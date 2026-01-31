@@ -1,65 +1,97 @@
-import Image from "next/image";
+import Link from 'next/link';
+import FeatureCard from '@/components/FeatureCard';
 
 export default function Home() {
+  const features = [
+    {
+      icon: 'fas fa-shield-alt',
+      title: 'Excelencia Certificada',
+      description: 'Cumplimos rigurosamente con estándares de calidad nacionales'
+    },
+    {
+      icon: 'fas fa-users',
+      title: 'Talento Humano',
+      description: 'Profesionales expertos dedicados a su bienestar'
+    },
+    {
+      icon: 'fas fa-microscope',
+      title: 'Tecnología Avanzada',
+      description: 'Equipos de última generación para diagnósticos precisos'
+    },
+    {
+      icon: 'fas fa-bullseye',
+      title: 'Resultados Confiables',
+      description: 'Seguridad y precisión en cada prueba realizada'
+    }
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-background"></div>
+        <div className="hero-gradient"></div>
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Precisión y Confianza en tus Resultados Clínicos
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="hero-subtitle">
+            Tu salud es nuestra prioridad en Quibdó, Chocó
           </p>
+          <div className="hero-button-container">
+            <Link
+              href="https://wa.me/573103661093?text=Hola,%20me%20gustaría%20obtener%20información%20sobre%20sus%20servicios."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-whatsapp-btn"
+              aria-label="Contactar por WhatsApp"
+            >
+              <i className="fab fa-whatsapp"></i>
+              Contactanos por WhatsApp
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* About Section */}
+      <section className="section" style={{ backgroundColor: '#ffffff' }}>
+        <div className="container">
+          <div className="text-center mb-5">
+            <h2 className="section-title">Comprometidos con la Salud del Chocó</h2>
+          </div>
+
+          <div style={{ maxWidth: '900px', margin: '0 auto', marginBottom: '3rem' }}>
+            <p style={{ fontSize: '1.1rem', color: 'var(--text-gray)', marginBottom: '20px' }}>
+              En <strong>Laboratorio Clínico Bioanálisis</strong> entendemos que detrás de cada muestra hay una
+              vida y una familia esperando respuestas. Por eso, nos dedicamos a ofrecer servicios de diagnóstico
+              clínico caracterizados por la <strong>humanización, la ética y la excelencia científica</strong>.
+            </p>
+            <p style={{ fontSize: '1.1rem', color: 'var(--text-gray)', marginBottom: '20px' }}>
+              Nuestro compromiso con la comunidad de Quibdó va más allá de entregar resultados. Buscamos ser un
+              aliado fundamental en el cuidado de la salud, con un equipo de profesionales apasionados y
+              tecnología de vanguardia que garantizan <strong>máxima precisión y confiabilidad</strong> en todos
+              nuestros procesos.
+            </p>
+            <p style={{ fontSize: '1.1rem', color: 'var(--text-gray)' }}>
+              Trabajamos incansablemente para brindar una atención cálida y oportuna, asegurando que cada paciente
+              reciba un trato digno y profesional. La confianza de nuestros pacientes es nuestra mayor motivación
+              para seguir mejorando día a día.
+            </p>
+          </div>
+
+          {/* Feature Cards Grid */}
+          <div className="cards-grid">
+            {features.map((feature, index) => (
+              <FeatureCard
+                key={index}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+              />
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }
