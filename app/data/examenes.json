@@ -1,0 +1,462 @@
+[
+  {
+    "codigo": "17H",
+    "nombre": "17 HIDROXIPROGESTERONA",
+    "precio": 59932
+  },
+  {
+    "codigo": "VAL",
+    "nombre": "ACIDO VALPROICO",
+    "precio": 27000
+  },
+  {
+    "codigo": "LUP",
+    "nombre": "ANTICOAGULANTE LUPICO",
+    "precio": 45588
+  },
+  {
+    "codigo": "ACSDNA",
+    "nombre": "ANTICUERPOS ANTI DNA",
+    "precio": 100000
+  },
+  {
+    "codigo": "RNP",
+    "nombre": "ANTICUERPOS ANTI RNP",
+    "precio": 100000
+  },
+  {
+    "codigo": "SSA",
+    "nombre": "ANTICUERPOS ANTI SSA",
+    "precio": 90000
+  },
+  {
+    "codigo": "ATG",
+    "nombre": "ANTICUERPOS ANTI TIROGLOBULINICOS",
+    "precio": 70000
+  },
+  {
+    "codigo": "ANTITPO",
+    "nombre": "ANTICUERPOS ANTI TIROPEROXIDASA",
+    "precio": 50000
+  },
+  {
+    "codigo": "FOSFG",
+    "nombre": "ANTICUERPOS ANTI-FOSFOLIPIDOS IGG",
+    "precio": 200000
+  },
+  {
+    "codigo": "FOSFM",
+    "nombre": "ANTICUERPOS ANTI-FOSFOLIPIDOS IgM",
+    "precio": 200000
+  },
+  {
+    "codigo": "SCL",
+    "nombre": "ANTICUERPOS ANTI-SCL 70",
+    "precio": 75063
+  },
+  {
+    "codigo": "SSB",
+    "nombre": "ANTICUERPOS ANTI-SSB",
+    "precio": 75063
+  },
+  {
+    "codigo": "ANAS",
+    "nombre": "ANTICUERPOS ANTINUCLEARES",
+    "precio": 50000
+  },
+  {
+    "codigo": "ENAS",
+    "nombre": "ANTICUERPOS ANTINUCLEARES EXTRACTABLES TOTALES ENA",
+    "precio": 140000
+  },
+  {
+    "codigo": "ACSHEPC",
+    "nombre": "ANTICUERPOS DE HEPATITIS C",
+    "precio": 60000
+  },
+  {
+    "codigo": "RUBG",
+    "nombre": "ANTICUERPOS IgG RUBEOLA",
+    "precio": 54234
+  },
+  {
+    "codigo": "RUBM",
+    "nombre": "ANTICUERPOS IgM RUBEOLA",
+    "precio": 54234
+  },
+  {
+    "codigo": "ACSTRIP",
+    "nombre": "ANTICUERPOS TRYPANOSOMA CRUZI",
+    "precio": 1
+  },
+  {
+    "codigo": "CA153",
+    "nombre": "ANTIGENO CA 15-3 (CANCER DE MAMA)",
+    "precio": 140000
+  },
+  {
+    "codigo": "AgCCA",
+    "nombre": "ANTÍGENO CCA",
+    "precio": 1
+  },
+  {
+    "codigo": "BICAR",
+    "nombre": "BICARBONATO",
+    "precio": 40000
+  },
+  {
+    "codigo": "BIOP",
+    "nombre": "BIOPSIA",
+    "precio": 120000
+  },
+  {
+    "codigo": "CA125",
+    "nombre": "CA 125 (ANTÍGENO C.A. DE OVARIO) - CA 125",
+    "precio": 101001
+  },
+  {
+    "codigo": "CA199",
+    "nombre": "CA 19-9 (ANTÍGENO DE CANCER) - CA19-9",
+    "precio": 101001
+  },
+  {
+    "codigo": "CARBA",
+    "nombre": "CARBAMAZEPINA NIVELES SERICOS",
+    "precio": 40000
+  },
+  {
+    "codigo": "CARDIOG",
+    "nombre": "CARDIOLIPINA IgG",
+    "precio": 50000
+  },
+  {
+    "codigo": "CARDIOM",
+    "nombre": "CARDIOLIPINA IgM",
+    "precio": 44000
+  },
+  {
+    "codigo": "CARGA",
+    "nombre": "CARGA VIRAL HIV",
+    "precio": 290000
+  },
+  {
+    "codigo": "CITOG",
+    "nombre": "CITOMEGALOVIRUS ANTICUERPOS G",
+    "precio": 54000
+  },
+  {
+    "codigo": "CITOM",
+    "nombre": "CITOMEGALOVIRUS ANTICUERPOS M",
+    "precio": 54000
+  },
+  {
+    "codigo": "C3",
+    "nombre": "COMPLEMENTO C3",
+    "precio": 45000
+  },
+  {
+    "codigo": "C4",
+    "nombre": "COMPLEMENTO C4",
+    "precio": 30000
+  },
+  {
+    "codigo": "PLASMA",
+    "nombre": "CONSERVACION DE PLASMA",
+    "precio": 1
+  },
+  {
+    "codigo": "SUERO",
+    "nombre": "CONSERVACION DE SUERO",
+    "precio": 1
+  },
+  {
+    "codigo": "COOIC",
+    "nombre": "COOMBS INDIRECTO CUALITATIVA",
+    "precio": 70000
+  },
+  {
+    "codigo": "CORTI",
+    "nombre": "CORTISOL",
+    "precio": 40000
+  },
+  {
+    "codigo": "CORT",
+    "nombre": "CORTISOL",
+    "precio": 50000
+  },
+  {
+    "codigo": "HONGO",
+    "nombre": "CULTIVO DE HONGOS MICOSIS SUPERFICIAL",
+    "precio": 93000
+  },
+  {
+    "codigo": "CURETRAL",
+    "nombre": "CULTIVO SECRECION URETRAL",
+    "precio": 88000
+  },
+  {
+    "codigo": "DEHIDRO",
+    "nombre": "DEHIDROEPIANDROSTERONA",
+    "precio": 50000
+  },
+  {
+    "codigo": "DIHTESTO",
+    "nombre": "DIHIDROTESTOSTERONA",
+    "precio": 130000
+  },
+  {
+    "codigo": "NUCAL",
+    "nombre": "ECOGRAFIA OBTRETICA CON TRANSLUCENCIA NUCAL",
+    "precio": 115000
+  },
+  {
+    "codigo": "ECOGRA",
+    "nombre": "ECOGRAFIA PELVICA TRASVAGINAL",
+    "precio": 120000
+  },
+  {
+    "codigo": "ELECTHB",
+    "nombre": "ELECTROFORESIS DE HEMOGLOBINA",
+    "precio": 60000
+  },
+  {
+    "codigo": "REMISION",
+    "nombre": "ESTE PACIENTE TIENE EXAMENES DE REMISION",
+    "precio": 90000
+  },
+  {
+    "codigo": "ESTR",
+    "nombre": "ESTRADIOL",
+    "precio": 60000
+  },
+  {
+    "codigo": "OCUP",
+    "nombre": "EXAMEN OCUPACIONAL",
+    "precio": 60000
+  },
+  {
+    "codigo": "FERR",
+    "nombre": "FERRITINA",
+    "precio": 60000
+  },
+  {
+    "codigo": "GLFOD",
+    "nombre": "GLUCOSA 6 FOSFATO DISHIDROGENASA",
+    "precio": 103000
+  },
+  {
+    "codigo": "HEMOSIS",
+    "nombre": "HEMOSISTEINA",
+    "precio": 148000
+  },
+  {
+    "codigo": "HEPAG",
+    "nombre": "HEPATITIS A, ANTICUERPOS IgG",
+    "precio": 90000
+  },
+  {
+    "codigo": "HEPAM",
+    "nombre": "HEPATITIS A, ANTICUERPOS IgM",
+    "precio": 90000
+  },
+  {
+    "codigo": "HEPBCENT",
+    "nombre": "HEPATITIS B ANTICUERPOS CENTRAL IgM",
+    "precio": 50000
+  },
+  {
+    "codigo": "HEPBTOT",
+    "nombre": "HEPATITIS B, ANTICUERPO CENTRAL TOTALES",
+    "precio": 48000
+  },
+  {
+    "codigo": "HBE",
+    "nombre": "HEPATITIS B, ANTICUERPOS E",
+    "precio": 1
+  },
+  {
+    "codigo": "HERPES I",
+    "nombre": "HERPES I ANTICUERPOS IGG",
+    "precio": 100000
+  },
+  {
+    "codigo": "HERPEIGM",
+    "nombre": "HERPES I ANTICUERPOS IGM",
+    "precio": 100000
+  },
+  {
+    "codigo": "HERPESG",
+    "nombre": "HERPES II ANTICUERPOS IgG",
+    "precio": 100000
+  },
+  {
+    "codigo": "HERPESM",
+    "nombre": "HERPES II ANTICUERPOS IgM",
+    "precio": 100000
+  },
+  {
+    "codigo": "SH",
+    "nombre": "HORMONA DE CRECIMIENTO",
+    "precio": 180000
+  },
+  {
+    "codigo": "TSH NEO",
+    "nombre": "HORMONA ESTIMULANTE DE TIROIDES TSH NEONATAL",
+    "precio": 19800
+  },
+  {
+    "codigo": "IgA",
+    "nombre": "INMUNOGLOBULINA IgA",
+    "precio": 62000
+  },
+  {
+    "codigo": "INS",
+    "nombre": "INSULINA",
+    "precio": 55000
+  },
+  {
+    "codigo": "CD3",
+    "nombre": "LINFOCITOS CD3",
+    "precio": 40000
+  },
+  {
+    "codigo": "CD4",
+    "nombre": "LINFOCITOS CD4",
+    "precio": 40000
+  },
+  {
+    "codigo": "CD8",
+    "nombre": "LINFOCITOS CD8",
+    "precio": 1
+  },
+  {
+    "codigo": "LITIO",
+    "nombre": "LITIO",
+    "precio": 40000
+  },
+  {
+    "codigo": "EVERO",
+    "nombre": "NIVELES DE EVEROLIMUS",
+    "precio": 185000
+  },
+  {
+    "codigo": "OPTOME",
+    "nombre": "OPTOMETRIA",
+    "precio": 60000
+  },
+  {
+    "codigo": "OSTEOM",
+    "nombre": "OSTEOMUSCULAR",
+    "precio": 50000
+  },
+  {
+    "codigo": "VPH",
+    "nombre": "PAPILOMAVIRUS POR PCR CON TIPIFICACION DE 14 CEPAS (Alto Riesgo)",
+    "precio": 190000
+  },
+  {
+    "codigo": "PTH",
+    "nombre": "PARATOHORMONA PTH",
+    "precio": 76438
+  },
+  {
+    "codigo": "PLOMO",
+    "nombre": "PLOMO",
+    "precio": 98900
+  },
+  {
+    "codigo": "PROGE",
+    "nombre": "PROGESTERONA",
+    "precio": 70000
+  },
+  {
+    "codigo": "PROGES",
+    "nombre": "PROGESTERONA",
+    "precio": 70000
+  },
+  {
+    "codigo": "PROTEC",
+    "nombre": "PROTEINA C DE LA COAGULACION",
+    "precio": 120000
+  },
+  {
+    "codigo": "PROTES",
+    "nombre": "PROTEINA S DE LA COAGULACION",
+    "precio": 246000
+  },
+  {
+    "codigo": "PTHS",
+    "nombre": "PROTEINA TRANSPORTADORA DE HORMONA SEXUAL",
+    "precio": 1
+  },
+  {
+    "codigo": "COVID19",
+    "nombre": "PRUEBA DE EXUDADO COVID19",
+    "precio": 300000
+  },
+  {
+    "codigo": "PATERN",
+    "nombre": "PRUEBA DE PATERNIDAD",
+    "precio": 780000
+  },
+  {
+    "codigo": "Código",
+    "nombre": "Prueba",
+    "precio": 0
+  },
+  {
+    "codigo": "ADDIS",
+    "nombre": "Recuento de Addis, Orina de 12 horas",
+    "precio": 25000
+  },
+  {
+    "codigo": "TESTL",
+    "nombre": "TESTOSTERONA LIBRE",
+    "precio": 58000
+  },
+  {
+    "codigo": "TEST",
+    "nombre": "TESTOSTERONA TOTAL",
+    "precio": 48000
+  },
+  {
+    "codigo": "TIROG",
+    "nombre": "TIROGLOBULINA",
+    "precio": 80000
+  },
+  {
+    "codigo": "TRANS",
+    "nombre": "TRANSFERRINA",
+    "precio": 70000
+  },
+  {
+    "codigo": "TREPO",
+    "nombre": "TREPONEMA PALLIDUM ANTICUERPOS IgM",
+    "precio": 160000
+  },
+  {
+    "codigo": "VITK",
+    "nombre": "VITAMINA K",
+    "precio": 285000
+  },
+  {
+    "codigo": "VITD",
+    "nombre": "VITAMNA D 25 HIDROXI",
+    "precio": 110000
+  },
+  {
+    "codigo": "WARFARIN",
+    "nombre": "WARFARINA",
+    "precio": 95000
+  },
+  {
+    "codigo": "WESTERN",
+    "nombre": "WESTERN BLOT",
+    "precio": 230000
+  },
+  {
+    "codigo": "ZINC",
+    "nombre": "ZINC",
+    "precio": 84000
+  }
+]
