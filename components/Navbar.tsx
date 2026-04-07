@@ -9,6 +9,13 @@ export default function Navbar() {
     const [isHidden, setIsHidden] = useState(false);
     const [lastScrollTop, setLastScrollTop] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [portalHref, setPortalHref] = useState<'/login' | '/dashboard'>('/login');
+
+    // Detectar sesión activa al montar el componente
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        setPortalHref(token ? '/dashboard' : '/login');
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -63,7 +70,17 @@ export default function Navbar() {
                         <li><Link href="/nosotros" className="nav-link" onClick={() => setIsMenuOpen(false)}>Nosotros</Link></li>
                         <li><Link href="/servicios" className="nav-link" onClick={() => setIsMenuOpen(false)}>Servicios</Link></li>
                         <li><Link href="/agenda-tu-cita" className="nav-link" onClick={() => setIsMenuOpen(false)}>Agenda tu Cita</Link></li>
-                        <li><Link href="/contacto" className="btn-contacto" onClick={() => setIsMenuOpen(false)}>Contacto</Link></li>
+                        <li><Link href="/contacto" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contacto</Link></li>
+                        <li>
+                            <Link
+                                href={portalHref}
+                                className="btn-contacto"
+                                onClick={() => setIsMenuOpen(false)}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                            >
+                                <i className="fas fa-user-circle"></i> Mi Portal
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </div>
