@@ -1,0 +1,12 @@
+# LabClinic Backend - Dependencies
+Django==4.2.29
+djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
+django-cors-headers==4.9.0
+django-ratelimit==4.1.0
+psycopg2-binary==2.9.11
+python-decouple==3.8
+PyJWT==2.11.0
+
+# Conexión a FASIL (MySQL on-premise)
+mysqlclient==2.2.7
