@@ -49,3 +49,16 @@ env/
 .env
 db.sqlite3
 .pytest_cache/
+backend/media/
+
+# Claude
+BioanalisisViejo.md 
+CLAUDE.md 
+Contex.md 
+EmpresasB2Bspec.md 
+SDD_Refactorizacion_BioanalisisCNG.md 
+SKILL.md 
+agents.md 
+Gap_Analysis_SDD.md
+Project state.md
+

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Entorno Python local (site-packages de Django, etc.)
+    "venv/**",
   ]),
 ]);
 
