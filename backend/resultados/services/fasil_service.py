@@ -1,0 +1,565 @@
+"""
+fasil_service.py — Capa de abstracción para integración con el sistema FASIL (LIS).
+
+Acción 9 del Gap Analysis (A-03 / A-06):
+    - A-03: El sistema viejo dependía directamente del servidor BIRT por IP interna
+            (resultado.php → http://192.168.1.109:8080/BioanalisisRepo272/...)
+    - A-06: El panel admin accedía directamente a tablas de FASIL (persona, tipo_doc,
+            mesa, svc_ordenes) en el mismo código PHP sin abstracción.
+
+Solución:
+    Esta capa encapsula TODA la lógica de integración con FASIL.
+    Las views NUNCA acceden a la BD de FASIL directamente.
+    Cuando se despliega on-premise (FASIL_ENABLED=True), el servicio conecta
+    a la BD MySQL de FASIL (bioanalisis272) por red local con credenciales
+    configuradas en .env — tal como hacía el sistema viejo, pero sin hardcodear.
+
+Arquitectura de conexión:
+    ┌────────────────────┐       ┌─────────────────────┐
+    │  Django Backend    │       │  BD FASIL (MySQL)    │
+    │  (PostgreSQL)      │──────>│  bioanalisis272      │
+    │                    │ LAN   │  192.168.1.109:3306  │
+    │  settings.DATABASES│       │                      │
+    │  ['fasil']         │       │  Tablas:             │
+    │                    │       │   - pct_pacientes    │
+    │                    │       │   - svc_ordenes      │
+    │                    │       │   - persona          │
+    │                    │       │   - tipo_doc         │
+    └────────────────────┘       └─────────────────────┘
+
+    En desarrollo local (FASIL_ENABLED=False): retorna datos mock.
+    En on-premise (FASIL_ENABLED=True): queries SQL reales a bioanalisis272.
+
+Uso:
+    from resultados.services.fasil_service import fasil_service
+
+    paciente = fasil_service.get_paciente('12345678')
+    ordenes  = fasil_service.get_ordenes(paciente_id='42', empresa_nit='900123456-7')
+"""
+
+import logging
+from dataclasses import dataclass
+from typing import Optional
+from django.conf import settings
+
+logger = logging.getLogger('resultados')
+
+
+# =============================================================================
+# Data Transfer Objects (DTOs) — Contratos de datos de FASIL
+# =============================================================================
+
+@dataclass
+class PacienteFASIL:
+    """
+    Representación de un paciente proveniente del sistema FASIL.
+
+    Equivalente en sistema viejo: fila de la tabla `pct_pacientes`
+    Campos mapeados:
+      - id_fasil        ← pct_pacientes.idPaciente
+      - documento       ← pct_pacientes.documento
+      - tipo_documento  ← pct_pacientes.idDocumento (tipo)
+      - nombre_completo ← pct_pacientes.nombres + ' ' + apellidos
+      - telefono        ← pct_pacientes.telefono
+      - email           ← pct_pacientes.email (si existe)
+    """
+    id_fasil: str
+    documento: str
+    tipo_documento: str        # 'CC', 'TI', 'CE', 'PA', 'RC'
+    nombre_completo: str
+    telefono: str = ''
+    email: str = ''
+
+
+@dataclass
+class OrdenFASIL:
+    """
+    Representación de una orden/resultado proveniente de FASIL.
+
+    Equivalente en sistema viejo: fila de la tabla `svc_ordenes`
+    Campos mapeados:
+      - id_orden      ← svc_ordenes.idOrden
+      - paciente_id   ← svc_ordenes.idPaciente
+      - empresa_nit   ← svc_ordenes.idEmpresa (nullable — null = paciente particular)
+      - tipo_examen   ← svc_ordenes.tipoExamen
+      - fecha_examen  ← svc_ordenes.fechaOrden
+      - tiene_pdf     ← indica si el resultado PDF fue generado
+
+    Nota histórica:
+      El sistema viejo generaba links al servidor BIRT:
+        http://192.168.1.109:8080/BioanalisisRepo272/frameset?...
+      (hallazgo A-03 del SDD — IP de servidor BIRT hardcodeada en código)
+      Se elimina esa dependencia. Los PDFs se sirven desde nuestro FileField.
+    """
+    id_orden: str
+    paciente_id: str
+    tipo_examen: str
+    fecha_examen: str          # ISO 8601: 'YYYY-MM-DD'
+    empresa_nit: Optional[str] = None
+    tiene_pdf: bool = True
+
+
+@dataclass
+class ContactoPacienteFASIL:
+    """
+    Datos de contacto de un paciente en FASIL.
+    Usados para enviar el código OTP al canal correcto.
+
+    El sistema viejo no verificaba identidad real (OTP era su propio documento).
+    Este DTO habilita el envío real de OTP por WhatsApp/SMS/email.
+    """
+    documento: str
+    telefono: str = ''
+    email: str = ''
+
+
+# =============================================================================
+# Excepciones del servicio FASIL
+# =============================================================================
+
+class FasilError(Exception):
+    """Error base para todos los fallos de integración con FASIL."""
+    pass
+
+
+class FasilPacienteNoEncontrado(FasilError):
+    """El paciente no existe en la BD de FASIL."""
+    pass
+
+
+class FasilOrdenNoEncontrada(FasilError):
+    """La orden/resultado no existe o no pertenece al paciente indicado."""
+    pass
+
+
+class FasilConexionError(FasilError):
+    """No se pudo establecer conexión con FASIL (red, credenciales, timeout)."""
+    pass
+
+
+# =============================================================================
+# Helpers internos
+# =============================================================================
+
+def _get_fasil_cursor():
+    """
+    Obtiene un cursor a la BD FASIL (MySQL) si está habilitada.
+
+    Usa django.db.connections['fasil'] configurado en settings.py.
+    Si FASIL_ENABLED=False, lanza FasilConexionError.
+
+    Nota: Este cursor es READ-ONLY por diseño. Nunca hacemos INSERT/UPDATE/DELETE
+    en la BD de FASIL — eso es responsabilidad exclusiva del software FASIL.
+    """
+    if not getattr(settings, 'FASIL_ENABLED', False):
+        raise FasilConexionError(
+            "FASIL_ENABLED=False. Conexión a BD FASIL no disponible en este entorno. "
+            "Activar en .env para despliegue on-premise."
+        )
+
+    try:
+        from django.db import connections
+        conn = connections['fasil']
+        return conn.cursor()
+    except Exception as e:
+        logger.error("FASIL conexión fallida: %s", str(e))
+        raise FasilConexionError(f"No se pudo conectar a la BD FASIL: {e}")
+
+
+def _is_fasil_enabled() -> bool:
+    """Retorna True si la conexión a FASIL está configurada y activa."""
+    return getattr(settings, 'FASIL_ENABLED', False)
+
+
+# =============================================================================
+# Servicio FASIL
+# =============================================================================
+
+class FasilService:
+    """
+    Capa de abstracción para la integración con el sistema FASIL (LIS).
+
+    PRINCIPIO RECTOR (Contex.md):
+        "El sistema NO reemplaza FASIL. Consulta, complementa y centraliza.
+         Nunca acoplarse directamente a su BD."
+
+    REGLA (CLAUDE.md / labclinic-refactor skill):
+        "Views NUNCA acceden a la BD de FASIL directamente."
+        "Toda lectura pasa por fasil_service."
+
+    Modos de operación:
+        FASIL_ENABLED=False (desarrollo local):
+            → Retorna datos mock. No requiere acceso a MySQL.
+        FASIL_ENABLED=True (on-premise en la misma red):
+            → Conecta a bioanalisis272 (MySQL) por LAN.
+            → Queries SQL de solo lectura a tablas FASIL.
+            → Credenciales desde .env (nunca hardcodeadas).
+
+    Las views NUNCA instancian ni llaman a FASIL directamente.
+    Siempre usan esta clase a través de la instancia singleton `fasil_service`.
+    """
+
+    @property
+    def enabled(self) -> bool:
+        """Indica si la conexión a FASIL está activa (on-premise)."""
+        return _is_fasil_enabled()
+
+    # -------------------------------------------------------------------------
+    # Pacientes
+    # -------------------------------------------------------------------------
+
+    def get_paciente(self, documento: str) -> PacienteFASIL:
+        """
+        Busca un paciente en FASIL por número de documento.
+
+        Equivalente en sistema viejo (bio_cng/php/nombres.php):
+            SELECT * FROM pct_pacientes
+            WHERE documento = '$c'
+
+        Args:
+            documento: Número de documento del paciente (CC, TI, CE, etc.)
+
+        Returns:
+            PacienteFASIL con los datos del paciente.
+
+        Raises:
+            FasilPacienteNoEncontrado: Si el paciente no existe en FASIL.
+            FasilConexionError: Si no se puede conectar con FASIL.
+        """
+        if not self.enabled:
+            logger.info("FASIL get_paciente | documento=%s | modo=MOCK", documento)
+            return self._mock_get_paciente(documento)
+
+        logger.info("FASIL get_paciente | documento=%s | modo=REAL", documento)
+        try:
+            cursor = _get_fasil_cursor()
+            # Query equivalente a nombres.php del sistema viejo
+            # pero parametrizada (evita SQL injection — hallazgo C-01 resuelto)
+            cursor.execute(
+                """
+                SELECT
+                    p.idPaciente,
+                    p.documento,
+                    td.descripcion AS tipo_documento,
+                    CONCAT(p.nombres, ' ', p.apellidos) AS nombre_completo,
+                    COALESCE(p.telefono, '') AS telefono,
+                    COALESCE(p.email, '') AS email
+                FROM pct_pacientes p
+                LEFT JOIN tipo_doc td ON p.idDocumento = td.idTipoDoc
+                WHERE p.documento = %s
+                LIMIT 1
+                """,
+                [documento]
+            )
+            row = cursor.fetchone()
+            cursor.close()
+
+            if not row:
+                raise FasilPacienteNoEncontrado(
+                    f"Paciente con documento '{documento}' no encontrado en FASIL."
+                )
+
+            return PacienteFASIL(
+                id_fasil=str(row[0]),
+                documento=str(row[1]),
+                tipo_documento=row[2] or 'CC',
+                nombre_completo=row[3] or '',
+                telefono=row[4] or '',
+                email=row[5] or '',
+            )
+
+        except FasilPacienteNoEncontrado:
+            raise
+        except Exception as e:
+            logger.error("FASIL get_paciente error: %s", str(e))
+            raise FasilConexionError(f"Error consultando paciente en FASIL: {e}")
+
+    def get_contacto_paciente(self, documento: str) -> ContactoPacienteFASIL:
+        """
+        Obtiene los datos de contacto de un paciente en FASIL.
+        Usado para enviar el código OTP al teléfono o email registrado.
+
+        El sistema viejo NO verificaba identidad — el "OTP" era solo el documento.
+        Este método habilita el OTP real cuando se despliegue on-premise.
+
+        Args:
+            documento: Número de documento del paciente.
+
+        Returns:
+            ContactoPacienteFASIL con teléfono y/o email de contacto.
+        """
+        if not self.enabled:
+            logger.info("FASIL get_contacto_paciente | documento=%s | modo=MOCK", documento)
+            return self._mock_get_contacto(documento)
+
+        logger.info("FASIL get_contacto_paciente | documento=%s | modo=REAL", documento)
+        try:
+            cursor = _get_fasil_cursor()
+            cursor.execute(
+                """
+                SELECT documento,
+                       COALESCE(telefono, '') AS telefono,
+                       COALESCE(email, '') AS email
+                FROM pct_pacientes
+                WHERE documento = %s
+                LIMIT 1
+                """,
+                [documento]
+            )
+            row = cursor.fetchone()
+            cursor.close()
+
+            if not row:
+                raise FasilPacienteNoEncontrado(
+                    f"Paciente con documento '{documento}' no encontrado en FASIL."
+                )
+
+            return ContactoPacienteFASIL(
+                documento=str(row[0]),
+                telefono=row[1] or '',
+                email=row[2] or '',
+            )
+
+        except FasilPacienteNoEncontrado:
+            raise
+        except Exception as e:
+            logger.error("FASIL get_contacto_paciente error: %s", str(e))
+            raise FasilConexionError(f"Error consultando contacto en FASIL: {e}")
+
+    # -------------------------------------------------------------------------
+    # Órdenes / Resultados
+    # -------------------------------------------------------------------------
+
+    def get_ordenes(
+        self,
+        paciente_id: str,
+        empresa_nit: Optional[str] = None,
+    ) -> list[OrdenFASIL]:
+        """
+        Lista las órdenes/resultados de un paciente en FASIL.
+        Si se pasa empresa_nit, filtra solo las órdenes de esa empresa.
+
+        Equivalente en sistema viejo (bio_cng/php/resultado.php):
+            SELECT * FROM svc_ordenes
+            WHERE idPaciente = '$c'
+            [AND idEmpresa = '$nit']
+
+        El viejo sistema luego generaba un link al servidor BIRT:
+            http://192.168.1.109:8080/BioanalisisRepo272/frameset?...
+        (hallazgo A-03 — IP hardcodeada). Esa dependencia se elimina.
+
+        Args:
+            paciente_id: ID del paciente en FASIL (id_fasil).
+            empresa_nit: NIT de la empresa para filtrar (None = todas las órdenes).
+
+        Returns:
+            Lista de OrdenFASIL. Lista vacía si no hay órdenes.
+        """
+        if not self.enabled:
+            logger.info(
+                "FASIL get_ordenes | paciente_id=%s | empresa_nit=%s | modo=MOCK",
+                paciente_id, empresa_nit
+            )
+            return self._mock_get_ordenes(paciente_id, empresa_nit)
+
+        logger.info(
+            "FASIL get_ordenes | paciente_id=%s | empresa_nit=%s | modo=REAL",
+            paciente_id, empresa_nit
+        )
+        try:
+            cursor = _get_fasil_cursor()
+
+            # Query base — equivalente a resultado.php del sistema viejo
+            # pero parametrizada (C-01 resuelto: no hay concatenación de vars)
+            sql = """
+                SELECT
+                    o.idOrden,
+                    o.idPaciente,
+                    COALESCE(o.tipoExamen, 'No especificado') AS tipo_examen,
+                    DATE_FORMAT(o.fechaOrden, '%%Y-%%m-%%d') AS fecha_examen,
+                    o.idEmpresa
+                FROM svc_ordenes o
+                WHERE o.idPaciente = %s
+            """
+            params = [paciente_id]
+
+            if empresa_nit:
+                sql += " AND o.idEmpresa = %s"
+                params.append(empresa_nit)
+
+            sql += " ORDER BY o.fechaOrden DESC"
+
+            cursor.execute(sql, params)
+            rows = cursor.fetchall()
+            cursor.close()
+
+            return [
+                OrdenFASIL(
+                    id_orden=str(row[0]),
+                    paciente_id=str(row[1]),
+                    tipo_examen=row[2] or 'No especificado',
+                    fecha_examen=row[3] or '',
+                    empresa_nit=str(row[4]) if row[4] else None,
+                    tiene_pdf=True,
+                )
+                for row in rows
+            ]
+
+        except Exception as e:
+            logger.error("FASIL get_ordenes error: %s", str(e))
+            raise FasilConexionError(f"Error consultando órdenes en FASIL: {e}")
+
+    def get_resultado_pdf(self, orden_id: str) -> bytes:
+        """
+        Descarga el PDF de un resultado desde FASIL.
+
+        Equivalente en sistema viejo (resultado.php):
+            El viejo NO descargaba — redirigía al servidor BIRT:
+            header("Location: http://192.168.1.109:8080/BioanalisisRepo272/frameset?...")
+            (hallazgo A-03 — dependencia directa al servidor BIRT por IP)
+
+        En el nuevo sistema, los PDFs subidos manualmente se guardan en FileField.
+        Para PDFs de FASIL: se consulta la tabla `resultado` de FASIL que almacenaba
+        el archivo como BLOB (hallazgo C-06).
+
+        Args:
+            orden_id: ID de la orden en FASIL.
+
+        Returns:
+            Bytes del archivo PDF.
+
+        Raises:
+            FasilOrdenNoEncontrada: Si la orden no tiene PDF asociado.
+        """
+        if not self.enabled:
+            logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=MOCK", orden_id)
+            raise NotImplementedError(
+                "get_resultado_pdf() en modo MOCK. "
+                "Los PDFs mock deben cargarse manualmente desde el panel admin."
+            )
+
+        logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=REAL", orden_id)
+        try:
+            cursor = _get_fasil_cursor()
+            # El sistema viejo almacenaba PDFs como BLOB en la tabla resultado
+            # (hallazgo C-06 del SDD). Los leemos pero los servimos desde Django.
+            cursor.execute(
+                """
+                SELECT re_archivo
+                FROM resultado
+                WHERE idOrden = %s
+                AND re_archivo IS NOT NULL
+                LIMIT 1
+                """,
+                [orden_id]
+            )
+            row = cursor.fetchone()
+            cursor.close()
+
+            if not row or not row[0]:
+                raise FasilOrdenNoEncontrada(
+                    f"No se encontró PDF para la orden '{orden_id}' en FASIL."
+                )
+
+            return bytes(row[0])
+
+        except FasilOrdenNoEncontrada:
+            raise
+        except Exception as e:
+            logger.error("FASIL get_resultado_pdf error: %s", str(e))
+            raise FasilConexionError(f"Error descargando PDF de FASIL: {e}")
+
+    # -------------------------------------------------------------------------
+    # Health check
+    # -------------------------------------------------------------------------
+
+    def ping(self) -> dict:
+        """
+        Verifica la conectividad con FASIL.
+        Útil para healthchecks y monitoring del despliegue on-premise.
+
+        Returns:
+            dict con 'status', 'modo' y 'detalle'.
+        """
+        if not self.enabled:
+            return {
+                'status': 'ok',
+                'modo': 'MOCK',
+                'detalle': 'FASIL_ENABLED=False. Servicio en modo mock para desarrollo.',
+            }
+
+        try:
+            cursor = _get_fasil_cursor()
+            cursor.execute("SELECT 1")
+            cursor.close()
+            return {
+                'status': 'ok',
+                'modo': 'REAL',
+                'detalle': 'Conexión a BD FASIL (bioanalisis272) exitosa.',
+            }
+        except Exception as e:
+            return {
+                'status': 'error',
+                'modo': 'REAL',
+                'detalle': f'No se pudo conectar a FASIL: {e}',
+            }
+
+    # -------------------------------------------------------------------------
+    # Datos mock para desarrollo local (FASIL_ENABLED=False)
+    # -------------------------------------------------------------------------
+
+    def _mock_get_paciente(self, documento: str) -> PacienteFASIL:
+        """Retorna un paciente mock para desarrollo local."""
+        if documento == '00000000':
+            raise FasilPacienteNoEncontrado(
+                f"[MOCK] Paciente con documento '{documento}' no encontrado."
+            )
+
+        return PacienteFASIL(
+            id_fasil=f"FASIL-{documento}",
+            documento=documento,
+            tipo_documento='CC',
+            nombre_completo='[Mock] Paciente FASIL de Prueba',
+            telefono='3001234567',
+            email='paciente.mock@ejemplo.com',
+        )
+
+    def _mock_get_contacto(self, documento: str) -> ContactoPacienteFASIL:
+        """Retorna contacto mock para desarrollo local."""
+        return ContactoPacienteFASIL(
+            documento=documento,
+            telefono='3001234567',
+            email='paciente.mock@ejemplo.com',
+        )
+
+    def _mock_get_ordenes(
+        self,
+        paciente_id: str,
+        empresa_nit: Optional[str] = None,
+    ) -> list[OrdenFASIL]:
+        """Retorna órdenes mock para desarrollo local."""
+        return [
+            OrdenFASIL(
+                id_orden=f"ORD-{paciente_id}-001",
+                paciente_id=paciente_id,
+                tipo_examen='Hemograma Completo',
+                fecha_examen='2026-04-01',
+                empresa_nit=empresa_nit,
+                tiene_pdf=True,
+            ),
+            OrdenFASIL(
+                id_orden=f"ORD-{paciente_id}-002",
+                paciente_id=paciente_id,
+                tipo_examen='Perfil Lipídico',
+                fecha_examen='2026-03-15',
+                empresa_nit=empresa_nit,
+                tiene_pdf=True,
+            ),
+        ]
+
+
+# =============================================================================
+# Instancia singleton — usar siempre esta, nunca instanciar FasilService()
+# =============================================================================
+
+fasil_service = FasilService()

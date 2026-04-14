@@ -141,3 +141,93 @@ class RoleManagementTests(APITestCase):
         response = self.client.post(self.users_url, self.new_user_data)
         # La vista de ListCreate necesita IsAuthenticated
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PublicRegisterSecurityTests(APITestCase):
+    """
+    Tests de seguridad para la corrección N-01:
+    El endpoint público POST /api/auth/register/ NO debe permitir
+    crear usuarios con roles privilegiados (admin, bacteriologo).
+
+    Antes de la corrección: RegisterSerializer aceptaba `role` en el body
+    → un atacante podía crear un admin sin autenticación.
+
+    Después de la corrección: RegisterSerializer excluye `role` del body
+    y fuerza PACIENTE en create(). Si se envía `role` en el body, es ignorado.
+    """
+
+    def setUp(self):
+        self.register_url = '/api/auth/register/'
+
+    def test_public_register_creates_paciente_by_default(self):
+        """El registro público crea siempre un usuario PACIENTE."""
+        data = {
+            'username': 'nuevo_paciente',
+            'password': 'contraseña123',
+            'documento': '123000001',
+        }
+        response = self.client.post(self.register_url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(username='nuevo_paciente')
+        self.assertEqual(user.role, User.Role.PACIENTE)
+
+    def test_public_register_ignores_admin_role_in_body(self):
+        """
+        Si alguien envía role='admin' al endpoint público, el campo es ignorado
+        y el usuario se crea como PACIENTE de todas formas.
+        Esto es el cierre concreto de la vulnerabilidad N-01.
+        """
+        data = {
+            'username': 'atacante_admin',
+            'password': 'contraseña123',
+            'documento': '999000001',
+            'role': 'admin',  # Intento de escalación de privilegios
+        }
+        response = self.client.post(self.register_url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(username='atacante_admin')
+        # El rol debe ser PACIENTE, no admin
+        self.assertEqual(user.role, User.Role.PACIENTE)
+        self.assertNotEqual(user.role, User.Role.ADMIN)
+
+    def test_public_register_ignores_bacteriologo_role_in_body(self):
+        """
+        El endpoint público tampoco debe permitir crear bacteriólogos.
+        """
+        data = {
+            'username': 'atacante_bacte',
+            'password': 'contraseña123',
+            'documento': '999000002',
+            'role': 'bacteriologo',
+        }
+        response = self.client.post(self.register_url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(username='atacante_bacte')
+        self.assertEqual(user.role, User.Role.PACIENTE)
+        self.assertNotEqual(user.role, User.Role.BACTERIOLOGO)
+
+    def test_admin_can_still_create_bacteriologo_via_users_endpoint(self):
+        """
+        El flujo legítimo del admin para crear bacteriólogos no se rompe.
+        POST /api/auth/users/ (autenticado como admin) sí acepta roles privilegiados.
+        """
+        admin = User.objects.create_user(
+            username='admin_test', password='pw', role=User.Role.ADMIN
+        )
+        self.client.force_authenticate(user=admin)
+
+        data = {
+            'username': 'bacteriologo_legit',
+            'password': 'contraseña123',
+            'documento': '777000001',
+            'role': 'bacteriologo',
+        }
+        response = self.client.post('/api/auth/users/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        user = User.objects.get(username='bacteriologo_legit')
+        self.assertEqual(user.role, User.Role.BACTERIOLOGO)
+
