@@ -42,7 +42,7 @@ export default function AgendaTuCita() {
                         <span style={{ color: 'var(--text-gray)', fontSize: '1rem', fontWeight: '500' }}>o</span>
 
                         <Link
-                            href="https://wa.me/573103661093?text=Hola,%20tengo%20una%20consulta."
+                            href="https://wa.me/573103661093?text=Hola,%20quiero%20agendar%20una%20toma%20de%20muestra%20a%20domicilio."
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn-contacto"
@@ -53,9 +53,6 @@ export default function AgendaTuCita() {
                             Escríbenos a nuestro WhatsApp
                         </Link>
 
-                        <p style={{ marginTop: '0.5rem', color: 'var(--text-gray)', fontSize: '0.9rem' }}>
-                            O llámanos al: +57 310 3661093
-                        </p>
                     </div>
                 </div>
             </div>
