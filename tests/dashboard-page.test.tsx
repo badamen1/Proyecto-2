@@ -1,8 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { vi, beforeEach } from "vitest";
 import Dashboard from "@/app/dashboard/page";
 
 const { mockPush } = vi.hoisted(() => ({ mockPush: vi.fn() }));
+const mockApiFetch = vi.hoisted(() => vi.fn());
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -10,6 +11,12 @@ vi.mock("next/navigation", () => ({
     replace: vi.fn(),
     prefetch: vi.fn(),
   }),
+}));
+
+vi.mock("@/lib/api", () => ({
+  apiFetch: mockApiFetch,
+  apiFetchBlob: vi.fn(),
+  logoutAndRedirect: vi.fn(),
 }));
 
 // Mock de localStorage
@@ -29,6 +36,8 @@ describe("Página Dashboard (roles)", () => {
   beforeEach(() => {
     localStorageMock.clear();
     mockPush.mockClear();
+    mockApiFetch.mockReset();
+    mockApiFetch.mockResolvedValue({ count: 0, next: null, previous: null, results: [] });
   });
 
   it("muestra menú de paciente por defecto", () => {
@@ -68,5 +77,22 @@ describe("Página Dashboard (roles)", () => {
     render(<Dashboard />);
 
     expect(mockPush).toHaveBeenCalledWith("/login");
+  });
+
+  it("muestra el conteo real de resultados del paciente", async () => {
+    localStorageMock.setItem("access_token", "fake-token");
+    localStorageMock.setItem("user_role", "paciente");
+    mockApiFetch.mockResolvedValue({
+      count: 3, next: null, previous: null, results: [],
+    });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/tienes 3 resultados disponibles/i)).toBeInTheDocument();
+    });
+
+    const link = screen.getByText(/ver resultados/i).closest("a");
+    expect(link).toHaveAttribute("href", "/dashboard/resultados");
   });
 });

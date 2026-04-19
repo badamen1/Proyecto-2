@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 interface UserData {
     id: number;
     username: string;
@@ -47,7 +49,7 @@ export default function UsuariosDashboard() {
 
     const fetchUsers = async (token: string) => {
         try {
-            const res = await fetch('http://localhost:8000/api/auth/users/', {
+            const res = await fetch(`${API_URL}/api/auth/users/`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -68,7 +70,7 @@ export default function UsuariosDashboard() {
         const token = localStorage.getItem('access_token');
         
         try {
-            const res = await fetch('http://localhost:8000/api/auth/users/', {
+            const res = await fetch(`${API_URL}/api/auth/users/`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

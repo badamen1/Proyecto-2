@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export default function Login() {
     const router = useRouter();
     const [loginType, setLoginType] = useState<'paciente' | 'personal'>('paciente');
@@ -24,7 +26,7 @@ export default function Login() {
         e.preventDefault();
         setError(''); setLoading(true);
         try {
-            const res = await fetch('http://localhost:8000/api/auth/otp/request/', {
+            const res = await fetch(`${API_URL}/api/auth/otp/request/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ documento })
@@ -46,7 +48,7 @@ export default function Login() {
         e.preventDefault();
         setError(''); setLoading(true);
         try {
-            const res = await fetch('http://localhost:8000/api/auth/otp/verify/', {
+            const res = await fetch(`${API_URL}/api/auth/otp/verify/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ documento, otp })
@@ -70,7 +72,7 @@ export default function Login() {
         e.preventDefault();
         setError(''); setLoading(true);
         try {
-            const res = await fetch('http://localhost:8000/api/auth/login/', {
+            const res = await fetch(`${API_URL}/api/auth/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })

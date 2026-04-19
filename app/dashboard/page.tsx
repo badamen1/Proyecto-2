@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api';
+import type { PaginatedResponse, ResultadoLista } from '@/lib/types';
 
 type Role = 'paciente' | 'bacteriologo' | 'admin' | null;
 
@@ -10,16 +12,22 @@ export default function Dashboard() {
     const router = useRouter();
     const [currentRole, setCurrentRole] = useState<Role>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [resultadosCount, setResultadosCount] = useState<number | null>(null);
 
     useEffect(() => {
         // Verificar autenticación
         const token = localStorage.getItem('access_token');
         const role = localStorage.getItem('user_role') as Role;
-        
+
         if (!token || !role) {
             router.push('/login');
         } else {
             setCurrentRole(role);
+            if (role === 'paciente') {
+                apiFetch<PaginatedResponse<ResultadoLista>>('/api/resultados/')
+                    .then((data) => setResultadosCount(data.count))
+                    .catch(() => setResultadosCount(0));
+            }
         }
         setIsLoading(false);
     }, [router]);
@@ -103,8 +111,14 @@ export default function Dashboard() {
                                         <i className="fas fa-file-medical-alt"></i>
                                     </div>
                                     <h3 style={{ color: '#333', marginBottom: '0.5rem' }}>Resultados Recientes</h3>
-                                    <p style={{ color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Tienes 1 resultado nuevo listo para descargar.</p>
-                                    <button className="btn-primary" style={{ padding: '10px 20px', borderRadius: '25px', fontSize: '0.9rem' }}>Ver Resultados</button>
+                                    <p style={{ color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                                        {resultadosCount === null
+                                            ? 'Cargando...'
+                                            : resultadosCount === 0
+                                            ? 'No tienes resultados aún.'
+                                            : `Tienes ${resultadosCount} resultado${resultadosCount > 1 ? 's' : ''} disponible${resultadosCount > 1 ? 's' : ''}.`}
+                                    </p>
+                                    <Link href="/dashboard/resultados" className="btn-primary" style={{ padding: '10px 20px', borderRadius: '25px', fontSize: '0.9rem', textDecoration: 'none', display: 'inline-block' }}>Ver Resultados</Link>
                                 </div>
                                 <div style={{ background: '#fff', borderRadius: '10px', padding: '2rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', textAlign: 'center' }}>
                                     <div style={{ width: '60px', height: '60px', background: '#eefcf1', color: '#28a745', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 1rem auto' }}>

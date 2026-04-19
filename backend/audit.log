@@ -1,0 +1,6 @@
+[2026-04-19 20:37:40] [INFO] [users] OTP solicitado | documento=1004011037 | nuevo_usuario=False
+[2026-04-19 20:38:02] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-19 20:39:11] [INFO] [users] OTP solicitado | documento=1004011037 | nuevo_usuario=False
+[2026-04-19 20:39:27] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-19 20:43:02] [INFO] [users] OTP solicitado | documento=52422603 | nuevo_usuario=False
+[2026-04-19 20:43:21] [INFO] [users] LOGIN OTP exitoso | user_id=3 | documento=52422603 | role=bacteriologo
