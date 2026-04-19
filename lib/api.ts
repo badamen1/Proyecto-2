@@ -16,12 +16,11 @@ function authHeaders(): Record<string, string> {
 }
 
 export function logoutAndRedirect(): void {
+  if (typeof window === 'undefined') return;
   window.localStorage.removeItem('access_token');
   window.localStorage.removeItem('refresh_token');
   window.localStorage.removeItem('user_role');
-  if (typeof window !== 'undefined') {
-    window.location.assign('/login');
-  }
+  window.location.assign('/login');
 }
 
 async function doRefresh(): Promise<string> {
@@ -72,9 +71,10 @@ async function requestOnce(
   return fetch(buildUrl(path), { ...opts, headers });
 }
 
-export async function apiFetch<T = unknown>(
+async function executeWithAuth<T>(
   path: string,
-  opts: RequestInit = {}
+  opts: RequestInit,
+  processResponse: (res: Response) => Promise<T>
 ): Promise<T> {
   let res = await requestOnce(path, opts);
 
@@ -93,29 +93,19 @@ export async function apiFetch<T = unknown>(
     throw new Error(body || res.statusText);
   }
 
-  return res.json() as Promise<T>;
+  return processResponse(res);
+}
+
+export async function apiFetch<T = unknown>(
+  path: string,
+  opts: RequestInit = {}
+): Promise<T> {
+  return executeWithAuth(path, opts, (res) => res.json() as Promise<T>);
 }
 
 export async function apiFetchBlob(
   path: string,
   opts: RequestInit = {}
 ): Promise<Blob> {
-  let res = await requestOnce(path, opts);
-
-  if (res.status === 401) {
-    try {
-      const newToken = await getOrStartRefresh();
-      res = await requestOnce(path, opts, newToken);
-    } catch {
-      logoutAndRedirect();
-      throw new Error('Sesión expirada');
-    }
-  }
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(body || res.statusText);
-  }
-
-  return res.blob();
+  return executeWithAuth(path, opts, (res) => res.blob());
 }
