@@ -26,4 +26,36 @@ describe('apiFetch', () => {
     expect(url).toBe('http://localhost:8000/api/test/');
     expect((init?.headers as Record<string, string>)['Authorization']).toBe('Bearer tok-123');
   });
+
+  it('ante 401 hace refresh y reintenta la request original', async () => {
+    window.localStorage.setItem('access_token', 'tok-viejo');
+    window.localStorage.setItem('refresh_token', 'refresh-abc');
+
+    const fetchSpy = vi.spyOn(global, 'fetch')
+      .mockResolvedValueOnce(
+        new Response('{"detail":"expired"}', { status: 401 })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ access: 'tok-nuevo' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: 'hola' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      );
+
+    const { apiFetch } = await import('@/lib/api');
+    const result = await apiFetch<{ data: string }>('/api/test/');
+
+    expect(result).toEqual({ data: 'hola' });
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
+    expect(fetchSpy.mock.calls[1][0]).toBe('http://localhost:8000/api/auth/login/refresh/');
+    expect(window.localStorage.getItem('access_token')).toBe('tok-nuevo');
+    const retryInit = fetchSpy.mock.calls[2][1];
+    expect((retryInit?.headers as Record<string, string>)['Authorization']).toBe('Bearer tok-nuevo');
+  });
 });
