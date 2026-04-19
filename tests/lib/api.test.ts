@@ -122,3 +122,54 @@ describe('apiFetch', () => {
     expect(refreshCalls).toHaveLength(1);
   });
 });
+
+describe('apiFetchBlob', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  it('retorna un Blob con el contenido del archivo', async () => {
+    window.localStorage.setItem('access_token', 'tok-123');
+    const pdfBytes = new Uint8Array([0x25, 0x50, 0x44, 0x46]);
+
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      new Response(pdfBytes, {
+        status: 200,
+        headers: { 'Content-Type': 'application/pdf' },
+      })
+    );
+
+    const { apiFetchBlob } = await import('@/lib/api');
+    const blob = await apiFetchBlob('/api/resultados/1/pdf/');
+
+    expect(blob.type).toBe('application/pdf');
+    expect(blob.size).toBe(4);
+    expect(typeof blob.slice).toBe('function');
+  });
+
+  it('tambien dispara refresh si 401', async () => {
+    window.localStorage.setItem('access_token', 'tok-viejo');
+    window.localStorage.setItem('refresh_token', 'ref');
+
+    vi.spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response('', { status: 401 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ access: 'tok-nuevo' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(new Uint8Array([1, 2, 3]), {
+          status: 200,
+          headers: { 'Content-Type': 'application/pdf' },
+        })
+      );
+
+    const { apiFetchBlob } = await import('@/lib/api');
+    const blob = await apiFetchBlob('/api/resultados/1/pdf/');
+    expect(blob.size).toBe(3);
+  });
+});
