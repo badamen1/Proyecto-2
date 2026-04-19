@@ -82,4 +82,43 @@ describe('apiFetch', () => {
     expect(window.localStorage.getItem('user_role')).toBeNull();
     expect(assignSpy).toHaveBeenCalledWith('/login');
   });
+
+  it('dos requests en paralelo con 401 solo disparan un refresh', async () => {
+    window.localStorage.setItem('access_token', 'tok-viejo');
+    window.localStorage.setItem('refresh_token', 'refresh-abc');
+
+    const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(
+      async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        if (url.endsWith('/api/auth/login/refresh/')) {
+          return new Response(JSON.stringify({ access: 'tok-nuevo' }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        const auth = (init?.headers as Record<string, string> | undefined)?.['Authorization'] ?? '';
+        if (auth === 'Bearer tok-nuevo') {
+          return new Response('{"ok":true}', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response('{"detail":"expired"}', { status: 401 });
+      }
+    );
+
+    const { apiFetch } = await import('@/lib/api');
+    const [a, b] = await Promise.all([
+      apiFetch<{ ok: boolean }>('/api/a/'),
+      apiFetch<{ ok: boolean }>('/api/b/'),
+    ]);
+
+    expect(a).toEqual({ ok: true });
+    expect(b).toEqual({ ok: true });
+
+    const refreshCalls = fetchSpy.mock.calls.filter(
+      ([url]) => typeof url === 'string' && url.endsWith('/api/auth/login/refresh/')
+    );
+    expect(refreshCalls).toHaveLength(1);
+  });
 });
