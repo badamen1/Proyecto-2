@@ -58,4 +58,28 @@ describe('apiFetch', () => {
     const retryInit = fetchSpy.mock.calls[2][1];
     expect((retryInit?.headers as Record<string, string>)['Authorization']).toBe('Bearer tok-nuevo');
   });
+
+  it('si el refresh falla, limpia tokens y lanza error de sesion', async () => {
+    window.localStorage.setItem('access_token', 'tok-viejo');
+    window.localStorage.setItem('refresh_token', 'refresh-malo');
+    window.localStorage.setItem('user_role', 'paciente');
+
+    const assignSpy = vi.fn();
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { ...window.location, assign: assignSpy },
+    });
+
+    vi.spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response('{"detail":"expired"}', { status: 401 }))
+      .mockResolvedValueOnce(new Response('{"detail":"invalid"}', { status: 401 }));
+
+    const { apiFetch } = await import('@/lib/api');
+    await expect(apiFetch('/api/test/')).rejects.toThrow(/sesi/i);
+
+    expect(window.localStorage.getItem('access_token')).toBeNull();
+    expect(window.localStorage.getItem('refresh_token')).toBeNull();
+    expect(window.localStorage.getItem('user_role')).toBeNull();
+    expect(assignSpy).toHaveBeenCalledWith('/login');
+  });
 });
