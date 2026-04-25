@@ -240,12 +240,12 @@ class FasilService:
                 SELECT
                     p.idPaciente,
                     p.documento,
-                    td.descripcion AS tipo_documento,
-                    CONCAT(p.nombres, ' ', p.apellidos) AS nombre_completo,
+                    COALESCE(gd.codDocumento, 'CC') AS tipo_documento,
+                    CONCAT(p.nomPaciente, ' ', p.apePaciente) AS nombre_completo,
                     COALESCE(p.telefono, '') AS telefono,
                     COALESCE(p.email, '') AS email
                 FROM pct_pacientes p
-                LEFT JOIN tipo_doc td ON p.idDocumento = td.idTipoDoc
+                LEFT JOIN gnr_documentos gd ON p.idDocumento = gd.idDocumento
                 WHERE p.documento = %s
                 LIMIT 1
                 """,
@@ -369,14 +369,22 @@ class FasilService:
         try:
             cursor = _get_fasil_cursor()
 
-            # Query base — equivalente a resultado.php del sistema viejo
-            # pero parametrizada (C-01 resuelto: no hay concatenación de vars)
+            # Query base — esquema real bioanalisis30.
+            # svc_ordenes no tiene tipoExamen; se obtiene de svc_detordenes → prb_prb.
+            # fechaOrden → fecha (timestamp). idEmpresa es INT (no NIT string).
             sql = """
                 SELECT
                     o.idOrden,
                     o.idPaciente,
-                    COALESCE(o.tipoExamen, 'No especificado') AS tipo_examen,
-                    DATE_FORMAT(o.fechaOrden, '%%Y-%%m-%%d') AS fecha_examen,
+                    COALESCE(
+                        (SELECT pp.nomPrb
+                         FROM svc_detordenes sd
+                         JOIN prb_prb pp ON sd.idPrb = pp.idPrb
+                         WHERE sd.idOrden = o.idOrden
+                         LIMIT 1),
+                        'Examen de laboratorio'
+                    ) AS tipo_examen,
+                    DATE_FORMAT(o.fecha, '%%Y-%%m-%%d') AS fecha_examen,
                     o.idEmpresa
                 FROM svc_ordenes o
                 WHERE o.idPaciente = %s
@@ -387,7 +395,7 @@ class FasilService:
                 sql += " AND o.idEmpresa = %s"
                 params.append(empresa_nit)
 
-            sql += " ORDER BY o.fechaOrden DESC"
+            sql += " ORDER BY o.fecha DESC"
 
             cursor.execute(sql, params)
             rows = cursor.fetchall()
@@ -441,14 +449,14 @@ class FasilService:
         logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=REAL", orden_id)
         try:
             cursor = _get_fasil_cursor()
-            # El sistema viejo almacenaba PDFs como BLOB en la tabla resultado
-            # (hallazgo C-06 del SDD). Los leemos pero los servimos desde Django.
+            # PDFs almacenados en svc_result (tabla real en bioanalisis30).
+            # Se leen como BLOB y se sirven desde Django.
             cursor.execute(
                 """
-                SELECT re_archivo
-                FROM resultado
+                SELECT archivo
+                FROM svc_result
                 WHERE idOrden = %s
-                AND re_archivo IS NOT NULL
+                AND archivo IS NOT NULL
                 LIMIT 1
                 """,
                 [orden_id]
