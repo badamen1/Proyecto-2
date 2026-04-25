@@ -86,25 +86,16 @@ DATABASES = {
     }
 }
 
-# BD FASIL (MySQL) — Conexión directa on-premise (solo lectura)
-# Acción 9 (A-03/A-06): El sistema viejo accedía a bioanalisis272 con credenciales
-# hardcodeadas (fasil2/f4s1l2). Ahora se configuran desde .env.
-# Se activa solo en despliegue on-premise (FASIL_ENABLED=True en .env).
+# BD FASIL (MySQL 5.5) — Conexion directa via PyMySQL (solo lectura)
+# NOTA: Django 5.x exige MySQL >= 8.0.11 pero FASIL corre MySQL 5.5.56.
+# Por eso NO se registra en DATABASES — Django lo rechazaria.
+# La conexion se hace con PyMySQL directo desde fasil_service.py.
 FASIL_ENABLED = config('FASIL_ENABLED', default=False, cast=bool)
-
-if FASIL_ENABLED:
-    DATABASES['fasil'] = {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('FASIL_DB_NAME'),
-        'USER': config('FASIL_DB_USER'),
-        'PASSWORD': config('FASIL_DB_PASSWORD'),
-        'HOST': config('FASIL_DB_HOST'),
-        'PORT': config('FASIL_DB_PORT', default='3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'read_default_file': '',
-        },
-    }
+FASIL_DB_NAME = config('FASIL_DB_NAME', default='bioanalisis30')
+FASIL_DB_USER = config('FASIL_DB_USER', default='fasil2')
+FASIL_DB_PASSWORD = config('FASIL_DB_PASSWORD', default='')
+FASIL_DB_HOST = config('FASIL_DB_HOST', default='192.168.1.109')
+FASIL_DB_PORT = config('FASIL_DB_PORT', default='3306')
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'

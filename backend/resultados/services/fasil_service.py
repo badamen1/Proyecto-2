@@ -16,15 +16,15 @@ Solución:
 
 Arquitectura de conexión:
     ┌────────────────────┐       ┌─────────────────────┐
-    │  Django Backend    │       │  BD FASIL (MySQL)    │
-    │  (PostgreSQL)      │──────>│  bioanalisis272      │
-    │                    │ LAN   │  192.168.1.109:3306  │
-    │  settings.DATABASES│       │                      │
-    │  ['fasil']         │       │  Tablas:             │
-    │                    │       │   - pct_pacientes    │
-    │                    │       │   - svc_ordenes      │
-    │                    │       │   - persona          │
-    │                    │       │   - tipo_doc         │
+    │  Django Backend    │       │  BD FASIL (MySQL 5.5)│
+    │  (PostgreSQL)      │──────>│  (via PyMySQL)      │
+    │                    │ LAN   │  192.168.1.109:3306 │
+    │  settings.py       │       │                     │
+    │  FASIL_DB_* vars   │       │  Tablas:            │
+    │                    │       │   - pct_pacientes   │
+    │                    │       │   - svc_ordenes     │
+    │                    │       │   - persona         │
+    │                    │       │   - tipo_doc        │
     └────────────────────┘       └─────────────────────┘
 
     En desarrollo local (FASIL_ENABLED=False): retorna datos mock.
@@ -143,26 +143,35 @@ class FasilConexionError(FasilError):
 
 def _get_fasil_cursor():
     """
-    Obtiene un cursor a la BD FASIL (MySQL) si está habilitada.
+    Obtiene un cursor a la BD FASIL (MySQL 5.5) usando PyMySQL directo.
 
-    Usa django.db.connections['fasil'] configurado en settings.py.
-    Si FASIL_ENABLED=False, lanza FasilConexionError.
+    IMPORTANTE: NO usa django.db.connections porque Django 5.x exige
+    MySQL >= 8.0.11 y FASIL corre MySQL 5.5.56. PyMySQL conecta sin
+    esa restriccion de version.
 
-    Nota: Este cursor es READ-ONLY por diseño. Nunca hacemos INSERT/UPDATE/DELETE
-    en la BD de FASIL — eso es responsabilidad exclusiva del software FASIL.
+    Este cursor es READ-ONLY por diseno. Nunca se hace INSERT/UPDATE/DELETE
+    en la BD de FASIL.
     """
     if not getattr(settings, 'FASIL_ENABLED', False):
         raise FasilConexionError(
-            "FASIL_ENABLED=False. Conexión a BD FASIL no disponible en este entorno. "
+            "FASIL_ENABLED=False. Conexion a BD FASIL no disponible. "
             "Activar en .env para despliegue on-premise."
         )
 
     try:
-        from django.db import connections
-        conn = connections['fasil']
+        import pymysql
+        conn = pymysql.connect(
+            host=getattr(settings, 'FASIL_DB_HOST', '192.168.1.109'),
+            port=int(getattr(settings, 'FASIL_DB_PORT', 3306)),
+            db=getattr(settings, 'FASIL_DB_NAME', 'bioanalisis30'),
+            user=getattr(settings, 'FASIL_DB_USER', 'fasil2'),
+            password=getattr(settings, 'FASIL_DB_PASSWORD', ''),
+            charset='utf8mb4',
+            connect_timeout=5,
+        )
         return conn.cursor()
     except Exception as e:
-        logger.error("FASIL conexión fallida: %s", str(e))
+        logger.error("FASIL conexion fallida: %s", str(e))
         raise FasilConexionError(f"No se pudo conectar a la BD FASIL: {e}")
 
 
