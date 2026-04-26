@@ -1,5 +1,6 @@
 # LabClinic Backend - Dependencies
 Django==5.2.13
+python-dotenv==1.0.1
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
 django-cors-headers==4.9.0
@@ -7,7 +8,6 @@ django-ratelimit==4.1.0
 psycopg2-binary==2.9.11
 python-decouple==3.8
 PyJWT==2.11.0
-dotenv==1.1.1
 
 # Conexión a FASIL (MySQL on-premise)
 # PyMySQL: driver MySQL 100% Python — no requiere compilación de extensiones C

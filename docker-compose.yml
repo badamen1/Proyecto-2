@@ -1,0 +1,83 @@
+version: '3.9'
+
+services:
+
+  # ── Base de datos ──────────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: labclinic_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: labclinic
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d labclinic"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Backend Django ─────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: labclinic_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: django-insecure-cb&wu7238wk&fj*6etvcwhlct!p_)qidj1ex4gjz=t*sdni_r_
+      DEBUG: "True"
+      ALLOWED_HOSTS: "*"
+      DB_NAME: labclinic
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: db
+      DB_PORT: "5432"
+      FASIL_ENABLED: "False"
+      FASIL_DB_NAME: bioanalisis30
+      FASIL_DB_USER: fasil2
+      FASIL_DB_PASSWORD: f4s1l2
+      FASIL_DB_HOST: 192.168.1.109
+      FASIL_DB_PORT: "3306"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Montar el código fuente permite que runserver detecte cambios en tiempo real
+      - ./backend:/app
+      # Volumen separado para PDFs subidos (persiste entre reinicios)
+      - backend_media:/app/media
+
+  # ── Frontend Next.js ───────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: labclinic_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      WATCHPACK_POLLING: "true"
+    depends_on:
+      - backend
+    volumes:
+      # Código fuente para hot-reload
+      - .:/app
+      # Volúmenes anónimos: preservan node_modules y .next del contenedor
+      # (evitan que el montaje del host los sobreescriba)
+      - /app/node_modules
+      - /app/.next
+      # Excluir el directorio backend del contexto del frontend
+      - /app/backend
+
+volumes:
+  postgres_data:
+  backend_media:

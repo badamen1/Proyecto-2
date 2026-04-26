@@ -1,0 +1,8 @@
+node_modules/
+.next/
+backend/
+.git/
+venv/
+*.log
+.claude/
+docs/
