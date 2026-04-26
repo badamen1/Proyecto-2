@@ -5,6 +5,8 @@
 **Rama:** develop
 **Contexto:** El backend ya tiene `fasil_service.py` completo y el endpoint `/api/resultados/` ya combina BD + FASIL. Lo que falta es cerrar los huecos que impiden que el flujo funcione de extremo a extremo: detalle de órdenes FASIL, descarga de PDF en mock, e indicadores visuales en el frontend.
 
+**Importante — formato de IDs FASIL:** FASIL devuelve IDs como enteros simples (ej: `42`). El prefijo `"fasil-"` **lo añade nuestro código** en `_orden_fasil_a_dict` (views.py línea 42: `'id': f'fasil-{orden.id_orden}'`). El frontend nunca ve IDs sin prefijo. El detalle llega como `GET /api/resultados/fasil-42/`; la view extrae `orden_id = "42"` quitando el prefijo.
+
 ---
 
 ## Estado actual
@@ -12,8 +14,9 @@
 | Componente | Estado |
 |---|---|
 | `fasil_service.get_paciente / get_ordenes` | ✅ Completo (mock + real) |
-| `GET /api/resultados/` unificado | ✅ Completo |
+| `GET /api/resultados/` unificado + prefijo `"fasil-"` | ✅ Completo |
 | `ResultadoUnificadoSerializer` | ✅ Completo |
+| `ResultadoDescargarPDFView` (pdf/) con `<str:pk>` | ✅ Ya implementado |
 | `urls.py` detalle `<int:pk>` | ❌ Rechaza IDs FASIL |
 | `ResultadoDetailView` con IDs FASIL | ❌ No implementado |
 | PDF en modo mock | ❌ Lanza NotImplementedError |
@@ -182,11 +185,11 @@ Usar el type guard `esFasilDetalle()` para bifurcar:
 
 | Test | Descripción |
 |---|---|
-| `test_detalle_fasil_retorna_dict` | GET `/api/resultados/fasil-ORD-1/` → 200 con campos correctos |
+| `test_detalle_fasil_retorna_dict` | GET `/api/resultados/fasil-42/` → 200 con campos correctos |
 | `test_detalle_fasil_paciente_no_encontrado` | GET con documento no en FASIL → 404 |
 | `test_detalle_fasil_conexion_error` | Mock lanza FasilConexionError → 503 |
 | `test_pdf_fasil_mock_retorna_bytes` | `fasil_service.get_resultado_pdf("any")` en modo mock → bytes válidos |
-| `test_url_detail_acepta_str_pk` | GET `/api/resultados/fasil-X/` llega al view (no 404 de URL) |
+| `test_url_detail_acepta_str_pk` | GET `/api/resultados/fasil-42/` llega al view (no 404 de URL) |
 
 ---
 
