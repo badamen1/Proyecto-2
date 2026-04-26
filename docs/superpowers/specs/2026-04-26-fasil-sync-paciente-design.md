@@ -60,10 +60,6 @@ def _get_fasil_orden(self, request, pk):
         orden = next((o for o in ordenes if str(o.id_orden) == orden_id), None)
         if orden is None:
             raise FasilOrdenNoEncontrada(orden_id)
-        ordenes = fasil_service.get_ordenes(paciente.id_fasil)
-        orden = next((o for o in ordenes if str(o.id_orden) == orden_id), None)
-        if orden is None:
-            raise FasilOrdenNoEncontrada(orden_id)
     except (FasilPacienteNoEncontrado, FasilOrdenNoEncontrada):
         return Response({'detail': 'Orden no encontrada.'}, status=404)
     except FasilConexionError as e:
