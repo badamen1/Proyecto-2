@@ -61,6 +61,9 @@ class OTPTests(APITestCase):
         self.paciente.set_unusable_password()
         self.paciente.save()
 
+    def tearDown(self):
+        cache.clear()
+
     def test_otp_rechaza_documento_sin_cuenta(self):
         """OTP request con documento no registrado → 404."""
         response = self.client.post(self.request_otp_url, {'documento': '00000000'})

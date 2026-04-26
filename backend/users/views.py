@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-import random
+import secrets
 import logging
 from .serializers import UserSerializer, RegisterSerializer, StaffRegisterSerializer, CustomTokenObtainPairSerializer
 
@@ -45,7 +45,7 @@ class RequestOTPView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        otp_code = str(random.randint(100000, 999999))
+        otp_code = str(secrets.randbelow(900000) + 100000)
         cache.set(f"otp_{documento}", otp_code, timeout=300)
 
         logger.info("OTP solicitado | user_id=%s | documento=%s", user.id, documento)
