@@ -1,57 +1,71 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-export default function Login() {
+function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [loginType, setLoginType] = useState<'paciente' | 'personal'>('paciente');
-    
-    // Estados para paciente (OTP)
+
     const [documento, setDocumento] = useState('');
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
-    
-    // Estados para personal (Contraseña)
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    
+
     const [error, setError] = useState('');
+    const [notRegistered, setNotRegistered] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (searchParams.get('registered') === '1') {
+            setSuccessMsg('¡Cuenta creada exitosamente! Ingresa tu documento para iniciar sesión.');
+        }
+    }, [searchParams]);
 
     const handlePatientRequestOTP = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(''); setLoading(true);
+        setError('');
+        setNotRegistered(false);
+        setLoading(true);
         try {
             const res = await fetch(`${API_URL}/api/auth/otp/request/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ documento })
+                body: JSON.stringify({ documento }),
             });
             const data = await res.json();
             if (res.ok) {
                 setOtpSent(true);
-                alert("Simulación: Revisa la consola del backend de Django para ver el código OTP.");
+                setSuccessMsg('Código enviado. Revisa la consola del backend Django para obtener el OTP simulado.');
+            } else if (res.status === 404) {
+                setNotRegistered(true);
+                setError(data.detail || 'No encontramos una cuenta con ese documento.');
             } else {
                 setError(data.detail || 'Error al solicitar OTP');
             }
-        } catch (err) {
-            setError('Error de conexión con el servidor Backend (Asegúrate que Django está corriendo en el puerto 8000)');
+        } catch {
+            setError('Error de conexión. Asegúrate que Django está corriendo en el puerto 8000.');
         }
         setLoading(false);
     };
 
     const handlePatientVerifyOTP = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(''); setLoading(true);
+        setError('');
+        setLoading(true);
         try {
             const res = await fetch(`${API_URL}/api/auth/otp/verify/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ documento, otp })
+                body: JSON.stringify({ documento, otp }),
             });
             const data = await res.json();
             if (res.ok) {
@@ -62,7 +76,7 @@ export default function Login() {
             } else {
                 setError(data.detail || 'Código OTP inválido');
             }
-        } catch (err) {
+        } catch {
             setError('Error de conexión con el servidor Backend');
         }
         setLoading(false);
@@ -70,32 +84,29 @@ export default function Login() {
 
     const handleStaffLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(''); setLoading(true);
+        setError('');
+        setLoading(true);
         try {
             const res = await fetch(`${API_URL}/api/auth/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password }),
             });
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
-                
-                // Decode SimpleJWT Payload safely
                 try {
-                    const tokenPayload = JSON.parse(atob(data.access.split('.')[1]));
-                    localStorage.setItem('user_role', tokenPayload.role || 'admin');
-                } catch(e) {
-                    console.error("No se pudo decodificar el rol del JWT");
+                    const payload = JSON.parse(atob(data.access.split('.')[1]));
+                    localStorage.setItem('user_role', payload.role || 'admin');
+                } catch {
                     localStorage.setItem('user_role', 'admin');
                 }
-                
                 router.push('/dashboard');
             } else {
                 setError(data.detail || 'Credenciales incorrectas para Personal');
             }
-        } catch (err) {
+        } catch {
             setError('Error de conexión con el servidor Backend');
         }
         setLoading(false);
@@ -113,110 +124,135 @@ export default function Login() {
                         <p style={{ color: 'var(--text-gray)' }}>Selecciona tu tipo de perfil</p>
                     </div>
 
-                    {/* Selector de Tipo de Login */}
                     <div style={{ display: 'flex', marginBottom: '1.5rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ddd' }}>
-                        <button 
+                        <button
                             type="button"
-                            onClick={() => { setLoginType('paciente'); setError(''); }}
-                            style={{ flex: 1, padding: '10px', border: 'none', background: loginType === 'paciente' ? 'var(--primary-blue)' : '#f8f9fa', color: loginType === 'paciente' ? '#fff' : '#666', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}
+                            onClick={() => { setLoginType('paciente'); setError(''); setNotRegistered(false); setSuccessMsg(''); }}
+                            style={{ flex: 1, padding: '10px', border: 'none', background: loginType === 'paciente' ? 'var(--primary-blue)' : '#f8f9fa', color: loginType === 'paciente' ? '#fff' : '#666', fontWeight: 'bold', cursor: 'pointer' }}
                         >
                             Paciente (OTP)
                         </button>
-                        <button 
+                        <button
                             type="button"
-                            onClick={() => { setLoginType('personal'); setError(''); }}
-                            style={{ flex: 1, padding: '10px', border: 'none', background: loginType === 'personal' ? 'var(--primary-blue)' : '#f8f9fa', color: loginType === 'personal' ? '#fff' : '#666', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}
+                            onClick={() => { setLoginType('personal'); setError(''); setNotRegistered(false); setSuccessMsg(''); }}
+                            style={{ flex: 1, padding: '10px', border: 'none', background: loginType === 'personal' ? 'var(--primary-blue)' : '#f8f9fa', color: loginType === 'personal' ? '#fff' : '#666', fontWeight: 'bold', cursor: 'pointer' }}
                         >
                             Personal
                         </button>
                     </div>
 
-                    {error && (
-                        <div style={{ background: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '0.9rem', textAlign: 'center' }}>
-                            {error}
+                    {successMsg && (
+                        <div style={{ background: '#d4edda', color: '#155724', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '0.9rem', textAlign: 'center' }}>
+                            {successMsg}
                         </div>
                     )}
 
-                    {/* Flujo Paciente */}
+                    {error && (
+                        <div style={{ background: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '5px', marginBottom: '10px', fontSize: '0.9rem', textAlign: 'center' }}>
+                            {error}
+                            {notRegistered && (
+                                <div style={{ marginTop: '8px' }}>
+                                    <Link href="/register" style={{ color: '#c62828', fontWeight: 'bold', textDecoration: 'underline' }}>
+                                        ¿No tienes cuenta? Regístrate aquí →
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {loginType === 'paciente' && !otpSent && (
                         <form onSubmit={handlePatientRequestOTP}>
                             <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>Número de Documento</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={documento}
                                     onChange={(e) => setDocumento(e.target.value)}
-                                    placeholder="Ej. 1078458080" 
+                                    placeholder="Ej. 1078458080"
                                     required
                                     style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' }}
                                 />
-                                <small style={{ color: '#888', marginTop: '5px', display: 'block' }}>Enviaremos un código a tu celular registrado para validar tu identidad.</small>
+                                <small style={{ color: '#888', marginTop: '5px', display: 'block' }}>
+                                    Te enviaremos un código OTP para validar tu identidad.
+                                </small>
                             </div>
                             <button type="submit" disabled={loading} className="btn-primary w-full" style={{ justifyContent: 'center', padding: '14px', fontSize: '1.1rem', borderRadius: '8px', opacity: loading ? 0.7 : 1 }}>
                                 {loading ? 'Solicitando...' : 'Recibir Código OTP'}
                             </button>
+                            <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-gray)' }}>
+                                ¿Eres nuevo paciente?{' '}
+                                <Link href="/register" style={{ color: 'var(--primary-blue)', fontWeight: '600' }}>
+                                    Regístrate aquí
+                                </Link>
+                            </p>
                         </form>
                     )}
 
                     {loginType === 'paciente' && otpSent && (
                         <form onSubmit={handlePatientVerifyOTP}>
                             <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>Ingresa tu Código (OTP)</label>
-                                <input 
-                                    type="text" 
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>Ingresa tu Código OTP</label>
+                                <input
+                                    type="text"
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value)}
-                                    placeholder="******" 
+                                    placeholder="······"
                                     maxLength={6}
                                     required
                                     style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '1.5rem', outline: 'none', textAlign: 'center', letterSpacing: '5px' }}
                                 />
-                                <small style={{ color: '#888', marginTop: '5px', display: 'block', textAlign: 'center' }}>Revisa la consola del backend para obtener el número simulado.</small>
+                                <small style={{ color: '#888', marginTop: '5px', display: 'block', textAlign: 'center' }}>
+                                    Revisa la consola del backend para obtener el código simulado.
+                                </small>
                             </div>
                             <button type="submit" disabled={loading} className="btn-primary w-full" style={{ justifyContent: 'center', padding: '14px', fontSize: '1.1rem', borderRadius: '8px', opacity: loading ? 0.7 : 1, background: '#28a745' }}>
                                 {loading ? 'Verificando...' : 'Verificar y Entrar'}
                             </button>
-                            <button type="button" onClick={() => setOtpSent(false)} style={{ background: 'none', border: 'none', color: 'var(--primary-blue)', width: '100%', textAlign: 'center', marginTop: '15px', cursor: 'pointer', textDecoration: 'underline' }}>
+                            <button type="button" onClick={() => { setOtpSent(false); setError(''); setSuccessMsg(''); }} style={{ background: 'none', border: 'none', color: 'var(--primary-blue)', width: '100%', textAlign: 'center', marginTop: '15px', cursor: 'pointer', textDecoration: 'underline' }}>
                                 Volver / Cambiar Documento
                             </button>
                         </form>
                     )}
 
-                    {/* Flujo Personal */}
                     {loginType === 'personal' && (
                         <form onSubmit={handleStaffLogin}>
                             <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>Usuario / Documento</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Tu usuario" 
+                                    placeholder="Tu usuario"
                                     required
                                     style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' }}
                                 />
                             </div>
-
                             <div style={{ marginBottom: '2rem', textAlign: 'left' }}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#333' }}>Contraseña</label>
-                                <input 
-                                    type="password" 
+                                <input
+                                    type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••" 
+                                    placeholder="••••••••"
                                     required
                                     style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' }}
                                 />
                             </div>
-
                             <button type="submit" disabled={loading} className="btn-primary w-full" style={{ justifyContent: 'center', padding: '14px', fontSize: '1.1rem', borderRadius: '8px', opacity: loading ? 0.7 : 1 }}>
                                 {loading ? 'Iniciando...' : 'Ingresar al Portal Interno'}
                             </button>
                         </form>
                     )}
-
                 </div>
             </div>
         </section>
+    );
+}
+
+export default function Login() {
+    return (
+        <Suspense fallback={<div style={{ minHeight: '90vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Cargando...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }

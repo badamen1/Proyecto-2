@@ -71,11 +71,9 @@ export default function Dashboard() {
                             {/* Paciente Menu */}
                             {currentRole === 'paciente' && (
                                 <>
-                                    <li><Link href="#" style={activeNavItemStyle}><i className="fas fa-home" style={{width: '25px'}}></i> Inicio</Link></li>
-                                    <li><Link href="#" style={navItemStyle}><i className="fas fa-file-medical-alt" style={{width: '25px'}}></i> Mis Resultados</Link></li>
+                                    <li><Link href="/dashboard" style={activeNavItemStyle}><i className="fas fa-home" style={{width: '25px'}}></i> Inicio</Link></li>
+                                    <li><Link href="/dashboard/resultados" style={navItemStyle}><i className="fas fa-file-medical-alt" style={{width: '25px'}}></i> Mis Resultados</Link></li>
                                     <li><Link href="/agendar-muestra" style={navItemStyle}><i className="fas fa-calendar-alt" style={{width: '25px'}}></i> Agendar Domicilio</Link></li>
-                                    <li><Link href="#" style={navItemStyle}><i className="fas fa-history" style={{width: '25px'}}></i> Historial Clínico</Link></li>
-                                    <li><Link href="#" style={navItemStyle}><i className="fas fa-user-edit" style={{width: '25px'}}></i> Mi Perfil</Link></li>
                                 </>
                             )}
 
@@ -124,9 +122,9 @@ export default function Dashboard() {
                                     <div style={{ width: '60px', height: '60px', background: '#eefcf1', color: '#28a745', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', margin: '0 auto 1rem auto' }}>
                                         <i className="fas fa-calendar-alt"></i>
                                     </div>
-                                    <h3 style={{ color: '#333', marginBottom: '0.5rem' }}>Próxima Cita</h3>
-                                    <p style={{ color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Toma de muestra a domicilio: 24 Mar, 08:00 AM</p>
-                                    <Link href="/agendar-muestra" style={{ color: 'var(--primary-blue)', fontWeight: 'bold' }}>Modificar cita</Link>
+                                    <h3 style={{ color: '#333', marginBottom: '0.5rem' }}>Toma a Domicilio</h3>
+                                    <p style={{ color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Agenda la toma de tu muestra en la comodidad de tu hogar.</p>
+                                    <Link href="/agendar-muestra" className="btn-primary" style={{ padding: '10px 20px', borderRadius: '25px', fontSize: '0.9rem', textDecoration: 'none', display: 'inline-block' }}>Agendar ahora</Link>
                                 </div>
                             </div>
                         )}

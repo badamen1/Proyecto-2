@@ -10,7 +10,7 @@ export type ResultadoEstado = 'PENDIENTE' | 'VALIDADO' | 'ENTREGADO';
 export type ResultadoFuente = 'FASIL' | 'EXTERNO' | 'MANUAL';
 
 export type ResultadoLista = {
-  id: number;
+  id: string;
   paciente_nombre: string;
   paciente_documento: string;
   empresa_nombre: string | null;

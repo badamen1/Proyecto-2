@@ -29,7 +29,7 @@ export default function ResultadosListaPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const loadFirst = useCallback(async () => {
     setLoading(true);
@@ -74,7 +74,7 @@ export default function ResultadosListaPage() {
     }
   };
 
-  const descargarPDF = async (id: number, nombreArchivo: string | null) => {
+  const descargarPDF = async (id: string, nombreArchivo: string | null) => {
     setDownloadingId(id);
     try {
       const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
@@ -155,8 +155,8 @@ export default function ResultadosListaPage() {
                             Ver
                           </Link>
                           <button
-                            onClick={() => descargarPDF(r.id, r.nombre_archivo)}
-                            disabled={downloadingId === r.id}
+                            onClick={() => descargarPDF(String(r.id), r.nombre_archivo)}
+                            disabled={downloadingId === String(r.id)}
                             style={{ background: '#28a745', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
                           >
                             {downloadingId === r.id ? 'Descargando...' : 'PDF'}
