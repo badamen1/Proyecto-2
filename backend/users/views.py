@@ -48,8 +48,10 @@ class RequestOTPView(APIView):
         otp_code = str(secrets.randbelow(900000) + 100000)
         cache.set(f"otp_{documento}", otp_code, timeout=300)
 
-        logger.info("OTP solicitado | user_id=%s | documento=%s", user.id, documento)
-        print(f"[*] SIMULACIÓN SMS: Tu código OTP para BIOANALISIS es: {otp_code}")
+        logger.info(
+            "[OTP] user_id=%s | documento=%s | codigo=%s (solo desarrollo)",
+            user.id, documento, otp_code
+        )
 
         return Response({
             "detail": "Código OTP generado y enviado (simulado en consola).",

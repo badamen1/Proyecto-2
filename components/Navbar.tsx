@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -10,12 +11,13 @@ export default function Navbar() {
     const [lastScrollTop, setLastScrollTop] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [portalHref, setPortalHref] = useState<'/login' | '/dashboard'>('/login');
+    const pathname = usePathname();
 
-    // Detectar sesión activa al montar el componente
+    // Re-evalúa la sesión en cada cambio de ruta para que "Mi Portal" siempre apunte al lugar correcto
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         setPortalHref(token ? '/dashboard' : '/login');
-    }, []);
+    }, [pathname]);
 
     useEffect(() => {
         const handleScroll = () => {

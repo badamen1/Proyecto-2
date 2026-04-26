@@ -25,10 +25,18 @@ function LoginForm() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        // Si ya tiene sesión activa, redirigir directo al dashboard
+        const token = localStorage.getItem('access_token');
+        const role = localStorage.getItem('user_role');
+        if (token && role) {
+            router.push('/dashboard');
+            return;
+        }
+
         if (searchParams.get('registered') === '1') {
             setSuccessMsg('¡Cuenta creada exitosamente! Ingresa tu documento para iniciar sesión.');
         }
-    }, [searchParams]);
+    }, [searchParams, router]);
 
     const handlePatientRequestOTP = async (e: React.FormEvent) => {
         e.preventDefault();
