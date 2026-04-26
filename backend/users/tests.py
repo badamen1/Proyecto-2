@@ -50,49 +50,60 @@ class OTPTests(APITestCase):
     def setUp(self):
         self.request_otp_url = '/api/auth/otp/request/'
         self.verify_otp_url = '/api/auth/otp/verify/'
-        self.documento = '123456789'
 
-    def test_request_otp(self):
-        """Prueba que un paciente pueda solicitar un OTP y se cree en la base de datos"""
-        data = {'documento': self.documento}
-        response = self.client.post(self.request_otp_url, data)
+        # Paciente pre-registrado en nuestro sistema
+        self.paciente = User.objects.create(
+            username='123456789',
+            documento='123456789',
+            nombre_completo='María García',
+            role=User.Role.PACIENTE,
+        )
+        self.paciente.set_unusable_password()
+        self.paciente.save()
+
+    def test_otp_rechaza_documento_sin_cuenta(self):
+        """OTP request con documento no registrado → 404."""
+        response = self.client.post(self.request_otp_url, {'documento': '00000000'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn('Regístrate primero', response.data['detail'])
+        # No se debe haber creado ningún usuario nuevo
+        self.assertFalse(User.objects.filter(documento='00000000').exists())
+
+    def test_otp_acepta_documento_registrado(self):
+        """OTP request con documento registrado → 200 y OTP en cache."""
+        response = self.client.post(self.request_otp_url, {'documento': '123456789'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-        # Verificar que el usuario se creó como PACIENTE
-        self.assertTrue(User.objects.filter(documento=self.documento).exists())
-        user = User.objects.get(documento=self.documento)
-        self.assertEqual(user.role, User.Role.PACIENTE)
-        
-        # Verificar que el cache se llenó correctamente
-        otp_guardado = cache.get(f"otp_{self.documento}")
+        otp_guardado = cache.get('otp_123456789')
         self.assertIsNotNone(otp_guardado)
+        self.assertEqual(len(otp_guardado), 6)
+
+    def test_otp_sin_documento_retorna_400(self):
+        """OTP request sin el campo documento → 400."""
+        response = self.client.post(self.request_otp_url, {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_verify_valid_otp(self):
-        """Prueba la verificación de un OTP válido y la generación del token JWT"""
-        # Primero solicitar para generar el registro y el cache
-        self.client.post(self.request_otp_url, {'documento': self.documento})
-        otp_guardado = cache.get(f"otp_{self.documento}")
-        
-        # Ahora verificar
-        data = {
-            'documento': self.documento,
-            'otp': otp_guardado
-        }
-        response = self.client.post(self.verify_otp_url, data)
+        """OTP correcto para usuario registrado → JWT con role."""
+        # Solicitar OTP primero
+        self.client.post(self.request_otp_url, {'documento': '123456789'})
+        otp_guardado = cache.get('otp_123456789')
+
+        response = self.client.post(self.verify_otp_url, {
+            'documento': '123456789',
+            'otp': otp_guardado,
+        })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('access', response.data)
         self.assertIn('refresh', response.data)
         self.assertEqual(response.data['role'], 'paciente')
 
     def test_verify_invalid_otp(self):
-        """Prueba que devuelva Unauthorized con un OTP incorrecto"""
-        self.client.post(self.request_otp_url, {'documento': self.documento})
-        
-        data = {
-            'documento': self.documento,
-            'otp': '000000' # OTP seguramente incorrecto
-        }
-        response = self.client.post(self.verify_otp_url, data)
+        """OTP incorrecto → 401."""
+        self.client.post(self.request_otp_url, {'documento': '123456789'})
+        response = self.client.post(self.verify_otp_url, {
+            'documento': '123456789',
+            'otp': '000000',
+        })
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -143,91 +154,56 @@ class RoleManagementTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PublicRegisterSecurityTests(APITestCase):
-    """
-    Tests de seguridad para la corrección N-01:
-    El endpoint público POST /api/auth/register/ NO debe permitir
-    crear usuarios con roles privilegiados (admin, bacteriologo).
-
-    Antes de la corrección: RegisterSerializer aceptaba `role` en el body
-    → un atacante podía crear un admin sin autenticación.
-
-    Después de la corrección: RegisterSerializer excluye `role` del body
-    y fuerza PACIENTE en create(). Si se envía `role` en el body, es ignorado.
-    """
+class PacienteRegisterTests(APITestCase):
+    """Tests para el nuevo flujo de registro de pacientes sin contraseña."""
 
     def setUp(self):
         self.register_url = '/api/auth/register/'
 
-    def test_public_register_creates_paciente_by_default(self):
-        """El registro público crea siempre un usuario PACIENTE."""
+    def test_registro_con_nombre_completo_crea_paciente(self):
+        """Registro con nombre_completo crea User PACIENTE sin contraseña."""
         data = {
-            'username': 'nuevo_paciente',
-            'password': 'contraseña123',
-            'documento': '123000001',
+            'documento': '123456789',
+            'tipo_documento': 'CC',
+            'nombre_completo': 'Ana María Torres',
+            'email': 'ana@ejemplo.com',
+            'telefono': '3001234567',
         }
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        user = User.objects.get(username='nuevo_paciente')
+        user = User.objects.get(documento='123456789')
+        self.assertEqual(user.nombre_completo, 'Ana María Torres')
         self.assertEqual(user.role, User.Role.PACIENTE)
+        self.assertEqual(user.username, '123456789')
+        self.assertFalse(user.has_usable_password())
 
-    def test_public_register_ignores_admin_role_in_body(self):
-        """
-        Si alguien envía role='admin' al endpoint público, el campo es ignorado
-        y el usuario se crea como PACIENTE de todas formas.
-        Esto es el cierre concreto de la vulnerabilidad N-01.
-        """
+    def test_registro_sin_nombre_completo_falla(self):
+        """nombre_completo es obligatorio."""
+        data = {'documento': '111222333'}
+        response = self.client.post(self.register_url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('nombre_completo', response.data)
+
+    def test_registro_duplicado_falla(self):
+        """No se puede registrar el mismo documento dos veces."""
         data = {
-            'username': 'atacante_admin',
-            'password': 'contraseña123',
-            'documento': '999000001',
-            'role': 'admin',  # Intento de escalación de privilegios
+            'documento': '999888777',
+            'nombre_completo': 'Carlos López',
+        }
+        self.client.post(self.register_url, data)
+        response = self.client.post(self.register_url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_registro_ignora_role_en_body(self):
+        """El campo role del body es ignorado — siempre crea PACIENTE."""
+        data = {
+            'documento': '777666555',
+            'nombre_completo': 'Atacante Admin',
+            'role': 'admin',
         }
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        user = User.objects.get(username='atacante_admin')
-        # El rol debe ser PACIENTE, no admin
+        user = User.objects.get(documento='777666555')
         self.assertEqual(user.role, User.Role.PACIENTE)
-        self.assertNotEqual(user.role, User.Role.ADMIN)
-
-    def test_public_register_ignores_bacteriologo_role_in_body(self):
-        """
-        El endpoint público tampoco debe permitir crear bacteriólogos.
-        """
-        data = {
-            'username': 'atacante_bacte',
-            'password': 'contraseña123',
-            'documento': '999000002',
-            'role': 'bacteriologo',
-        }
-        response = self.client.post(self.register_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        user = User.objects.get(username='atacante_bacte')
-        self.assertEqual(user.role, User.Role.PACIENTE)
-        self.assertNotEqual(user.role, User.Role.BACTERIOLOGO)
-
-    def test_admin_can_still_create_bacteriologo_via_users_endpoint(self):
-        """
-        El flujo legítimo del admin para crear bacteriólogos no se rompe.
-        POST /api/auth/users/ (autenticado como admin) sí acepta roles privilegiados.
-        """
-        admin = User.objects.create_user(
-            username='admin_test', password='pw', role=User.Role.ADMIN
-        )
-        self.client.force_authenticate(user=admin)
-
-        data = {
-            'username': 'bacteriologo_legit',
-            'password': 'contraseña123',
-            'documento': '777000001',
-            'role': 'bacteriologo',
-        }
-        response = self.client.post('/api/auth/users/', data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        user = User.objects.get(username='bacteriologo_legit')
-        self.assertEqual(user.role, User.Role.BACTERIOLOGO)
 

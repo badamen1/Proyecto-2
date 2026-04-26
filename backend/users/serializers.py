@@ -1,64 +1,79 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.db import IntegrityError
 
 User = get_user_model()
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'documento', 'tipo_documento', 'telefono']
+        fields = [
+            'id', 'username', 'email', 'nombre_completo',
+            'role', 'documento', 'tipo_documento', 'telefono'
+        ]
         read_only_fields = ['id']
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
-    Serializer de auto-registro PÚBLICO.
+    Registro público de pacientes — flujo OTP (sin contraseña).
 
-    El campo `role` NO se expone — siempre se crea un usuario con rol PACIENTE.
-    Esto cierra la vulnerabilidad N-01: un actor externo no puede crear
-    cuentas admin o bacteriólogo desde el endpoint público /api/auth/register/.
-
-    El flujo normal del paciente usa OTP (RequestOTPView / VerifyOTPView).
-    Este endpoint queda para registro directo con password (ej. empresa demo).
+    Recibe: documento, nombre_completo, tipo_documento (opt), email (opt), telefono (opt).
+    Crea: User con username=documento, role=PACIENTE, set_unusable_password().
+    Nunca acepta: role, password, username en el body.
     """
-    password = serializers.CharField(write_only=True)
+    nombre_completo = serializers.CharField(required=True, max_length=200)
 
     class Meta:
         model = User
-        # 'role' intencionalmente EXCLUIDO — siempre se asigna PACIENTE
-        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'documento', 'tipo_documento', 'telefono']
+        fields = ['documento', 'tipo_documento', 'nombre_completo', 'email', 'telefono']
+
+    def validate_documento(self, value):
+        if User.objects.filter(documento=value).exists():
+            raise serializers.ValidationError(
+                "Ya existe una cuenta con este número de documento."
+            )
+        return value
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email', ''),
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
-            documento=validated_data.get('documento', ''),
+        documento = validated_data['documento']
+        user = User(
+            username=documento,
+            documento=documento,
             tipo_documento=validated_data.get('tipo_documento', 'CC'),
+            nombre_completo=validated_data['nombre_completo'],
+            email=validated_data.get('email', ''),
             telefono=validated_data.get('telefono', ''),
-            role=User.Role.PACIENTE,  # Forzado — no acepta roles del request body
+            role=User.Role.PACIENTE,
         )
+        user.set_unusable_password()
+        try:
+            user.save()
+        except IntegrityError:
+            raise serializers.ValidationError(
+                {"documento": "Ya existe una cuenta con este número de documento."}
+            )
         return user
 
 
 class StaffRegisterSerializer(serializers.ModelSerializer):
     """
-    Serializer de registro PRIVILEGIADO — solo para uso de Admin.
-
-    Permite asignar roles como `bacteriologo` o `admin`.
-    Solo se usa desde UserListView (protegido por IsAuthenticated + rol admin).
-    NUNCA debe exponerse en un endpoint público.
+    Registro privilegiado — solo para Admin via POST /api/auth/users/.
+    Permite asignar roles como bacteriologo o admin.
+    NUNCA exponer en endpoints públicos.
     """
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'documento', 'tipo_documento', 'telefono', 'role']
+        fields = [
+            'username', 'email', 'password', 'nombre_completo',
+            'documento', 'tipo_documento', 'telefono', 'role'
+        ]
 
     def validate_role(self, value):
-        """El admin puede asignar cualquier rol. Se valida contra las opciones definidas."""
         valid_roles = [r[0] for r in User.Role.choices]
         if value not in valid_roles:
             raise serializers.ValidationError(f"Rol inválido. Opciones: {valid_roles}")
@@ -69,8 +84,7 @@ class StaffRegisterSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             email=validated_data.get('email', ''),
             password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
+            nombre_completo=validated_data.get('nombre_completo', ''),
             documento=validated_data.get('documento', ''),
             tipo_documento=validated_data.get('tipo_documento', 'CC'),
             telefono=validated_data.get('telefono', ''),
@@ -78,11 +92,11 @@ class StaffRegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        # Add custom claims
         token['role'] = user.role
         token['username'] = user.username
         return token

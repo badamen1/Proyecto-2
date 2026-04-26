@@ -19,36 +19,36 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 class RequestOTPView(APIView):
     """
-    Paso 1 del Login de Pacientes (Según Contex.md)
-    El paciente ingresa su documento, se genera un OTP y se "envía" (por ahora, simulado)
+    Paso 1 del Login de Pacientes.
+
+    El paciente ingresa su documento. Si tiene cuenta registrada se genera
+    y envía el OTP. Si no tiene cuenta se rechaza con 404 explícito.
+
+    CAMBIO ARQUITECTÓNICO: Ya no hace get_or_create.
+    El paciente debe registrarse primero en POST /api/auth/register/.
     """
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        documento = request.data.get('documento')
+        documento = request.data.get('documento', '').strip()
         if not documento:
-            return Response({"detail": "Se requiere el documento."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Validar si el usuario existe o si hay que importar desde FASIL (MVP: Se asume que existe o se registra al vuelo para demo)
-        user, created = User.objects.get_or_create(
-            documento=documento,
-            defaults={
-                'username': documento, 
-                'role': User.Role.PACIENTE
-            }
-        )
-        if created:
-            user.set_unusable_password()
-            user.save()
+            return Response(
+                {"detail": "Se requiere el documento."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        # Generar código OTP de 6 dígitos
+        try:
+            user = User.objects.get(documento=documento)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "No tienes una cuenta. Regístrate primero."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         otp_code = str(random.randint(100000, 999999))
-        
-        # Guardar en cache por 5 minutos
         cache.set(f"otp_{documento}", otp_code, timeout=300)
 
-        # Simulación del envío de OTP — en producción conectar con WhatsApp/SMS
-        logger.info("OTP solicitado | documento=%s | nuevo_usuario=%s", documento, created)
+        logger.info("OTP solicitado | user_id=%s | documento=%s", user.id, documento)
         print(f"[*] SIMULACIÓN SMS: Tu código OTP para BIOANALISIS es: {otp_code}")
 
         return Response({

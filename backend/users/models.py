@@ -19,6 +19,7 @@ class User(AbstractUser):
         default='CC'
     )
     telefono = models.CharField(max_length=15, blank=True)
+    nombre_completo = models.CharField(max_length=200, blank=True, verbose_name='Nombre completo')
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
