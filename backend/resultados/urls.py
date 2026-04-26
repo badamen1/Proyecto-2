@@ -29,7 +29,7 @@ urlpatterns = [
     # Detalle / Actualizar / Eliminar resultado
     path('resultados/<int:pk>/', ResultadoDetailView.as_view(), name='resultado_detail'),
     # Descargar PDF del resultado
-    path('resultados/<int:pk>/pdf/', ResultadoDescargarPDFView.as_view(), name='resultado_descargar_pdf'),
+    path('resultados/<str:pk>/pdf/', ResultadoDescargarPDFView.as_view(), name='resultado_descargar_pdf'),
     # Cambiar estado del resultado (PENDIENTE → VALIDADO → ENTREGADO)
     path('resultados/<int:pk>/estado/', ResultadoCambiarEstadoView.as_view(), name='resultado_cambiar_estado'),
 ]

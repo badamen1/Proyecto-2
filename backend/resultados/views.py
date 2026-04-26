@@ -14,8 +14,39 @@ from .serializers import (
     ResultadoSerializer,
     ResultadoListSerializer,
 )
+from .services.fasil_service import (
+    fasil_service,
+    FasilPacienteNoEncontrado,
+    FasilConexionError,
+)
 
 logger = logging.getLogger('resultados')
+
+
+def _resultado_a_dict(resultado):
+    """Convierte un Resultado de BD al formato de lista unificada."""
+    return {
+        'id': str(resultado.pk),
+        'tipo_examen': resultado.tipo_examen,
+        'fecha_examen': str(resultado.fecha_examen),
+        'estado': resultado.estado,
+        'fuente': resultado.fuente,
+        'nombre_archivo': resultado.nombre_archivo,
+        'tiene_pdf': bool(resultado.archivo_pdf),
+    }
+
+
+def _orden_fasil_a_dict(orden):
+    """Convierte una OrdenFASIL al formato de lista unificada."""
+    return {
+        'id': f'fasil-{orden.id_orden}',
+        'tipo_examen': orden.tipo_examen,
+        'fecha_examen': orden.fecha_examen,
+        'estado': 'ENTREGADO',
+        'fuente': 'FASIL',
+        'nombre_archivo': None,
+        'tiene_pdf': orden.tiene_pdf,
+    }
 
 
 # =============================================================================
@@ -202,6 +233,61 @@ class ResultadoListCreateView(generics.ListCreateAPIView):
             self.request.user.id, resultado.empresa_id
         )
 
+    def list(self, request, *args, **kwargs):
+        """Para pacientes: combina BD + FASIL. Para admin/bacteriólogo: solo BD."""
+        if request.user.role not in ('admin', 'bacteriologo'):
+            return self._list_paciente(request)
+        return super().list(request, *args, **kwargs)
+
+    def _list_paciente(self, request):
+        from .serializers import ResultadoUnificadoSerializer
+
+        # 1. Resultados de BD (ya filtrados por get_queryset para paciente_user=user)
+        qs = self.get_queryset()
+        bd_items = [_resultado_a_dict(r) for r in qs]
+
+        # 2. Órdenes FASIL — secuencial, con degradación elegante
+        fasil_items = []
+        documento = getattr(request.user, 'documento', None)
+        if documento:
+            try:
+                paciente_fasil = fasil_service.get_paciente(documento)
+                ordenes = fasil_service.get_ordenes(paciente_fasil.id_fasil)
+                fasil_items = [_orden_fasil_a_dict(o) for o in ordenes]
+            except FasilPacienteNoEncontrado:
+                logger.info(
+                    "FASIL: paciente no encontrado | documento=%s", documento
+                )
+            except FasilConexionError:
+                logger.error(
+                    "FASIL: error de conexión al listar resultados | documento=%s", documento
+                )
+
+        # 3. Combinar y ordenar por fecha_examen descendente
+        todos = bd_items + fasil_items
+        todos.sort(key=lambda x: x['fecha_examen'], reverse=True)
+
+        # 4. Paginación manual compatible con DRF
+        page_size = int(request.query_params.get('page_size', 20))
+        page = int(request.query_params.get('page', 1))
+        start = (page - 1) * page_size
+        end = start + page_size
+        pagina = todos[start:end]
+
+        next_url = None
+        if end < len(todos):
+            next_url = request.build_absolute_uri(
+                f'?page={page + 1}&page_size={page_size}'
+            )
+
+        serializer = ResultadoUnificadoSerializer(pagina, many=True)
+        return Response({
+            'count': len(todos),
+            'next': next_url,
+            'previous': None,
+            'results': serializer.data,
+        })
+
 
 class ResultadoDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -265,8 +351,25 @@ class ResultadoDescargarPDFView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
+        from .services.fasil_service import FasilOrdenNoEncontrada, FasilConexionError as FasilConn
         user = request.user
 
+        # Ruta FASIL: pk empieza con "fasil-"
+        if isinstance(pk, str) and pk.startswith('fasil-'):
+            orden_id = pk[len('fasil-'):]
+            try:
+                pdf_bytes = fasil_service.get_resultado_pdf(orden_id)
+            except FasilOrdenNoEncontrada:
+                raise Http404("No se encontró el PDF en FASIL.")
+            except FasilConn as e:
+                raise Http404(f"No se pudo conectar con FASIL: {e}")
+
+            from django.http import HttpResponse
+            response = HttpResponse(pdf_bytes, content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="resultado_{orden_id}.pdf"'
+            return response
+
+        # Ruta BD: pk es un entero (como string) — admin/bact o paciente con paciente_user
         if user.role in ('admin', 'bacteriologo'):
             resultado = get_object_or_404(Resultado, pk=pk)
         else:
@@ -280,7 +383,6 @@ class ResultadoDescargarPDFView(APIView):
         if not resultado.archivo_pdf:
             raise Http404("Este resultado no tiene un archivo PDF asociado.")
 
-        # Servir el archivo como descarga
         response = FileResponse(
             resultado.archivo_pdf.open('rb'),
             content_type=resultado.tipo_archivo or 'application/pdf'

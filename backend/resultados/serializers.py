@@ -186,3 +186,20 @@ class ResultadoListSerializer(serializers.ModelSerializer):
         if obj.paciente_id:
             return obj.paciente.documento
         return ''
+
+
+class ResultadoUnificadoSerializer(serializers.Serializer):
+    """
+    Serializer de solo lectura para la vista unificada paciente.
+    Representa tanto un Resultado de BD como una OrdenFASIL.
+    El campo 'id' siempre es string:
+      - Resultado BD: str(pk)        → "15"
+      - Orden FASIL:  "fasil-" + id  → "fasil-ORD-42"
+    """
+    id = serializers.CharField(read_only=True)
+    tipo_examen = serializers.CharField(read_only=True)
+    fecha_examen = serializers.CharField(read_only=True)
+    estado = serializers.CharField(read_only=True)
+    fuente = serializers.CharField(read_only=True)
+    nombre_archivo = serializers.CharField(read_only=True, allow_null=True)
+    tiene_pdf = serializers.BooleanField(read_only=True)
