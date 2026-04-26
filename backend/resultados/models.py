@@ -120,9 +120,20 @@ class Resultado(models.Model):
     # Relaciones
     paciente = models.ForeignKey(
         Paciente,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='resultados',
         verbose_name='Paciente'
+    )
+    paciente_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='resultados_directos',
+        verbose_name='Paciente (usuario)',
+        help_text='FK directa al User del paciente. Reemplaza la indirección via Paciente.user.',
     )
     subido_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,

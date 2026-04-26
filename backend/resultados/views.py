@@ -168,18 +168,16 @@ class ResultadoListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Resultado.objects.select_related('paciente', 'subido_por', 'empresa')
+        queryset = Resultado.objects.select_related('paciente', 'paciente_user', 'subido_por', 'empresa')
 
         if user.role in ('admin', 'bacteriologo'):
             qs = queryset.all()
         else:
-            # Paciente solo ve sus resultados validados/entregados
             qs = queryset.filter(
-                paciente__user=user,
+                paciente_user=user,
                 estado__in=['VALIDADO', 'ENTREGADO']
             )
 
-        # Filtros opcionales por query params
         fuente = self.request.query_params.get('fuente')
         estado = self.request.query_params.get('estado')
         paciente_id = self.request.query_params.get('paciente')
@@ -225,7 +223,7 @@ class ResultadoDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Resultado.objects.select_related('paciente', 'subido_por', 'empresa')
+        queryset = Resultado.objects.select_related('paciente', 'paciente_user', 'subido_por', 'empresa')
 
         if user.role == 'admin':
             return queryset.all()
@@ -233,7 +231,7 @@ class ResultadoDetailView(generics.RetrieveUpdateDestroyAPIView):
             return queryset.all()
         else:
             return queryset.filter(
-                paciente__user=user,
+                paciente_user=user,
                 estado__in=['VALIDADO', 'ENTREGADO']
             )
 
@@ -269,14 +267,13 @@ class ResultadoDescargarPDFView(APIView):
     def get(self, request, pk):
         user = request.user
 
-        # Obtener resultado con permisos
         if user.role in ('admin', 'bacteriologo'):
             resultado = get_object_or_404(Resultado, pk=pk)
         else:
             resultado = get_object_or_404(
                 Resultado,
                 pk=pk,
-                paciente__user=user,
+                paciente_user=user,
                 estado__in=['VALIDADO', 'ENTREGADO']
             )
 
