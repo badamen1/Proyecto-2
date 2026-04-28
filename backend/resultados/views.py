@@ -361,8 +361,8 @@ class ResultadoDescargarPDFView(APIView):
                 pdf_bytes = fasil_service.get_resultado_pdf(orden_id)
             except FasilOrdenNoEncontrada:
                 raise Http404("No se encontró el PDF en FASIL.")
-            except FasilConn as e:
-                raise Http404(f"No se pudo conectar con FASIL: {e}")
+            except (FasilConn, NotImplementedError) as e:
+                raise Http404(f"PDF no disponible: {e}")
 
             from django.http import HttpResponse
             response = HttpResponse(pdf_bytes, content_type='application/pdf')
