@@ -94,13 +94,19 @@ export default function ResultadosListaPage() {
   };
 
   const verPDFNuevaTab = async (id: string) => {
+    const newTab = window.open('', '_blank');
+    if (!newTab) {
+      alert('Verifica que tu navegador permita ventanas emergentes para este sitio.');
+      return;
+    }
     setDownloadingId(id);
     try {
       const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      newTab.location.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 30_000);
     } catch (err) {
+      newTab.close();
       alert('No se pudo abrir el PDF: ' + (err as Error).message);
     } finally {
       setDownloadingId(null);
@@ -173,7 +179,7 @@ export default function ResultadosListaPage() {
                                   disabled={downloadingId === String(r.id)}
                                   style={{ background: 'var(--primary-blue)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
                                 >
-                                  Ver PDF
+                                  {downloadingId === String(r.id) ? 'Abriendo...' : 'Ver PDF'}
                                 </button>
                                 <button
                                   onClick={() => descargarPDF(String(r.id), r.nombre_archivo)}
