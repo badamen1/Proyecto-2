@@ -38,6 +38,7 @@ Uso:
 """
 
 import logging
+import requests
 from dataclasses import dataclass
 from typing import Optional
 from django.conf import settings
@@ -425,25 +426,26 @@ class FasilService:
 
     def get_resultado_pdf(self, orden_id: str) -> bytes:
         """
-        Descarga el PDF de un resultado desde FASIL.
+        Descarga el PDF de un resultado proxeando el servidor BIRT de la clínica.
 
-        Equivalente en sistema viejo (resultado.php):
-            El viejo NO descargaba — redirigía al servidor BIRT:
-            header("Location: http://192.168.1.109:8080/BioanalisisRepo272/frameset?...")
-            (hallazgo A-03 — dependencia directa al servidor BIRT por IP)
+        El sistema PHP viejo redirigía el browser del paciente directamente a BIRT:
+            header("Location: http://192.168.1.109:8080/BioanalisisRepo272/run?...")
+        Esto exponía la IP interna y fallaba desde fuera de la red.
 
-        En el nuevo sistema, los PDFs subidos manualmente se guardan en FileField.
-        Para PDFs de FASIL: se consulta la tabla `resultado` de FASIL que almacenaba
-        el archivo como BLOB (hallazgo C-06).
+        El nuevo sistema actúa como proxy: el backend (en la misma LAN que BIRT)
+        descarga el PDF y lo sirve al paciente. La IP de BIRT nunca sale al cliente.
+
+        URL BIRT requiere idEmpresa además de idOrden — se obtiene de svc_ordenes.
 
         Args:
-            orden_id: ID de la orden en FASIL.
+            orden_id: ID de la orden en FASIL (svc_ordenes.idOrden).
 
         Returns:
-            Bytes del archivo PDF.
+            Bytes del PDF generado por BIRT.
 
         Raises:
-            FasilOrdenNoEncontrada: Si la orden no tiene PDF asociado.
+            FasilOrdenNoEncontrada: Si idOrden no existe en svc_ordenes.
+            FasilConexionError: Si no se puede conectar a FASIL o a BIRT.
         """
         if not self.enabled:
             logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=MOCK", orden_id)
@@ -453,35 +455,47 @@ class FasilService:
             )
 
         logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=REAL", orden_id)
+
+        # 1. Obtener idEmpresa para construir la URL BIRT
         try:
             cursor = _get_fasil_cursor()
-            # PDFs almacenados en svc_result (tabla real en bioanalisis30).
-            # Se leen como BLOB y se sirven desde Django.
             cursor.execute(
-                """
-                SELECT archivo
-                FROM svc_result
-                WHERE idOrden = %s
-                AND archivo IS NOT NULL
-                LIMIT 1
-                """,
+                "SELECT idEmpresa FROM svc_ordenes WHERE idOrden = %s LIMIT 1",
                 [orden_id]
             )
             row = cursor.fetchone()
             cursor.close()
-
-            if not row or not row[0]:
-                raise FasilOrdenNoEncontrada(
-                    f"No se encontró PDF para la orden '{orden_id}' en FASIL."
-                )
-
-            return bytes(row[0])
-
-        except FasilOrdenNoEncontrada:
-            raise
         except Exception as e:
-            logger.error("FASIL get_resultado_pdf error: %s", str(e))
-            raise FasilConexionError(f"Error descargando PDF de FASIL: {e}")
+            logger.error("FASIL get_resultado_pdf error buscando orden: %s", str(e))
+            raise FasilConexionError(f"Error consultando orden en FASIL: {e}")
+
+        if not row:
+            raise FasilOrdenNoEncontrada(
+                f"No se encontró la orden '{orden_id}' en FASIL."
+            )
+
+        empresa_id = row[0]
+
+        # 2. Construir URL BIRT con los parámetros del reporte
+        birt_host = getattr(settings, 'FASIL_BIRT_HOST', 'http://192.168.1.109:8080')
+        url = (
+            f"{birt_host}/BioanalisisRepo272/run"
+            f"?__format=pdf"
+            f"&__report=ListadoResultadosOrden4.rptdesign"
+            f"&Desde%20Empresa={empresa_id}"
+            f"&Hasta%20Empresa={empresa_id}"
+            f"&Desde%20Orden={orden_id}"
+            f"&Hasta%20Orden={orden_id}"
+        )
+
+        # 3. Proxear la descarga desde BIRT (backend y BIRT están en la misma LAN)
+        try:
+            response = requests.get(url, timeout=30)
+            response.raise_for_status()
+            return response.content
+        except Exception as e:
+            logger.error("FASIL get_resultado_pdf error BIRT: %s | url=%s", str(e), url)
+            raise FasilConexionError(f"No se pudo obtener el PDF desde BIRT: {e}")
 
     # -------------------------------------------------------------------------
     # Health check
