@@ -1,7 +1,6 @@
 from django.test import SimpleTestCase
 from unittest.mock import patch, MagicMock
 from resultados.services.fasil_service import fasil_service, FasilOrdenNoEncontrada, FasilConexionError
-import requests as req_lib
 
 
 class FasilServiceGetOrdenesTests(SimpleTestCase):
