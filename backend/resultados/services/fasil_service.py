@@ -573,7 +573,7 @@ class FasilService:
                 tipo_examen='Hemograma Completo',
                 fecha_examen='2026-04-01',
                 empresa_nit=empresa_nit,
-                tiene_pdf=True,
+                tiene_pdf=False,
             ),
             OrdenFASIL(
                 id_orden=f"ORD-{paciente_id}-002",
@@ -581,7 +581,7 @@ class FasilService:
                 tipo_examen='Perfil Lipídico',
                 fecha_examen='2026-03-15',
                 empresa_nit=empresa_nit,
-                tiene_pdf=True,
+                tiene_pdf=False,
             ),
         ]
 

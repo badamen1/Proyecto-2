@@ -52,6 +52,15 @@ class FasilServiceGetOrdenesTests(SimpleTestCase):
 
         self.assertIsNone(result[0].empresa_nit)
 
+    @patch('resultados.services.fasil_service._is_fasil_enabled', return_value=False)
+    def test_mock_ordenes_tienen_pdf_false(self, _):
+        """_mock_get_ordenes debe retornar órdenes con tiene_pdf=False (BIRT no disponible en desarrollo)."""
+        result = fasil_service.get_ordenes('7')
+
+        self.assertTrue(len(result) > 0, "Se esperan al menos 2 órdenes mock")
+        for orden in result:
+            self.assertFalse(orden.tiene_pdf, f"Orden {orden.id_orden} debe tener tiene_pdf=False")
+
 
 class FasilServiceGetResultadoPdfTests(SimpleTestCase):
     """Tests unitarios de FasilService.get_resultado_pdf con proxy BIRT."""
