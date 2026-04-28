@@ -93,6 +93,20 @@ export default function ResultadosListaPage() {
     }
   };
 
+  const verPDFNuevaTab = async (id: string) => {
+    setDownloadingId(id);
+    try {
+      const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    } catch (err) {
+      alert('No se pudo abrir el PDF: ' + (err as Error).message);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ minHeight: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -151,16 +165,49 @@ export default function ResultadosListaPage() {
                           </span>
                         </td>
                         <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
-                          <Link href={`/dashboard/resultados/${r.id}`} style={{ background: 'var(--primary-blue)', color: '#fff', padding: '6px 12px', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem' }}>
-                            Ver
-                          </Link>
-                          <button
-                            onClick={() => descargarPDF(String(r.id), r.nombre_archivo)}
-                            disabled={downloadingId === String(r.id)}
-                            style={{ background: '#28a745', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
-                          >
-                            {downloadingId === r.id ? 'Descargando...' : 'PDF'}
-                          </button>
+                          {r.fuente === 'FASIL' ? (
+                            r.tiene_pdf !== false ? (
+                              <>
+                                <button
+                                  onClick={() => verPDFNuevaTab(String(r.id))}
+                                  disabled={downloadingId === String(r.id)}
+                                  style={{ background: 'var(--primary-blue)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                                >
+                                  Ver PDF
+                                </button>
+                                <button
+                                  onClick={() => descargarPDF(String(r.id), r.nombre_archivo)}
+                                  disabled={downloadingId === String(r.id)}
+                                  style={{ background: '#28a745', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                                >
+                                  {downloadingId === String(r.id) ? 'Descargando...' : 'PDF'}
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                disabled
+                                style={{ background: '#ccc', color: '#666', border: 'none', padding: '6px 12px', borderRadius: '4px', fontSize: '0.85rem', cursor: 'not-allowed' }}
+                              >
+                                PDF no disponible
+                              </button>
+                            )
+                          ) : (
+                            <>
+                              <Link
+                                href={`/dashboard/resultados/${r.id}`}
+                                style={{ background: 'var(--primary-blue)', color: '#fff', padding: '6px 12px', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem' }}
+                              >
+                                Ver
+                              </Link>
+                              <button
+                                onClick={() => descargarPDF(String(r.id), r.nombre_archivo)}
+                                disabled={downloadingId === String(r.id)}
+                                style={{ background: '#28a745', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                              >
+                                {downloadingId === String(r.id) ? 'Descargando...' : 'PDF'}
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     );

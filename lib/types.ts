@@ -20,6 +20,7 @@ export type ResultadoLista = {
   fecha_examen: string;
   fecha_carga: string;
   nombre_archivo: string | null;
+  tiene_pdf?: boolean;
 };
 
 export type ResultadoDetalle = ResultadoLista & {
