@@ -102,4 +102,104 @@ describe('Pagina /dashboard/resultados', () => {
       expect(mockPush).toHaveBeenCalledWith('/login');
     });
   });
+
+  it('muestra botón deshabilitado para orden FASIL con tiene_pdf false', async () => {
+    localStorageMock.setItem('access_token', 'tok');
+    localStorageMock.setItem('user_role', 'paciente');
+    mockApiFetch.mockResolvedValueOnce({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [
+        {
+          id: 'fasil-ORD-7-001',
+          paciente_nombre: 'Juan',
+          paciente_documento: '123',
+          empresa_nombre: null,
+          tipo_examen: 'Hemograma Completo',
+          fuente: 'FASIL',
+          estado: 'ENTREGADO',
+          fecha_examen: '2026-04-01',
+          fecha_carga: '2026-04-01T10:00:00Z',
+          nombre_archivo: null,
+          tiene_pdf: false,
+        },
+      ],
+    });
+
+    const { default: Page } = await import('@/app/dashboard/resultados/page');
+    render(<Page />);
+
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: /pdf no disponible/i });
+      expect(btn).toBeDisabled();
+      expect(screen.queryByRole('link', { name: /^ver$/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it('muestra botones Ver PDF y PDF para orden FASIL con tiene_pdf true', async () => {
+    localStorageMock.setItem('access_token', 'tok');
+    localStorageMock.setItem('user_role', 'paciente');
+    mockApiFetch.mockResolvedValueOnce({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [
+        {
+          id: 'fasil-ORD-7-001',
+          paciente_nombre: 'Juan',
+          paciente_documento: '123',
+          empresa_nombre: null,
+          tipo_examen: 'Perfil Lipídico',
+          fuente: 'FASIL',
+          estado: 'ENTREGADO',
+          fecha_examen: '2026-04-01',
+          fecha_carga: '2026-04-01T10:00:00Z',
+          nombre_archivo: null,
+          tiene_pdf: true,
+        },
+      ],
+    });
+
+    const { default: Page } = await import('@/app/dashboard/resultados/page');
+    render(<Page />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /ver pdf/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^pdf$/i })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: /^ver$/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it('muestra link Ver y botón PDF para resultado manual', async () => {
+    localStorageMock.setItem('access_token', 'tok');
+    localStorageMock.setItem('user_role', 'paciente');
+    mockApiFetch.mockResolvedValueOnce({
+      count: 1,
+      next: null,
+      previous: null,
+      results: [
+        {
+          id: '42',
+          paciente_nombre: 'Juan',
+          paciente_documento: '123',
+          empresa_nombre: null,
+          tipo_examen: 'Hemograma',
+          fuente: 'MANUAL',
+          estado: 'VALIDADO',
+          fecha_examen: '2026-04-01',
+          fecha_carga: '2026-04-01T10:00:00Z',
+          nombre_archivo: 'hemo.pdf',
+        },
+      ],
+    });
+
+    const { default: Page } = await import('@/app/dashboard/resultados/page');
+    render(<Page />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: /^ver$/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^pdf$/i })).toBeInTheDocument();
+    });
+  });
 });
