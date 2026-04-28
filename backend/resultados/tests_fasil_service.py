@@ -71,7 +71,7 @@ class FasilServiceGetResultadoPdfTests(SimpleTestCase):
 
         self.assertEqual(fasil_service.get_resultado_pdf('42'), b'%PDF-1.4 fake')
         called_url = mock_requests.get.call_args[0][0]
-        self.assertIn('BioanalisisRepo272/run', called_url)
+        self.assertIn('Bioanalisis30/run', called_url)
         self.assertIn('Desde%20Orden=42', called_url)
         self.assertIn('Hasta%20Orden=42', called_url)
         self.assertIn('Desde%20Empresa=5', called_url)

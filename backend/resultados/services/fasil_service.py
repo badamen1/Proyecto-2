@@ -479,7 +479,7 @@ class FasilService:
         # 2. Construir URL BIRT con los parámetros del reporte
         birt_host = getattr(settings, 'FASIL_BIRT_HOST', 'http://192.168.1.109:8080')
         url = (
-            f"{birt_host}/BioanalisisRepo272/run"
+            f"{birt_host}/Bioanalisis30/run"
             f"?__format=pdf"
             f"&__report=ListadoResultadosOrden4.rptdesign"
             f"&Desde%20Empresa={empresa_id}"
