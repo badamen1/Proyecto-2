@@ -12,3 +12,6 @@ PyJWT==2.11.0
 # Conexión a FASIL (MySQL on-premise)
 # PyMySQL: driver MySQL 100% Python — no requiere compilación de extensiones C
 PyMySQL==1.1.1
+
+# HTTP client — usado por fasil_service para proxear PDFs desde servidor BIRT
+requests==2.32.3

@@ -378,17 +378,14 @@ class FasilService:
         try:
             cursor = _get_fasil_cursor()
 
-            # Query base — esquema real bioanalisis30.
-            # svc_ordenes no tiene tipoExamen; se obtiene de svc_detordenes → prb_prb.
-            # fechaOrden → fecha (timestamp). idEmpresa es INT (no NIT string).
             sql = """
                 SELECT
                     o.idOrden,
                     o.idPaciente,
                     COALESCE(
-                        (SELECT pp.nomPrb
+                        (SELECT pp.namePrueba
                          FROM svc_detordenes sd
-                         JOIN prb_prb pp ON sd.idPrb = pp.idPrb
+                         JOIN prb_prb pp ON sd.idPrueba = pp.idPrueba
                          WHERE sd.idOrden = o.idOrden
                          LIMIT 1),
                         'Examen de laboratorio'
