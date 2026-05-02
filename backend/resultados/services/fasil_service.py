@@ -424,37 +424,33 @@ class FasilService:
             logger.error("FASIL get_ordenes error: %s", str(e))
             raise FasilConexionError(f"Error consultando órdenes en FASIL: {e}")
 
-    def get_resultado_pdf(self, orden_id: str) -> bytes:
+    def get_resultado_pdf_url(self, orden_id: str) -> str:
         """
-        Descarga el PDF de un resultado proxeando el servidor BIRT de la clínica.
+        Construye y retorna la URL BIRT para que el navegador la abra directamente.
 
-        El sistema PHP viejo redirigía el browser del paciente directamente a BIRT:
-            header("Location: http://192.168.1.109:8080/BioanalisisRepo272/run?...")
-        Esto exponía la IP interna y fallaba desde fuera de la red.
-
-        El nuevo sistema actúa como proxy: el backend (en la misma LAN que BIRT)
-        descarga el PDF y lo sirve al paciente. La IP de BIRT nunca sale al cliente.
-
-        URL BIRT requiere idEmpresa además de idOrden — se obtiene de svc_ordenes.
+        BIRT usa JavaScript para generar el PDF — no se puede proxear vía requests.
+        El navegador debe navegar a la URL de BIRT directamente para que el JS se ejecute.
+        Esta es la misma estrategia del sistema PHP viejo (header Location), pero
+        ahora el backend resuelve idEmpresa desde FASIL antes de devolver la URL.
 
         Args:
             orden_id: ID de la orden en FASIL (svc_ordenes.idOrden).
 
         Returns:
-            Bytes del PDF generado por BIRT.
+            URL completa de BIRT lista para abrir en el navegador.
 
         Raises:
             FasilOrdenNoEncontrada: Si idOrden no existe en svc_ordenes.
-            FasilConexionError: Si no se puede conectar a FASIL o a BIRT.
+            FasilConexionError: Si no se puede conectar a FASIL.
         """
         if not self.enabled:
-            logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=MOCK", orden_id)
+            logger.info("FASIL get_resultado_pdf_url | orden_id=%s | modo=MOCK", orden_id)
             raise NotImplementedError(
-                "get_resultado_pdf() en modo MOCK. "
-                "Los PDFs mock deben cargarse manualmente desde el panel admin."
+                "get_resultado_pdf_url() en modo MOCK. "
+                "Los PDFs FASIL solo están disponibles en despliegue on-premise."
             )
 
-        logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=REAL", orden_id)
+        logger.info("FASIL get_resultado_pdf_url | orden_id=%s | modo=REAL", orden_id)
 
         # 1. Obtener idEmpresa para construir la URL BIRT
         try:
@@ -466,7 +462,7 @@ class FasilService:
             row = cursor.fetchone()
             cursor.close()
         except Exception as e:
-            logger.error("FASIL get_resultado_pdf error buscando orden: %s", str(e))
+            logger.error("FASIL get_resultado_pdf_url error buscando orden: %s", str(e))
             raise FasilConexionError(f"Error consultando orden en FASIL: {e}")
 
         if not row:
@@ -476,10 +472,10 @@ class FasilService:
 
         empresa_id = row[0]
 
-        # 2. Construir URL BIRT con los parámetros del reporte
+        # 2. Construir URL BIRT — el navegador la abre directamente
         birt_host = getattr(settings, 'FASIL_BIRT_HOST', 'http://192.168.1.109:8080')
         birt_user = getattr(settings, 'FASIL_BIRT_USER', '54')
-        url = (
+        return (
             f"{birt_host}/BioanalisisRepo30/run"
             f"?__format=pdf"
             f"&__report=ListadoResultadosOrden4.rptdesign"
@@ -504,15 +500,6 @@ class FasilService:
             f"&Desde%20Orden={orden_id}"
             f"&Hasta%20Orden={orden_id}"
         )
-
-        # 3. Proxear la descarga desde BIRT (backend y BIRT están en la misma LAN)
-        try:
-            response = requests.get(url, timeout=30)
-            response.raise_for_status()
-            return response.content
-        except Exception as e:
-            logger.error("FASIL get_resultado_pdf error BIRT: %s | url=%s", str(e), url)
-            raise FasilConexionError(f"No se pudo obtener el PDF desde BIRT: {e}")
 
     # -------------------------------------------------------------------------
     # Health check

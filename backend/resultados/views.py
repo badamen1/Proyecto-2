@@ -358,16 +358,14 @@ class ResultadoDescargarPDFView(APIView):
         if isinstance(pk, str) and pk.startswith('fasil-'):
             orden_id = pk[len('fasil-'):]
             try:
-                pdf_bytes = fasil_service.get_resultado_pdf(orden_id)
+                pdf_url = fasil_service.get_resultado_pdf_url(orden_id)
             except FasilOrdenNoEncontrada:
                 raise Http404("No se encontró el PDF en FASIL.")
             except (FasilConn, NotImplementedError) as e:
                 raise Http404(f"PDF no disponible: {e}")
 
-            from django.http import HttpResponse
-            response = HttpResponse(pdf_bytes, content_type='application/pdf')
-            response['Content-Disposition'] = f'inline; filename="resultado_{orden_id}.pdf"'
-            return response
+            from rest_framework.response import Response
+            return Response({"pdf_url": pdf_url})
 
         # Ruta BD: pk es un entero (como string) — admin/bact o paciente con paciente_user
         if user.role in ('admin', 'bacteriologo'):

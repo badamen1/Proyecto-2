@@ -76,17 +76,30 @@ export default function ResultadosListaPage() {
 
   const descargarPDF = async (id: string, nombreArchivo: string | null) => {
     setDownloadingId(id);
+    let fasilTab: Window | null = null;
     try {
-      const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = nombreArchivo ?? `resultado_${id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      if (id.startsWith('fasil-')) {
+        // BIRT usa JavaScript para generar el PDF — el navegador debe abrir la URL directamente
+        fasilTab = window.open('', '_blank');
+        if (!fasilTab) {
+          alert('Verifica que tu navegador permita ventanas emergentes para este sitio.');
+          return;
+        }
+        const { pdf_url } = await apiFetch<{ pdf_url: string }>(`/api/resultados/${id}/pdf/`);
+        fasilTab.location.href = pdf_url;
+      } else {
+        const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombreArchivo ?? `resultado_${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
     } catch (err) {
+      fasilTab?.close();
       alert('No se pudo descargar el PDF: ' + (err as Error).message);
     } finally {
       setDownloadingId(null);
@@ -101,10 +114,16 @@ export default function ResultadosListaPage() {
     }
     setDownloadingId(id);
     try {
-      const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
-      const url = URL.createObjectURL(blob);
-      newTab.location.href = url;
-      setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      if (id.startsWith('fasil-')) {
+        // BIRT usa JavaScript para generar el PDF — navegar directamente a la URL
+        const { pdf_url } = await apiFetch<{ pdf_url: string }>(`/api/resultados/${id}/pdf/`);
+        newTab.location.href = pdf_url;
+      } else {
+        const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
+        const url = URL.createObjectURL(blob);
+        newTab.location.href = url;
+        setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      }
     } catch (err) {
       newTab.close();
       alert('No se pudo abrir el PDF: ' + (err as Error).message);
