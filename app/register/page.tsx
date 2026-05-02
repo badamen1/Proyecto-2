@@ -45,13 +45,28 @@ export default function Register() {
                 return;
             }
 
-            const data = await res.json();
+            let data: unknown;
+            try {
+                data = await res.json();
+            } catch {
+                setError(`Error del servidor (${res.status}). Intenta de nuevo.`);
+                return;
+            }
+
             if (typeof data === 'object' && data !== null) {
-                const detail = (data as Record<string, unknown>).detail;
-                if (typeof detail === 'string') {
-                    setError(detail);
+                const obj = data as Record<string, unknown>;
+                if (typeof obj.detail === 'string') {
+                    setError(obj.detail);
                 } else {
-                    setFieldErrors(data as FieldErrors);
+                    // DRF validation errors (400 or 422): { field: [msg, ...] }
+                    const hasFieldErrors = Object.keys(obj).some(
+                        (k) => Array.isArray(obj[k]) || typeof obj[k] === 'string'
+                    );
+                    if (hasFieldErrors) {
+                        setFieldErrors(data as FieldErrors);
+                    } else {
+                        setError(`Error ${res.status}: no se pudo crear la cuenta.`);
+                    }
                 }
             } else {
                 setError('Error al crear la cuenta.');
