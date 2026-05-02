@@ -491,7 +491,6 @@ class FasilService:
             f"{birt_host}/BioanalisisRepo30/run"
             f"?__format=pdf"
             f"&__report=ListadoResultadosOrden4.rptdesign"
-            f"&__format=pdf"
             f"&Desde%20Empresa={empresa_id}"
             f"&Hasta%20Empresa={empresa_id}"
             f"&Desde%20Orden={orden_id}"
@@ -545,15 +544,15 @@ class FasilService:
             post_resp.raise_for_status()
 
             if not post_resp.content.startswith(b'%PDF'):
-                preview = post_resp.content[:300].decode('utf-8', errors='replace')
+                ct = post_resp.headers.get('content-type', '')
                 logger.error(
                     "FASIL BIRT POST no retornó PDF | orden=%s | content-type=%s | preview=%s",
-                    orden_id, post_resp.headers.get('content-type', ''), preview
+                    orden_id, ct,
+                    post_resp.content[:300].decode('utf-8', errors='replace')
                 )
                 raise FasilConexionError(
-                    f"BIRT POST no retornó PDF. "
-                    f"Content-type: {post_resp.headers.get('content-type', '')}. "
-                    f"Inicio: {preview[:120]}"
+                    f"BIRT POST no retornó PDF (content-type: {ct}). "
+                    f"Revisar logs del servidor para detalles."
                 )
 
             logger.info("FASIL BIRT PDF obtenido | orden=%s | bytes=%d", orden_id, len(post_resp.content))

@@ -138,3 +138,25 @@ class FasilServiceGetResultadoPdfTests(SimpleTestCase):
         """En FASIL_ENABLED=False, lanza NotImplementedError."""
         with self.assertRaises(NotImplementedError):
             fasil_service.get_resultado_pdf('1')
+
+    @patch('resultados.services.fasil_service.requests.Session')
+    @patch('resultados.services.fasil_service._is_fasil_enabled', return_value=True)
+    @patch('resultados.services.fasil_service._get_fasil_cursor')
+    def test_error_http_birt_lanza_fasil_conexion_error(self, mock_cursor_fn, _, mock_session_cls):
+        """Si BIRT devuelve error HTTP (ej. 503), lanza FasilConexionError."""
+        from resultados.services.fasil_service import FasilConexionError
+        import requests as req_lib
+
+        cursor = MagicMock()
+        cursor.fetchone.return_value = (1,)
+        mock_cursor_fn.return_value = cursor
+
+        session = MagicMock()
+        error_resp = MagicMock()
+        error_resp.content = b'<html>Service Unavailable</html>'
+        error_resp.raise_for_status.side_effect = req_lib.exceptions.HTTPError('503 Server Error')
+        session.get.return_value = error_resp
+        mock_session_cls.return_value = session
+
+        with self.assertRaises(FasilConexionError):
+            fasil_service.get_resultado_pdf('116657')
