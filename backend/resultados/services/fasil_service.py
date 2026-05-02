@@ -478,10 +478,27 @@ class FasilService:
 
         # 2. Construir URL BIRT con los parámetros del reporte
         birt_host = getattr(settings, 'FASIL_BIRT_HOST', 'http://192.168.1.109:8080')
+        birt_user = getattr(settings, 'FASIL_BIRT_USER', '54')
         url = (
-            f"{birt_host}/Bioanalisis30/run"
+            f"{birt_host}/BioanalisisRepo30/run"
             f"?__format=pdf"
             f"&__report=ListadoResultadosOrden4.rptdesign"
+            f"&Pentrega=false"
+            f"&Ptitulos=true"
+            f"&Pfirmas=false"
+            f"&PMDesde=0"
+            f"&PMHasta=999"
+            f"&Premitido=0"
+            f"&PmediaCarta=false"
+            f"&Ppiefirma=false"
+            f"&Phistoria=Historia%20"
+            f"&Pcomentario=l"
+            f"&Psinfirmas=false"
+            f"&Pacreditada=2"
+            f"&Pconfoto=false"
+            f"&Pcarpeta=a"
+            f"&usuario={birt_user}"
+            f"&Documento=%22%25%22"
             f"&Desde%20Empresa={empresa_id}"
             f"&Hasta%20Empresa={empresa_id}"
             f"&Desde%20Orden={orden_id}"
@@ -523,7 +540,7 @@ class FasilService:
             return {
                 'status': 'ok',
                 'modo': 'REAL',
-                'detalle': 'Conexión a BD FASIL (bioanalisis272) exitosa.',
+                'detalle': 'Conexión a BD FASIL (bioanalisis30) exitosa.',
             }
         except Exception as e:
             return {

@@ -24,6 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     Crea: User con username=documento, role=PACIENTE, set_unusable_password().
     Nunca acepta: role, password, username en el body.
     """
+    documento = serializers.CharField(required=True, max_length=20)
     nombre_completo = serializers.CharField(required=True, max_length=200)
 
     class Meta:

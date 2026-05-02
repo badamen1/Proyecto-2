@@ -97,6 +97,7 @@ FASIL_DB_PASSWORD = config('FASIL_DB_PASSWORD', default='')
 FASIL_DB_HOST = config('FASIL_DB_HOST', default='192.168.1.109')
 FASIL_DB_PORT = config('FASIL_DB_PORT', default='3306')
 FASIL_BIRT_HOST = config('FASIL_BIRT_HOST', default='http://192.168.1.109:8080')
+FASIL_BIRT_USER = config('FASIL_BIRT_USER', default='54')
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
