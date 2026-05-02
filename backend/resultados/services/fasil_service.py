@@ -424,35 +424,34 @@ class FasilService:
             logger.error("FASIL get_ordenes error: %s", str(e))
             raise FasilConexionError(f"Error consultando órdenes en FASIL: {e}")
 
-    def get_resultado_pdf_url(self, orden_id: str) -> str:
+    def get_resultado_pdf(self, orden_id: str) -> bytes:
         """
-        Construye y retorna la URL BIRT para que el navegador la abra directamente.
+        Obtiene bytes del PDF desde BIRT usando GET+POST con sesión.
 
-        BIRT usa JavaScript para generar el PDF — no se puede proxear vía requests.
-        El navegador debe navegar a la URL de BIRT directamente para que el JS se ejecute.
-        Esta es la misma estrategia del sistema PHP viejo (header Location), pero
-        ahora el backend resuelve idEmpresa desde FASIL antes de devolver la URL.
+        BIRT usa un viewer JavaScript. El flujo real (confirmado por DevTools):
+          1. GET a la URL del reporte → BIRT setea JSESSIONID y devuelve el viewer HTML.
+          2. POST con los parámetros del formulario → BIRT devuelve el PDF binario.
 
         Args:
             orden_id: ID de la orden en FASIL (svc_ordenes.idOrden).
 
         Returns:
-            URL completa de BIRT lista para abrir en el navegador.
+            Bytes del PDF generado por BIRT.
 
         Raises:
             FasilOrdenNoEncontrada: Si idOrden no existe en svc_ordenes.
-            FasilConexionError: Si no se puede conectar a FASIL.
+            FasilConexionError: Si no se puede conectar a FASIL o a BIRT.
         """
         if not self.enabled:
-            logger.info("FASIL get_resultado_pdf_url | orden_id=%s | modo=MOCK", orden_id)
+            logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=MOCK", orden_id)
             raise NotImplementedError(
-                "get_resultado_pdf_url() en modo MOCK. "
+                "get_resultado_pdf() en modo MOCK. "
                 "Los PDFs FASIL solo están disponibles en despliegue on-premise."
             )
 
-        logger.info("FASIL get_resultado_pdf_url | orden_id=%s | modo=REAL", orden_id)
+        logger.info("FASIL get_resultado_pdf | orden_id=%s | modo=REAL", orden_id)
 
-        # 1. Obtener idEmpresa para construir la URL BIRT
+        # 1. Obtener idEmpresa desde FASIL
         try:
             cursor = _get_fasil_cursor()
             cursor.execute(
@@ -462,7 +461,7 @@ class FasilService:
             row = cursor.fetchone()
             cursor.close()
         except Exception as e:
-            logger.error("FASIL get_resultado_pdf_url error buscando orden: %s", str(e))
+            logger.error("FASIL get_resultado_pdf error buscando orden: %s", str(e))
             raise FasilConexionError(f"Error consultando orden en FASIL: {e}")
 
         if not row:
@@ -471,35 +470,100 @@ class FasilService:
             )
 
         empresa_id = row[0]
-
-        # 2. Construir URL BIRT — el navegador la abre directamente
         birt_host = getattr(settings, 'FASIL_BIRT_HOST', 'http://192.168.1.109:8080')
         birt_user = getattr(settings, 'FASIL_BIRT_USER', '54')
-        return (
+
+        # URL para GET (establece sesión BIRT y muestra el viewer con parámetros)
+        get_url = (
             f"{birt_host}/BioanalisisRepo30/run"
             f"?__format=pdf"
             f"&__report=ListadoResultadosOrden4.rptdesign"
-            f"&Pentrega=false"
-            f"&Ptitulos=true"
-            f"&Pfirmas=false"
-            f"&PMDesde=0"
-            f"&PMHasta=999"
-            f"&Premitido=0"
-            f"&PmediaCarta=false"
-            f"&Ppiefirma=false"
-            f"&Phistoria=Historia%20"
-            f"&Pcomentario=l"
-            f"&Psinfirmas=false"
-            f"&Pacreditada=2"
-            f"&Pconfoto=false"
-            f"&Pcarpeta=a"
-            f"&usuario={birt_user}"
-            f"&Documento=%22%25%22"
+            f"&Pentrega=false&Ptitulos=true&Pfirmas=false&PMDesde=0&PMHasta=0"
+            f"&Premitido=0&PmediaCarta=false&Ppiefirma=false&Phistoria=Historia%20"
+            f"&Pcomentario=l&Psinfirmas=false&Pacreditada=2&Pconfoto=false&Pcarpeta=a"
+            f"&usuario={birt_user}&Documento=%22%25%22"
+            f"&Desde%20Empresa={empresa_id}&Hasta%20Empresa={empresa_id}"
+            f"&Desde%20Orden={orden_id}&Hasta%20Orden={orden_id}"
+        )
+
+        # URL para POST (solo parámetros de identificación — el body lleva el resto)
+        post_url = (
+            f"{birt_host}/BioanalisisRepo30/run"
+            f"?__format=pdf"
+            f"&__report=ListadoResultadosOrden4.rptdesign"
+            f"&__format=pdf"
             f"&Desde%20Empresa={empresa_id}"
             f"&Hasta%20Empresa={empresa_id}"
             f"&Desde%20Orden={orden_id}"
             f"&Hasta%20Orden={orden_id}"
         )
+
+        # Parámetros del formulario BIRT (confirmados por inspección DevTools)
+        post_data = {
+            '_format': 'pdf',
+            '__format': 'pdf',
+            '__report': 'ListadoResultadosOrden4.rptdesign',
+            'Desde Empresa': str(empresa_id),
+            'Hasta Empresa': str(empresa_id),
+            'Desde Orden': str(orden_id),
+            'Hasta Orden': str(orden_id),
+            'Documento': '%',
+            'usuario': str(birt_user),
+            'Pentrega': 'false',
+            'Ptitulos': 'true',
+            'Pfirmas': 'false',
+            'PMDesde': '0',
+            'PMHasta': '0',
+            'Premitido': '0',
+            'PmediaCarta': 'false',
+            'Ppiefirma': 'false',
+            'Phistoria': 'Historia ',
+            'Pcomentario': 'l',
+            'Psinfirmas': 'false',
+            'Pacreditada': '2',
+            'Pconfoto': 'false',
+            'Pcarpeta': 'a',
+            'DesdePrioridad': '1',
+            'HastaPrioridad': '17',
+        }
+
+        try:
+            session = requests.Session()
+
+            # Paso 1: GET → establece JSESSIONID, carga el viewer BIRT
+            get_resp = session.get(get_url, timeout=30)
+            get_resp.raise_for_status()
+
+            # Si BIRT devuelve PDF directo (sin viewer), retornar inmediatamente
+            if get_resp.content.startswith(b'%PDF'):
+                logger.info("FASIL BIRT devolvió PDF directo en GET | orden=%s", orden_id)
+                return get_resp.content
+
+            # Paso 2: POST con parámetros del formulario → BIRT genera y entrega el PDF
+            logger.info("FASIL BIRT viewer HTML recibido, haciendo POST | orden=%s", orden_id)
+            post_resp = session.post(post_url, data=post_data, timeout=60)
+            post_resp.raise_for_status()
+
+            if not post_resp.content.startswith(b'%PDF'):
+                preview = post_resp.content[:300].decode('utf-8', errors='replace')
+                logger.error(
+                    "FASIL BIRT POST no retornó PDF | orden=%s | content-type=%s | preview=%s",
+                    orden_id, post_resp.headers.get('content-type', ''), preview
+                )
+                raise FasilConexionError(
+                    f"BIRT POST no retornó PDF. "
+                    f"Content-type: {post_resp.headers.get('content-type', '')}. "
+                    f"Inicio: {preview[:120]}"
+                )
+
+            logger.info("FASIL BIRT PDF obtenido | orden=%s | bytes=%d", orden_id, len(post_resp.content))
+            return post_resp.content
+
+        except (FasilOrdenNoEncontrada, FasilConexionError):
+            raise
+        except Exception as e:
+            logger.error("FASIL get_resultado_pdf error: %s | orden=%s", str(e), orden_id)
+            raise FasilConexionError(f"Error obteniendo PDF de BIRT: {e}")
 
     # -------------------------------------------------------------------------
     # Health check

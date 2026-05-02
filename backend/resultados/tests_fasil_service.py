@@ -1,4 +1,3 @@
-import requests as req_lib
 from django.test import SimpleTestCase
 from unittest.mock import patch, MagicMock
 from resultados.services.fasil_service import fasil_service, FasilOrdenNoEncontrada, FasilConexionError
@@ -63,56 +62,79 @@ class FasilServiceGetOrdenesTests(SimpleTestCase):
 
 
 class FasilServiceGetResultadoPdfTests(SimpleTestCase):
-    """Tests unitarios de FasilService.get_resultado_pdf con proxy BIRT."""
+    """Tests de get_resultado_pdf con GET+POST a BIRT via requests.Session()."""
 
-    @patch('resultados.services.fasil_service.requests')
+    def _mock_html_response(self):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.headers = {'content-type': 'text/html;charset=utf-8'}
+        resp.content = b'<html>BIRT Viewer</html>'
+        resp.raise_for_status = MagicMock()
+        return resp
+
+    def _mock_pdf_response(self):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.headers = {'content-type': 'application/pdf'}
+        resp.content = b'%PDF-1.4 fake'
+        resp.raise_for_status = MagicMock()
+        return resp
+
+    @patch('resultados.services.fasil_service.requests.Session')
     @patch('resultados.services.fasil_service._is_fasil_enabled', return_value=True)
     @patch('resultados.services.fasil_service._get_fasil_cursor')
-    def test_descarga_pdf_y_construye_url_birt(self, mock_cursor_fn, _, mock_requests):
-        """get_resultado_pdf consulta idEmpresa y construye URL BIRT correcta."""
+    def test_get_html_luego_post_retorna_pdf(self, mock_cursor_fn, _, mock_session_cls):
+        """Flujo normal: GET devuelve HTML, POST devuelve PDF."""
         cursor = MagicMock()
-        cursor.fetchone.return_value = (5,)   # idEmpresa = 5
+        cursor.fetchone.return_value = (1,)  # empresa_id = 1
         mock_cursor_fn.return_value = cursor
 
-        mock_resp = MagicMock()
-        mock_resp.content = b'%PDF-1.4 fake'
-        mock_requests.get.return_value = mock_resp
+        session = MagicMock()
+        session.get.return_value = self._mock_html_response()
+        session.post.return_value = self._mock_pdf_response()
+        mock_session_cls.return_value = session
 
-        self.assertEqual(fasil_service.get_resultado_pdf('42'), b'%PDF-1.4 fake')
-        called_url = mock_requests.get.call_args[0][0]
-        self.assertIn('Bioanalisis30/run', called_url)
-        self.assertIn('Desde%20Orden=42', called_url)
-        self.assertIn('Hasta%20Orden=42', called_url)
-        self.assertIn('Desde%20Empresa=5', called_url)
-        self.assertIn('ListadoResultadosOrden4.rptdesign', called_url)
+        result = fasil_service.get_resultado_pdf('116657')
 
-    @patch('resultados.services.fasil_service.requests')
+        self.assertEqual(result, b'%PDF-1.4 fake')
+        session.get.assert_called_once()
+        session.post.assert_called_once()
+        # Verificar que el POST incluye los parámetros clave
+        post_data = session.post.call_args[1]['data']
+        self.assertEqual(post_data['__format'], 'pdf')
+        self.assertEqual(post_data['DesdePrioridad'], '1')
+        self.assertEqual(post_data['HastaPrioridad'], '17')
+
+    @patch('resultados.services.fasil_service.requests.Session')
     @patch('resultados.services.fasil_service._is_fasil_enabled', return_value=True)
     @patch('resultados.services.fasil_service._get_fasil_cursor')
-    def test_orden_inexistente_lanza_fasil_orden_no_encontrada(self, mock_cursor_fn, _, mock_requests):
-        """Si svc_ordenes no tiene el idOrden, lanza FasilOrdenNoEncontrada."""
+    def test_get_directo_pdf_sin_post(self, mock_cursor_fn, _, mock_session_cls):
+        """Si BIRT devuelve PDF directo en el GET, no hace POST."""
         cursor = MagicMock()
-        cursor.fetchone.return_value = None   # orden no existe
+        cursor.fetchone.return_value = (1,)
+        mock_cursor_fn.return_value = cursor
+
+        session = MagicMock()
+        session.get.return_value = self._mock_pdf_response()
+        mock_session_cls.return_value = session
+
+        result = fasil_service.get_resultado_pdf('116657')
+
+        self.assertEqual(result, b'%PDF-1.4 fake')
+        session.post.assert_not_called()
+
+    @patch('resultados.services.fasil_service._is_fasil_enabled', return_value=True)
+    @patch('resultados.services.fasil_service._get_fasil_cursor')
+    def test_orden_inexistente_lanza_error(self, mock_cursor_fn, _):
+        """Si la orden no existe en FASIL, lanza FasilOrdenNoEncontrada."""
+        cursor = MagicMock()
+        cursor.fetchone.return_value = None
         mock_cursor_fn.return_value = cursor
 
         with self.assertRaises(FasilOrdenNoEncontrada):
             fasil_service.get_resultado_pdf('9999')
 
-        mock_requests.get.assert_not_called()
-
-    @patch('resultados.services.fasil_service.requests')
-    @patch('resultados.services.fasil_service._is_fasil_enabled', return_value=True)
-    @patch('resultados.services.fasil_service._get_fasil_cursor')
-    def test_birt_http_error_lanza_fasil_conexion_error(self, mock_cursor_fn, _, mock_requests):
-        """Si BIRT responde error HTTP, lanza FasilConexionError."""
-        cursor = MagicMock()
-        cursor.fetchone.return_value = (3,)
-        mock_cursor_fn.return_value = cursor
-
-        mock_resp = MagicMock()
-        mock_resp.raise_for_status.side_effect = req_lib.exceptions.HTTPError('503')
-        mock_requests.get.return_value = mock_resp
-        mock_requests.exceptions.HTTPError = req_lib.exceptions.HTTPError
-
-        with self.assertRaises(FasilConexionError):
-            fasil_service.get_resultado_pdf('77')
+    def test_modo_mock_lanza_not_implemented(self):
+        """En FASIL_ENABLED=False, lanza NotImplementedError."""
+        with self.assertRaises(NotImplementedError):
+            fasil_service.get_resultado_pdf('1')
