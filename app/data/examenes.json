@@ -288,6 +288,14 @@
     "sintomas": ["obesidad central", "estrías", "cara de luna llena", "hipertensión", "debilidad muscular", "fatiga extrema", "hipotensión", "pigmentación de piel"]
   },
   {
+    "codigo": "CORT",
+    "nombre": "CORTISOL",
+    "precio": 50000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide el cortisol, hormona del estrés producida por las glándulas suprarrenales. Diagnóstica para síndrome de Cushing e insuficiencia suprarrenal (Addison).",
+    "sintomas": ["obesidad central", "estrías", "cara de luna llena", "hipertensión", "debilidad muscular", "fatiga extrema", "hipotensión", "pigmentación de piel"]
+  },
+  {
     "codigo": "HONGO",
     "nombre": "CULTIVO DE HONGOS MICOSIS SUPERFICIAL",
     "precio": 93000,
@@ -569,6 +577,14 @@
   },
   {
     "codigo": "PROGE",
+    "nombre": "PROGESTERONA",
+    "precio": 70000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide los niveles de progesterona. Útil para evaluar la ovulación, diagnosticar insuficiencia lútea y monitorear el embarazo temprano.",
+    "sintomas": ["infertilidad", "abortos espontáneos recurrentes", "irregularidades menstruales", "síndrome premenstrual severo", "embarazo temprano"]
+  },
+  {
+    "codigo": "PROGES",
     "nombre": "PROGESTERONA",
     "precio": 70000,
     "categoria": "Hormonas",
