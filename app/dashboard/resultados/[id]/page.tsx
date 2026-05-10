@@ -72,29 +72,17 @@ export default function ResultadoDetallePage() {
 
   const descargarPDF = async () => {
     if (!id) return;
-    let fasilTab: Window | null = null;
     try {
-      if (id.startsWith('fasil-')) {
-        fasilTab = window.open('', '_blank');
-        if (!fasilTab) {
-          alert('Verifica que tu navegador permita ventanas emergentes para este sitio.');
-          return;
-        }
-        const { pdf_url } = await apiFetch<{ pdf_url: string }>(`/api/resultados/${id}/pdf/`);
-        fasilTab.location.href = pdf_url;
-      } else {
-        const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = resultado?.nombre_archivo ?? `resultado_${id}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
+      const blob = await apiFetchBlob(`/api/resultados/${id}/pdf/`);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resultado?.nombre_archivo ?? `resultado_${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (err) {
-      fasilTab?.close();
       alert('No se pudo descargar: ' + (err as Error).message);
     }
   };
