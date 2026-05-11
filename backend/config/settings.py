@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'resultados.apps.ResultadosConfig',
     'empresas.apps.EmpresasConfig',
+    'chatbot.apps.ChatbotConfig',
 ]
 
 MIDDLEWARE = [
@@ -233,5 +234,15 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'chatbot': {
+            'handlers': ['console', 'audit_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
+
+# =============================================================================
+# CHATBOT — Gemini 2.5 Flash
+# =============================================================================
+GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
