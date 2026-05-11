@@ -385,7 +385,7 @@
   },
   {
     "codigo": "HEMOSIS",
-    "nombre": "HEMOSISTEINA",
+    "nombre": "HOMOCISTEINA",
     "precio": 148000,
     "categoria": "Metabolismo",
     "descripcion": "Mide la homocisteína en sangre. Niveles elevados son factor de riesgo cardiovascular y se asocian con deficiencia de vitaminas B.",
@@ -689,7 +689,7 @@
   },
   {
     "codigo": "VITD",
-    "nombre": "VITAMNA D 25 HIDROXI",
+    "nombre": "VITAMINA D 25 HIDROXI",
     "precio": 110000,
     "categoria": "Metabolismo",
     "descripcion": "Mide el nivel de vitamina D. Su deficiencia se asocia con osteoporosis, fatiga y alteraciones del sistema inmune.",
