@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import ServiceCard from '@/components/ServiceCard';
+import ServiceCard from '@/shared/ui/ServiceCard';
 import examenesData from '../data/examenes.json';
 
 export default function Servicios() {

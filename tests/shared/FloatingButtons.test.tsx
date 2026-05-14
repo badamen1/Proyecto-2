@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import FloatingButtons from "@/components/FloatingButtons";
+import FloatingButtons from "@/shared/ui/FloatingButtons";
 
 describe("FloatingButtons", () => {
   it("enlaza WhatsApp con el número configurado", () => {

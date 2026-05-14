@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/shared/layout/Navbar";
 import Footer from "@/shared/layout/Footer";
-import FloatingButtons from "@/components/FloatingButtons";
+import FloatingButtons from "@/shared/ui/FloatingButtons";
 import ChatbotWidget from "@/components/ChatbotWidget";
 
 export const metadata: Metadata = {

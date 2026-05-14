@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ServiceCard from "@/components/ServiceCard";
+import ServiceCard from "@/shared/ui/ServiceCard";
 
 describe("ServiceCard", () => {
   it("muestra título, descripción e icono", () => {
