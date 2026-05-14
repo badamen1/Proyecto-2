@@ -1,4 +1,4 @@
-import FeatureCard from '@/components/FeatureCard';
+import FeatureCard from '@/shared/ui/FeatureCard';
 
 export const metadata = {
     title: 'Nosotros - Laboratorio Clínico BIOANALISIS',
