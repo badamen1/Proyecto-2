@@ -4,3 +4,478 @@
 [2026-04-19 20:39:27] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
 [2026-04-19 20:43:02] [INFO] [users] OTP solicitado | documento=52422603 | nuevo_usuario=False
 [2026-04-19 20:43:21] [INFO] [users] LOGIN OTP exitoso | user_id=3 | documento=52422603 | role=bacteriologo
+[2026-04-25 21:37:10] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=True
+[2026-04-25 21:37:10] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=True
+[2026-04-25 21:37:10] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 21:37:10] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=True
+[2026-04-25 21:37:10] [INFO] [users] LOGIN OTP exitoso | user_id=7 | documento=123456789 | role=paciente
+[2026-04-25 21:39:34] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=True
+[2026-04-25 21:39:34] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=True
+[2026-04-25 21:39:34] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 21:39:34] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=True
+[2026-04-25 21:39:34] [INFO] [users] LOGIN OTP exitoso | user_id=7 | documento=123456789 | role=paciente
+[2026-04-25 21:40:56] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=False
+[2026-04-25 21:40:56] [INFO] [users] OTP solicitado | documento=00000000 | nuevo_usuario=True
+[2026-04-25 21:40:56] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=False
+[2026-04-25 21:40:56] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 21:40:56] [INFO] [users] OTP solicitado | documento=123456789 | nuevo_usuario=False
+[2026-04-25 21:40:56] [INFO] [users] LOGIN OTP exitoso | user_id=6 | documento=123456789 | role=paciente
+[2026-04-25 21:41:19] [INFO] [users] OTP solicitado | user_id=5 | documento=123456789
+[2026-04-25 21:41:20] [INFO] [users] OTP solicitado | user_id=8 | documento=123456789
+[2026-04-25 21:41:20] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 21:41:20] [INFO] [users] OTP solicitado | user_id=9 | documento=123456789
+[2026-04-25 21:41:20] [INFO] [users] LOGIN OTP exitoso | user_id=9 | documento=123456789 | role=paciente
+[2026-04-25 21:53:28] [INFO] [users] OTP solicitado | user_id=5 | documento=123456789
+[2026-04-25 21:53:28] [INFO] [users] OTP solicitado | user_id=8 | documento=123456789
+[2026-04-25 21:53:28] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 21:53:28] [INFO] [users] OTP solicitado | user_id=9 | documento=123456789
+[2026-04-25 21:53:28] [INFO] [users] LOGIN OTP exitoso | user_id=9 | documento=123456789 | role=paciente
+[2026-04-25 21:55:13] [INFO] [users] OTP solicitado | user_id=5 | documento=123456789
+[2026-04-25 21:55:13] [INFO] [users] OTP solicitado | user_id=8 | documento=123456789
+[2026-04-25 21:55:13] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 21:55:13] [INFO] [users] OTP solicitado | user_id=9 | documento=123456789
+[2026-04-25 21:55:13] [INFO] [users] LOGIN OTP exitoso | user_id=9 | documento=123456789 | role=paciente
+[2026-04-25 22:16:54] [INFO] [users] OTP solicitado | user_id=10 | documento=123456789
+[2026-04-25 22:16:54] [INFO] [users] OTP solicitado | user_id=13 | documento=123456789
+[2026-04-25 22:16:54] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 22:16:55] [INFO] [users] OTP solicitado | user_id=14 | documento=123456789
+[2026-04-25 22:16:55] [INFO] [users] LOGIN OTP exitoso | user_id=14 | documento=123456789 | role=paciente
+[2026-04-25 22:19:31] [INFO] [users] OTP solicitado | user_id=10 | documento=123456789
+[2026-04-25 22:19:31] [INFO] [users] OTP solicitado | user_id=13 | documento=123456789
+[2026-04-25 22:19:31] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 22:19:31] [INFO] [users] OTP solicitado | user_id=14 | documento=123456789
+[2026-04-25 22:19:31] [INFO] [users] LOGIN OTP exitoso | user_id=14 | documento=123456789 | role=paciente
+[2026-04-25 22:25:24] [ERROR] [resultados] FASIL: error de conexión al listar resultados | documento=44455566
+[2026-04-25 22:25:24] [INFO] [resultados] FASIL: paciente no encontrado | documento=44455566
+[2026-04-25 22:25:30] [INFO] [resultados] FASIL get_paciente | documento=99988877 | modo=MOCK
+[2026-04-25 22:25:30] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-99988877 | empresa_nit=None | modo=MOCK
+[2026-04-25 22:25:30] [INFO] [resultados] FASIL get_paciente | documento=55566677 | modo=MOCK
+[2026-04-25 22:25:30] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-55566677 | empresa_nit=None | modo=MOCK
+[2026-04-25 22:25:30] [ERROR] [resultados] FASIL: error de conexión al listar resultados | documento=44455566
+[2026-04-25 22:25:30] [INFO] [resultados] FASIL: paciente no encontrado | documento=44455566
+[2026-04-25 22:25:33] [INFO] [users] OTP solicitado | user_id=14 | documento=123456789
+[2026-04-25 22:25:33] [INFO] [users] OTP solicitado | user_id=17 | documento=123456789
+[2026-04-25 22:25:33] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 22:25:33] [INFO] [users] OTP solicitado | user_id=18 | documento=123456789
+[2026-04-25 22:25:33] [INFO] [users] LOGIN OTP exitoso | user_id=18 | documento=123456789 | role=paciente
+[2026-04-25 22:26:07] [INFO] [users] OTP solicitado | user_id=5 | documento=123456789
+[2026-04-25 22:26:07] [INFO] [users] OTP solicitado | user_id=8 | documento=123456789
+[2026-04-25 22:26:07] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 22:26:07] [INFO] [users] OTP solicitado | user_id=9 | documento=123456789
+[2026-04-25 22:26:07] [INFO] [users] LOGIN OTP exitoso | user_id=9 | documento=123456789 | role=paciente
+[2026-04-25 22:26:36] [INFO] [resultados] FASIL: paciente no encontrado | documento=99988877
+[2026-04-25 22:26:36] [INFO] [resultados] FASIL get_paciente | documento=55566677 | modo=MOCK
+[2026-04-25 22:26:36] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-55566677 | empresa_nit=None | modo=MOCK
+[2026-04-25 22:26:36] [ERROR] [resultados] FASIL: error de conexión al listar resultados | documento=44455566
+[2026-04-25 22:26:36] [INFO] [resultados] FASIL: paciente no encontrado | documento=44455566
+[2026-04-25 22:26:39] [INFO] [users] OTP solicitado | user_id=14 | documento=123456789
+[2026-04-25 22:26:39] [INFO] [users] OTP solicitado | user_id=17 | documento=123456789
+[2026-04-25 22:26:39] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 22:26:39] [INFO] [users] OTP solicitado | user_id=18 | documento=123456789
+[2026-04-25 22:26:39] [INFO] [users] LOGIN OTP exitoso | user_id=18 | documento=123456789 | role=paciente
+[2026-04-25 22:29:48] [INFO] [resultados] FASIL: paciente no encontrado | documento=99988877
+[2026-04-25 22:29:48] [INFO] [resultados] FASIL get_paciente | documento=55566677 | modo=MOCK
+[2026-04-25 22:29:48] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-55566677 | empresa_nit=None | modo=MOCK
+[2026-04-25 22:29:48] [ERROR] [resultados] FASIL: error de conexión al listar resultados | documento=44455566
+[2026-04-25 22:29:48] [INFO] [resultados] FASIL: paciente no encontrado | documento=44455566
+[2026-04-25 22:29:51] [INFO] [users] OTP solicitado | user_id=16 | documento=123456789
+[2026-04-25 22:29:51] [INFO] [users] OTP solicitado | user_id=19 | documento=123456789
+[2026-04-25 22:29:51] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-25 22:29:51] [INFO] [users] OTP solicitado | user_id=20 | documento=123456789
+[2026-04-25 22:29:51] [INFO] [users] LOGIN OTP exitoso | user_id=20 | documento=123456789 | role=paciente
+[2026-04-26 11:32:48] [INFO] [users] OTP solicitado | user_id=2 | documento=1004011037
+[2026-04-26 11:36:11] [INFO] [users] [OTP] user_id=2 | documento=1004011037 | codigo=133808 (solo desarrollo)
+[2026-04-26 11:36:22] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-26 11:36:22] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:22] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:22] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:22] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:26] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:26] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:26] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:26] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:31] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=ORD-FASIL-1004011037-001 | modo=MOCK
+[2026-04-26 11:36:39] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=ORD-FASIL-1004011037-001 | modo=MOCK
+[2026-04-26 11:36:39] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=ORD-FASIL-1004011037-001 | modo=MOCK
+[2026-04-26 11:36:48] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:48] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:48] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:48] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:51] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:51] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:51] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:51] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:52] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:52] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:54] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:54] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:36:54] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:36:54] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:37:02] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:37:02] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:37:02] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:37:02] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:37:04] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:37:04] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:37:04] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:37:04] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:40:07] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:40:07] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:40:07] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:40:07] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:41:11] [INFO] [users] [OTP] user_id=2 | documento=1004011037 | codigo=271096 (solo desarrollo)
+[2026-04-26 11:41:23] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-26 11:41:23] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:41:23] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:41:23] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:41:23] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:48:05] [INFO] [users] [OTP] user_id=2 | documento=1004011037 | codigo=213538 (solo desarrollo)
+[2026-04-26 11:48:20] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-26 11:48:20] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:48:20] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:48:20] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:48:20] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:51:42] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:51:42] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:51:42] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:51:42] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:51:45] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:51:45] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-26 11:51:45] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-26 11:51:45] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-27 19:00:20] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:00:20] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:00:20] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:00:54] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:00:54] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:00:54] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:01:01] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:01:01] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:01:01] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:02:59] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:02:59] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:02:59] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:05:46] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:05:46] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:05:46] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:07:44] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:07:44] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:07:44] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:11:27] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:11:27] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:11:27] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:14:41] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:14:41] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/BioanalisisRepo272/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:14:41] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:14:41] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:14:47] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:14:47] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:14:47] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:14:47] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:14:47] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/BioanalisisRepo272/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:14:47] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:14:47] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:16:34] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:16:34] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:16:34] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:16:34] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:16:34] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/BioanalisisRepo272/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:16:34] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:16:34] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:17:16] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:17:16] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:17:16] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:17:16] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:17:21] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:17:21] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:17:21] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:17:21] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:17:21] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:17:21] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:17:21] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:26:38] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:26:38] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:26:38] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:26:38] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:26:38] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/BioanalisisRepo272/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:26:38] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:26:38] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:29:07] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:29:07] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:29:07] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:29:07] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:29:07] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/BioanalisisRepo272/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:29:07] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:29:07] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 19:31:56] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 19:31:56] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 19:31:56] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 19:31:56] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 19:31:56] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 19:31:56] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 19:31:56] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 23:23:01] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 23:23:01] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 23:23:01] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 23:23:01] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 23:23:01] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 23:23:01] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 23:23:01] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 23:30:23] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-04-27 23:37:28] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-04-27 23:37:33] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 23:37:33] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 23:37:33] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-04-27 23:37:33] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 23:37:33] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 23:37:33] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 23:37:33] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 23:37:33] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-27 23:38:11] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-27 23:38:11] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-27 23:38:11] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-04-27 23:38:11] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-27 23:38:11] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-27 23:38:11] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-27 23:38:11] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-27 23:38:11] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-28 00:17:11] [INFO] [users] [OTP] user_id=2 | documento=1004011037 | codigo=943702 (solo desarrollo)
+[2026-04-28 00:17:21] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-28 00:17:36] [WARNING] [users] LOGIN OTP fallido | documento=1004011037 | otp_valido=False
+[2026-04-28 00:18:36] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:36] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:36] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:36] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:38] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:38] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:38] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:38] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:41] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:41] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:41] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:41] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:43] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:43] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:43] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:43] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:46] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:46] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:46] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:46] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:52] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 00:18:52] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 00:18:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:48:26] [INFO] [users] [OTP] user_id=2 | documento=1004011037 | codigo=794318 (solo desarrollo)
+[2026-04-28 09:48:45] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-28 09:48:45] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:48:45] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:48:45] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:48:45] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:48:52] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:48:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:48:52] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:48:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:48:57] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:48:57] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:48:57] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:48:57] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:49:06] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:49:06] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 09:49:06] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 09:49:06] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:10:53] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:10:53] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:10:53] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:10:53] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:11:00] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:11:00] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:11:00] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:11:00] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:11:29] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:11:29] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:11:31] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:11:31] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:11:31] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:11:31] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:12] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:12] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:12] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:12] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:13] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:13] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:13] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:13] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:18] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:18] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:18] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:18] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:19] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:19] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:19] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:19] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:21] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:21] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:14:21] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:14:21] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:19:47] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:19:47] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:19:47] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:19:47] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:19:49] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:19:49] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:19:49] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:19:49] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:20:13] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:20:13] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-28 10:20:13] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-28 10:20:13] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-29 12:27:34] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-29 12:27:34] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-29 12:27:34] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-04-29 12:27:34] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-29 12:27:34] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-29 12:27:34] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-29 12:27:34] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-29 12:27:34] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-29 12:28:26] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-29 12:28:26] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-29 12:28:26] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-04-29 12:28:26] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-29 12:28:26] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-29 12:28:26] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-29 12:28:26] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-29 12:28:26] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-29 12:53:19] [INFO] [users] [OTP] user_id=2 | documento=1004011037 | codigo=501288 (solo desarrollo)
+[2026-04-29 12:53:38] [INFO] [users] LOGIN OTP exitoso | user_id=2 | documento=1004011037 | role=paciente
+[2026-04-29 12:53:39] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-29 12:53:39] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-29 12:53:39] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-29 12:53:39] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-29 12:53:40] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-29 12:53:40] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-29 12:53:40] [INFO] [resultados] FASIL get_paciente | documento=1004011037 | modo=MOCK
+[2026-04-29 12:53:40] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-1004011037 | empresa_nit=None | modo=MOCK
+[2026-04-29 13:02:33] [INFO] [users] [OTP] user_id=5 | documento=123456789 | codigo=529733 (solo desarrollo)
+[2026-04-29 13:02:33] [INFO] [users] [OTP] user_id=8 | documento=123456789 | codigo=816685 (solo desarrollo)
+[2026-04-29 13:02:33] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-29 13:02:33] [INFO] [users] [OTP] user_id=9 | documento=123456789 | codigo=244015 (solo desarrollo)
+[2026-04-29 13:02:33] [INFO] [users] LOGIN OTP exitoso | user_id=9 | documento=123456789 | role=paciente
+[2026-04-29 13:02:36] [INFO] [resultados] FASIL: paciente no encontrado | documento=99988877
+[2026-04-29 13:02:36] [INFO] [resultados] FASIL get_paciente | documento=55566677 | modo=MOCK
+[2026-04-29 13:02:36] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-55566677 | empresa_nit=None | modo=MOCK
+[2026-04-29 13:02:36] [ERROR] [resultados] FASIL: error de conexión al listar resultados | documento=44455566
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL: paciente no encontrado | documento=44455566
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=77 | modo=REAL
+[2026-04-29 13:02:37] [ERROR] [resultados] FASIL get_resultado_pdf error BIRT: 503 | url=http://192.168.1.109:8080/Bioanalisis30/run?__format=pdf&__report=ListadoResultadosOrden4.rptdesign&Desde%20Empresa=3&Hasta%20Empresa=3&Desde%20Orden=77&Hasta%20Orden=77
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=42 | modo=REAL
+[2026-04-29 13:02:37] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-04-29 13:09:10] [INFO] [users] [OTP] user_id=5 | documento=123456789 | codigo=218120 (solo desarrollo)
+[2026-04-29 13:09:10] [INFO] [users] [OTP] user_id=8 | documento=123456789 | codigo=105821 (solo desarrollo)
+[2026-04-29 13:09:10] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-04-29 13:09:10] [INFO] [users] [OTP] user_id=9 | documento=123456789 | codigo=135404 (solo desarrollo)
+[2026-04-29 13:09:10] [INFO] [users] LOGIN OTP exitoso | user_id=9 | documento=123456789 | role=paciente
+[2026-04-29 13:09:13] [INFO] [resultados] FASIL: paciente no encontrado | documento=99988877
+[2026-04-29 13:09:13] [INFO] [resultados] FASIL get_paciente | documento=55566677 | modo=MOCK
+[2026-04-29 13:09:13] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-55566677 | empresa_nit=None | modo=MOCK
+[2026-04-29 13:09:13] [ERROR] [resultados] FASIL: error de conexión al listar resultados | documento=44455566
+[2026-04-29 13:09:13] [INFO] [resultados] FASIL: paciente no encontrado | documento=44455566
+[2026-05-02 17:14:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:14:06] [INFO] [resultados] FASIL BIRT devolvió PDF directo en GET | orden=116657
+[2026-05-02 17:14:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:14:06] [INFO] [resultados] FASIL BIRT viewer HTML recibido, haciendo POST | orden=116657
+[2026-05-02 17:14:06] [INFO] [resultados] FASIL BIRT PDF obtenido | orden=116657 | bytes=13
+[2026-05-02 17:14:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=1 | modo=MOCK
+[2026-05-02 17:14:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL BIRT devolvió PDF directo en GET | orden=116657
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL BIRT viewer HTML recibido, haciendo POST | orden=116657
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL BIRT PDF obtenido | orden=116657 | bytes=13
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=1 | modo=MOCK
+[2026-05-02 17:15:04] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL BIRT devolvió PDF directo en GET | orden=116657
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL BIRT viewer HTML recibido, haciendo POST | orden=116657
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL BIRT PDF obtenido | orden=116657 | bytes=13
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=1 | modo=MOCK
+[2026-05-02 17:16:15] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL BIRT devolvió PDF directo en GET | orden=116657
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL BIRT viewer HTML recibido, haciendo POST | orden=116657
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL BIRT PDF obtenido | orden=116657 | bytes=13
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=1 | modo=MOCK
+[2026-05-02 17:18:52] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:26:06] [ERROR] [resultados] FASIL get_resultado_pdf error: 503 Server Error | orden=116657
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL BIRT devolvió PDF directo en GET | orden=116657
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL BIRT viewer HTML recibido, haciendo POST | orden=116657
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL BIRT PDF obtenido | orden=116657 | bytes=13
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=1 | modo=MOCK
+[2026-05-02 17:26:06] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:26:28] [ERROR] [resultados] FASIL get_resultado_pdf error: 503 Server Error | orden=116657
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL BIRT devolvió PDF directo en GET | orden=116657
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL BIRT viewer HTML recibido, haciendo POST | orden=116657
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL BIRT PDF obtenido | orden=116657 | bytes=13
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=1 | modo=MOCK
+[2026-05-02 17:26:28] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL
+[2026-05-10 21:51:38] [ERROR] [chatbot] Chatbot Gemini error: API error
+[2026-05-10 21:51:38] [INFO] [chatbot] Chatbot OK | ip=127.0.0.1 | chars_respuesta=9
+[2026-05-10 21:51:38] [INFO] [chatbot] Chatbot OK | ip=127.0.0.1 | chars_respuesta=9
+[2026-05-10 21:51:38] [INFO] [chatbot] Chatbot OK | ip=127.0.0.1 | chars_respuesta=32
+[2026-05-10 21:51:45] [ERROR] [chatbot] Chatbot Gemini error: API error
+[2026-05-10 21:51:45] [INFO] [chatbot] Chatbot OK | ip=127.0.0.1 | chars_respuesta=9
+[2026-05-10 21:51:45] [INFO] [chatbot] Chatbot OK | ip=127.0.0.1 | chars_respuesta=9
+[2026-05-10 21:51:45] [INFO] [chatbot] Chatbot OK | ip=127.0.0.1 | chars_respuesta=32
+[2026-05-10 21:51:45] [INFO] [resultados] FASIL: paciente no encontrado | documento=99988877
+[2026-05-10 21:51:45] [INFO] [resultados] FASIL get_paciente | documento=55566677 | modo=MOCK
+[2026-05-10 21:51:45] [INFO] [resultados] FASIL get_ordenes | paciente_id=FASIL-55566677 | empresa_nit=None | modo=MOCK
+[2026-05-10 21:51:45] [ERROR] [resultados] FASIL: error de conexión al listar resultados | documento=44455566
+[2026-05-10 21:51:45] [INFO] [resultados] FASIL: paciente no encontrado | documento=44455566
+[2026-05-10 21:51:48] [INFO] [users] [OTP] user_id=1 | documento=123456789 | codigo=303125 (solo desarrollo)
+[2026-05-10 21:51:48] [INFO] [users] [OTP] user_id=1 | documento=123456789 | codigo=211676 (solo desarrollo)
+[2026-05-10 21:51:48] [WARNING] [users] LOGIN OTP fallido | documento=123456789 | otp_valido=True
+[2026-05-10 21:51:48] [INFO] [users] [OTP] user_id=1 | documento=123456789 | codigo=345168 (solo desarrollo)
+[2026-05-10 21:51:48] [INFO] [users] LOGIN OTP exitoso | user_id=1 | documento=123456789 | role=paciente
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_ordenes | paciente_id=5 | empresa_nit=None | modo=REAL
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_ordenes | paciente_id=9999 | empresa_nit=None | modo=REAL
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=MOCK
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_ordenes | paciente_id=7 | empresa_nit=None | modo=REAL
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-10 21:51:51] [ERROR] [resultados] FASIL get_resultado_pdf error: 503 Server Error | orden=116657
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL BIRT devolvió PDF directo en GET | orden=116657
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=116657 | modo=REAL
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL BIRT viewer HTML recibido, haciendo POST | orden=116657
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL BIRT PDF obtenido | orden=116657 | bytes=13
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=1 | modo=MOCK
+[2026-05-10 21:51:51] [INFO] [resultados] FASIL get_resultado_pdf | orden_id=9999 | modo=REAL

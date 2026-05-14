@@ -4,7 +4,8 @@
       "Bash(python *)",
       "Bash(git add *)",
       "Bash(git commit -m 'fix\\(backend\\): upgrade Django to 5.1.6 for Python 3.14 compatibility *)",
-      "Bash(git commit -m 'fix\\(backend\\): upgrade Django a 5.2.13 para soporte Python 3.14 *)"
+      "Bash(git commit -m 'fix\\(backend\\): upgrade Django a 5.2.13 para soporte Python 3.14 *)",
+      "Bash(powershell *)"
     ]
   }
 }

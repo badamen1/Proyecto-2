@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/agenda-tu-cita/layout,_N_T_/agenda-tu-cita/page,_N_T_/agenda-tu-cita"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/agenda-tu-cita/__PAGE__",
+    "/agenda-tu-cita",
+    "/_index",
+    "/_head"
+  ]
+}
