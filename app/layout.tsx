@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/shared/layout/Navbar";
+import Footer from "@/shared/layout/Footer";
 import FloatingButtons from "@/components/FloatingButtons";
 import ChatbotWidget from "@/components/ChatbotWidget";
 
