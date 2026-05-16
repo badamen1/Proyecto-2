@@ -226,3 +226,29 @@ class ResultadoPDFFasilTests(APITestCase):
 
         response = self.client.get('/api/resultados/fasil-ORD-00/pdf/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class ResultadoLakeModelTests(TestCase):
+    """Resultado puede existir con solo paciente_documento (sin FK a Paciente ni User)."""
+
+    def test_resultado_acepta_solo_paciente_documento(self):
+        r = Resultado(
+            paciente_documento='99900011',
+            tipo_examen='Perfil Lipídico',
+            fuente='EXTERNO',
+            estado='PENDIENTE',
+            fecha_examen=datetime.date.today(),
+        )
+        self.assertEqual(r.paciente_documento, '99900011')
+        self.assertIsNone(r.paciente)
+        self.assertIsNone(r.paciente_user)
+
+    def test_str_resultado_sin_paciente_usa_documento(self):
+        r = Resultado(
+            paciente_documento='99900011',
+            tipo_examen='Hemograma',
+            fuente='EXTERNO',
+            estado='PENDIENTE',
+            fecha_examen=datetime.date.today(),
+        )
+        self.assertIn('Hemograma', str(r))

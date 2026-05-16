@@ -208,13 +208,27 @@ class Resultado(models.Model):
         help_text='Referencia a svc_ordenes en FASIL (para integración futura)'
     )
 
+    # Lake pattern: documento sin FK a Paciente ni User
+    paciente_documento = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name='Documento del paciente (lake)',
+        help_text='Documento cuando no existe Paciente en BD. Query por documento al registrarse.'
+    )
+
     class Meta:
         verbose_name = 'Resultado'
         verbose_name_plural = 'Resultados'
         ordering = ['-fecha_examen', '-fecha_carga']
 
     def __str__(self):
-        return f"{self.tipo_examen} - {self.paciente.nombre_completo} ({self.fecha_examen})"
+        nombre = (
+            self.paciente.nombre_completo if self.paciente
+            else self.paciente_documento or 'Sin paciente'
+        )
+        return f"{self.tipo_examen} - {nombre} ({self.fecha_examen})"
 
     @property
     def nombre_archivo(self):
