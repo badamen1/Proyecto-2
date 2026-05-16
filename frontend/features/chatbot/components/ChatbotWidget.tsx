@@ -1,6 +1,8 @@
 'use client';
 
+import React from 'react';
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
@@ -14,6 +16,36 @@ const WELCOME: Message = {
   content:
     'Hola, soy el asistente virtual de BIOANALISIS. Cuéntame tus síntomas y te orientaré sobre qué exámenes podrían serte útiles. Recuerda que mis recomendaciones no reemplazan la consulta médica.',
 };
+
+function parseMarkdownLinks(text: string): React.ReactNode[] {
+  const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <Link
+        key={key++}
+        href={match[2]}
+        style={{ color: '#93c5fd', textDecoration: 'underline' }}
+      >
+        {match[1]}
+      </Link>
+    );
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
 
 export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -153,7 +185,7 @@ export default function ChatbotWidget() {
                   wordBreak: 'break-word',
                 }}
               >
-                {msg.content}
+                {msg.role === 'model' ? parseMarkdownLinks(msg.content) : msg.content}
               </div>
             ))}
             {loading && (
