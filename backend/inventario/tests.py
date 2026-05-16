@@ -294,3 +294,184 @@ class ProductoToggleTest(BaseAPITest):
         self.client.force_authenticate(user=self.bacteriologo)
         r = self.client.patch(f'/api/inventario/productos/{self.producto.id}/toggle/')
         self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+
+
+# ─────────────────────────────────────────────
+# Endpoints: Ingreso y Egreso (4–6)
+# ─────────────────────────────────────────────
+
+class ProductoIngresoTest(BaseAPITest):
+
+    def test_ingreso_suma_stock(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 10, 'motivo': 'Compra inicial'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock_actual, 10)
+
+    def test_ingreso_crea_movimiento_tipo_ingreso(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 5, 'motivo': 'Compra'},
+            format='json'
+        )
+        mov = Movimiento.objects.get(producto=self.producto)
+        self.assertEqual(mov.tipo, Movimiento.TipoMovimiento.INGRESO)
+        self.assertEqual(mov.cantidad, 5)
+        self.assertEqual(mov.registrado_por, self.admin)
+
+    def test_ingreso_actualiza_ultimo_costo(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 10, 'motivo': 'Compra', 'ultimo_costo': '25.50'},
+            format='json'
+        )
+        self.producto.refresh_from_db()
+        self.assertEqual(str(self.producto.ultimo_costo), '25.50')
+
+    def test_ingreso_actualiza_vencimiento_y_lote(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 10, 'motivo': 'Compra', 'fecha_vencimiento': '2027-12-31', 'numero_lote': 'L-2024'},
+            format='json'
+        )
+        self.producto.refresh_from_db()
+        self.assertEqual(str(self.producto.fecha_vencimiento), '2027-12-31')
+        self.assertEqual(self.producto.numero_lote, 'L-2024')
+
+    def test_bacteriologo_no_puede_ingresar(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 5, 'motivo': 'Test'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_cantidad_cero_retorna_400(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 0, 'motivo': 'Test'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_sin_motivo_retorna_400(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 5, 'motivo': ''},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_respuesta_incluye_ultimo_costo_para_admin(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/ingreso/',
+            {'cantidad': 10, 'motivo': 'Compra', 'ultimo_costo': '10.00'},
+            format='json'
+        )
+        self.assertIn('ultimo_costo', r.data)
+
+
+class ProductoEgresoTest(BaseAPITest):
+
+    def setUp(self):
+        super().setUp()
+        self.producto.stock_actual = 10
+        self.producto.save()
+
+    def test_egreso_resta_stock(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/egreso/',
+            {'cantidad': 3, 'motivo': 'Uso en análisis'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock_actual, 7)
+
+    def test_egreso_stock_insuficiente_retorna_400(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/egreso/',
+            {'cantidad': 20, 'motivo': 'Test'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('Stock insuficiente', r.data['detail'])
+
+    def test_egreso_crea_movimiento_tipo_egreso(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/egreso/',
+            {'cantidad': 4, 'motivo': 'Análisis hemograma'},
+            format='json'
+        )
+        mov = Movimiento.objects.get(producto=self.producto)
+        self.assertEqual(mov.tipo, Movimiento.TipoMovimiento.EGRESO)
+        self.assertEqual(mov.cantidad, 4)
+
+    def test_bacteriologo_puede_egresar(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/egreso/',
+            {'cantidad': 2, 'motivo': 'Análisis'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+
+    def test_bacteriologo_egreso_no_ve_ultimo_costo(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/egreso/',
+            {'cantidad': 1, 'motivo': 'Test'},
+            format='json'
+        )
+        self.assertNotIn('ultimo_costo', r.data)
+
+    def test_cantidad_cero_retorna_400(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post(
+            f'/api/inventario/productos/{self.producto.id}/egreso/',
+            {'cantidad': 0, 'motivo': 'Test'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class ProductoMovimientosTest(BaseAPITest):
+
+    def setUp(self):
+        super().setUp()
+        Movimiento.objects.create(
+            producto=self.producto,
+            tipo=Movimiento.TipoMovimiento.INGRESO,
+            cantidad=10, motivo='Setup ingreso',
+        )
+
+    def test_admin_ve_historial(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get(f'/api/inventario/productos/{self.producto.id}/movimientos/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertEqual(r.data['count'], 1)
+
+    def test_bacteriologo_ve_historial(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get(f'/api/inventario/productos/{self.producto.id}/movimientos/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+
+    def test_historial_incluye_producto_nombre(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get(f'/api/inventario/productos/{self.producto.id}/movimientos/')
+        self.assertIn('producto_nombre', r.data['results'][0])

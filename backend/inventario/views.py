@@ -102,3 +102,122 @@ class ProductoToggleView(APIView):
             'detail': f"Producto '{producto.nombre}' {accion} correctamente.",
             'activo': producto.activo,
         })
+
+
+# =============================================================================
+# INGRESO / EGRESO / HISTORIAL (endpoints 4–6)
+# =============================================================================
+
+class ProductoIngresoView(APIView):
+    """POST /api/inventario/productos/<id>/ingreso/ — Suma stock (solo admin)."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        _require_admin(request.user)
+        producto = get_object_or_404(Producto, pk=pk)
+
+        motivo = request.data.get('motivo', '').strip()
+        if not motivo:
+            return Response({'detail': 'El motivo es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            cantidad = int(request.data.get('cantidad', 0))
+            if cantidad <= 0:
+                raise ValueError
+        except (ValueError, TypeError):
+            return Response({'detail': 'La cantidad debe ser un entero positivo.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        producto.stock_actual += cantidad
+        update_fields = ['stock_actual', 'fecha_actualizacion']
+
+        fecha_vencimiento = request.data.get('fecha_vencimiento')
+        numero_lote = request.data.get('numero_lote')
+        ultimo_costo = request.data.get('ultimo_costo')
+
+        if fecha_vencimiento is not None:
+            producto.fecha_vencimiento = fecha_vencimiento
+            update_fields.append('fecha_vencimiento')
+        if numero_lote is not None:
+            producto.numero_lote = numero_lote
+            update_fields.append('numero_lote')
+        if ultimo_costo is not None:
+            try:
+                producto.ultimo_costo = Decimal(str(ultimo_costo))
+            except InvalidOperation:
+                return Response({'detail': 'El costo debe ser un número decimal válido.'}, status=status.HTTP_400_BAD_REQUEST)
+            update_fields.append('ultimo_costo')
+
+        producto.save(update_fields=update_fields)
+
+        Movimiento.objects.create(
+            producto=producto,
+            tipo=Movimiento.TipoMovimiento.INGRESO,
+            cantidad=cantidad,
+            motivo=motivo,
+            registrado_por=request.user,
+        )
+
+        logger.info(
+            "INGRESO | producto_id=%s | codigo=%s | cantidad=%s | admin_id=%s",
+            producto.id, producto.codigo, cantidad, request.user.id
+        )
+        return Response(ProductoSerializer(producto).data)
+
+
+class ProductoEgresoView(APIView):
+    """POST /api/inventario/productos/<id>/egreso/ — Resta stock (admin y bacteriólogo)."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        _require_operativo(request.user)
+        producto = get_object_or_404(Producto, pk=pk)
+
+        motivo = request.data.get('motivo', '').strip()
+        if not motivo:
+            return Response({'detail': 'El motivo es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            cantidad = int(request.data.get('cantidad', 0))
+            if cantidad <= 0:
+                raise ValueError
+        except (ValueError, TypeError):
+            return Response({'detail': 'La cantidad debe ser un entero positivo.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if producto.stock_actual < cantidad:
+            return Response(
+                {'detail': f'Stock insuficiente. Stock actual: {producto.stock_actual}, solicitado: {cantidad}.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        producto.stock_actual -= cantidad
+        producto.save(update_fields=['stock_actual', 'fecha_actualizacion'])
+
+        Movimiento.objects.create(
+            producto=producto,
+            tipo=Movimiento.TipoMovimiento.EGRESO,
+            cantidad=cantidad,
+            motivo=motivo,
+            registrado_por=request.user,
+        )
+
+        logger.info(
+            "EGRESO | producto_id=%s | codigo=%s | cantidad=%s | user_id=%s | role=%s",
+            producto.id, producto.codigo, cantidad, request.user.id, request.user.role
+        )
+
+        serializer_class = ProductoSerializer if request.user.role in ROLES_ADMIN else ProductoBacteriologoSerializer
+        return Response(serializer_class(producto).data)
+
+
+class ProductoMovimientosView(generics.ListAPIView):
+    """GET /api/inventario/productos/<id>/movimientos/ — Historial (admin y bacteriólogo)."""
+    permission_classes = [IsAuthenticated]
+    serializer_class = MovimientoSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['fecha_registro', 'tipo']
+    ordering = ['-fecha_registro']
+
+    def get_queryset(self):
+        _require_operativo(self.request.user)
+        producto = get_object_or_404(Producto, pk=self.kwargs['pk'])
+        return Movimiento.objects.filter(producto=producto).select_related('producto', 'registrado_por')
