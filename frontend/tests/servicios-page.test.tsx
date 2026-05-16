@@ -1,7 +1,22 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Servicios from "@/app/servicios/page";
-import examenesData from "@/app/data/examenes.json";
+
+const MOCK_EXAMENES = [
+  { slug: "glucosa-basal", nombre: "Glucosa Basal", codigo: "GLU", categoria: "Metabolismo", precio: 15000, sintomas: ["sed"] },
+  { slug: "hemograma-completo", nombre: "Hemograma Completo", codigo: "HEM", categoria: "Hematología", precio: 25000, sintomas: ["fatiga"] },
+  { slug: "acido-valproico", nombre: "Ácido Valproico", codigo: "VAL", categoria: "Otras", precio: 60000, sintomas: [] },
+];
+
+beforeEach(() => {
+  global.fetch = vi.fn().mockResolvedValue({
+    json: () => Promise.resolve({ results: MOCK_EXAMENES }),
+  } as Response);
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("Página Servicios (catálogo)", () => {
   it("muestra el título y el buscador", () => {
@@ -12,23 +27,24 @@ describe("Página Servicios (catálogo)", () => {
     ).toBeInTheDocument();
   });
 
-  it("lista todos los exámenes cuando el buscador está vacío", () => {
+  it("lista todos los exámenes cuando el buscador está vacío", async () => {
     render(<Servicios />);
-    expect(screen.getByText(new RegExp(`Mostrando ${examenesData.length}`))).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText(new RegExp(`Mostrando ${MOCK_EXAMENES.length}`))).toBeInTheDocument(),
+    );
   });
 
   it("filtra por nombre o código", async () => {
     const user = userEvent.setup();
     render(<Servicios />);
-    const input = screen.getByPlaceholderText(/buscar examen por nombre o código/i);
 
-    await user.type(input, "ACIDO VALPROICO");
-    const matches = examenesData.filter(
-      (e) =>
-        e.nombre.toLowerCase().includes("acido valproico") ||
-        e.codigo.toLowerCase().includes("acido valproico"),
+    await waitFor(() =>
+      expect(screen.getByText(/Mostrando 3/)).toBeInTheDocument(),
     );
-    expect(screen.getByText(new RegExp(`Mostrando ${matches.length}`))).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText(/buscar examen por nombre o código/i);
+    await user.type(input, "glucosa");
+    expect(screen.getByText(/Mostrando 1/)).toBeInTheDocument();
 
     await user.clear(input);
     await user.type(input, "ZZZ_INEXISTENTE_999");
