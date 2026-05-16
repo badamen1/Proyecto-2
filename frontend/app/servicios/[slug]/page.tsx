@@ -39,25 +39,29 @@ export default function ExamenDetallePage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     fetch(`${API_BASE}/api/examenes/${slug}/`)
       .then((res) => {
         if (res.status === 404) {
-          setNotFound(true);
+          if (!cancelled) setNotFound(true);
           return null;
         }
         return res.json() as Promise<ExamenDetail>;
       })
       .then((data) => {
-        if (data) setExamen(data);
+        if (!cancelled && data) setExamen(data);
       })
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false));
+      .catch(() => { if (!cancelled) setNotFound(true); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [slug]);
 
   if (loading) {
     return (
       <section
         className="section"
+        role="status"
+        aria-label="Cargando examen"
         style={{
           minHeight: '60vh',
           display: 'flex',
@@ -106,7 +110,7 @@ export default function ExamenDetallePage() {
     >
       <div className="container" style={{ maxWidth: '800px' }}>
         {/* Breadcrumb */}
-        <nav style={{ marginBottom: '1.5rem', fontSize: '0.85rem', color: '#888' }}>
+        <nav aria-label="Ruta de navegación" style={{ marginBottom: '1.5rem', fontSize: '0.85rem', color: '#888' }}>
           <Link href="/" style={{ color: '#888' }}>
             Inicio
           </Link>
