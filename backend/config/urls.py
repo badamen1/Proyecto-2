@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/', include('empresas.urls')),
     path('api/', include('chatbot.urls')),
     path('api/', include('examenes.urls')),
+    path('api/', include('inventario.urls')),
 ]
 
 # Servir archivos media (PDFs) en desarrollo

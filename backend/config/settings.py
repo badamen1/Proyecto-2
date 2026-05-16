@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'empresas.apps.EmpresasConfig',
     'chatbot.apps.ChatbotConfig',
     'examenes.apps.ExamenesConfig',
+    'inventario.apps.InventarioConfig',
 ]
 
 MIDDLEWARE = [
@@ -241,6 +242,11 @@ LOGGING = {
             'propagate': False,
         },
         'examenes': {
+            'handlers': ['console', 'audit_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'inventario': {
             'handlers': ['console', 'audit_file'],
             'level': 'INFO',
             'propagate': False,
