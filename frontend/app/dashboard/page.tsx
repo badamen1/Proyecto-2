@@ -84,6 +84,7 @@ export default function Dashboard() {
                                     <li><Link href="/dashboard/bacteriologo/ingresar" style={navItemStyle}><i className="fas fa-vials" style={{width: '25px'}}></i> Ingresar Resultados</Link></li>
                                     <li><Link href="/dashboard/bacteriologo/validar" style={navItemStyle}><i className="fas fa-check-double" style={{width: '25px'}}></i> Validar Exámenes</Link></li>
                                     <li><Link href="/dashboard/bacteriologo/buscar" style={navItemStyle}><i className="fas fa-search" style={{width: '25px'}}></i> Buscar Paciente</Link></li>
+                                    <li><Link href="/dashboard/inventario" style={navItemStyle}><i className="fas fa-box-open" style={{width: '25px'}}></i> Inventario</Link></li>
                                 </>
                             )}
 
@@ -92,7 +93,7 @@ export default function Dashboard() {
                                 <>
                                     <li><Link href="#" style={activeNavItemStyle}><i className="fas fa-tachometer-alt" style={{width: '25px'}}></i> Resumen Total</Link></li>
                                     <li><Link href="/dashboard/usuarios" style={navItemStyle}><i className="fas fa-users-cog" style={{width: '25px'}}></i> Gestión de Usuarios</Link></li>
-                                    <li><Link href="#" style={navItemStyle}><i className="fas fa-box-open" style={{width: '25px'}}></i> Inventario</Link></li>
+                                    <li><Link href="/dashboard/inventario" style={navItemStyle}><i className="fas fa-box-open" style={{width: '25px'}}></i> Inventario</Link></li>
                                     <li><Link href="#" style={navItemStyle}><i className="fas fa-list" style={{width: '25px'}}></i> Catálogo de Tarifas</Link></li>
                                     <li><Link href="#" style={navItemStyle}><i className="fas fa-chart-pie" style={{width: '25px'}}></i> Reportes y Estadísticas</Link></li>
                                 </>
