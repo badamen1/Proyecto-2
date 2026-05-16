@@ -240,6 +240,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'examenes': {
+            'handlers': ['console', 'audit_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
 
