@@ -231,24 +231,39 @@ class ResultadoPDFFasilTests(APITestCase):
 class ResultadoLakeModelTests(TestCase):
     """Resultado puede existir con solo paciente_documento (sin FK a Paciente ni User)."""
 
-    def test_resultado_acepta_solo_paciente_documento(self):
-        r = Resultado(
+    def test_resultado_persiste_con_solo_paciente_documento(self):
+        """Verifica que el campo se guarda y recupera correctamente de la BD."""
+        r = Resultado.objects.create(
             paciente_documento='99900011',
             tipo_examen='Perfil Lipídico',
             fuente='EXTERNO',
             estado='PENDIENTE',
             fecha_examen=datetime.date.today(),
         )
-        self.assertEqual(r.paciente_documento, '99900011')
-        self.assertIsNone(r.paciente)
-        self.assertIsNone(r.paciente_user)
+        r_db = Resultado.objects.get(pk=r.pk)
+        self.assertEqual(r_db.paciente_documento, '99900011')
+        self.assertIsNone(r_db.paciente)
+        self.assertIsNone(r_db.paciente_user)
 
-    def test_str_resultado_sin_paciente_usa_documento(self):
-        r = Resultado(
+    def test_str_resultado_con_documento_incluye_documento(self):
+        """str() incluye el documento cuando paciente FK es null."""
+        r = Resultado.objects.create(
             paciente_documento='99900011',
             tipo_examen='Hemograma',
             fuente='EXTERNO',
             estado='PENDIENTE',
             fecha_examen=datetime.date.today(),
         )
-        self.assertIn('Hemograma', str(r))
+        resultado_str = str(r)
+        self.assertIn('Hemograma', resultado_str)
+        self.assertIn('99900011', resultado_str)
+
+    def test_str_resultado_sin_paciente_ni_documento_usa_fallback(self):
+        """str() muestra 'Sin paciente' cuando ambos FKs y documento son null."""
+        r = Resultado.objects.create(
+            tipo_examen='Glucosa',
+            fuente='MANUAL',
+            estado='PENDIENTE',
+            fecha_examen=datetime.date.today(),
+        )
+        self.assertIn('Sin paciente', str(r))
