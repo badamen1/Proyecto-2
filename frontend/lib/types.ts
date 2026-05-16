@@ -70,6 +70,7 @@ export type ProductoBacteriologoDetalle = Omit<ProductoDetalle, 'ultimo_costo'>;
 
 export type MovimientoLista = {
   id: number;
+  producto_codigo: string;
   producto_nombre: string;
   tipo: TipoMovimiento;
   cantidad: number;
