@@ -80,10 +80,10 @@ export default function Dashboard() {
                             {/* Bacteriólogo Menu */}
                             {currentRole === 'bacteriologo' && (
                                 <>
-                                    <li><Link href="#" style={activeNavItemStyle}><i className="fas fa-chart-line" style={{width: '25px'}}></i> Panel Trabajo</Link></li>
-                                    <li><Link href="#" style={navItemStyle}><i className="fas fa-vials" style={{width: '25px'}}></i> Ingresar Resultados</Link></li>
-                                    <li><Link href="#" style={navItemStyle}><i className="fas fa-check-double" style={{width: '25px'}}></i> Validar Exámenes</Link></li>
-                                    <li><Link href="#" style={navItemStyle}><i className="fas fa-search" style={{width: '25px'}}></i> Buscar Paciente</Link></li>
+                                    <li><Link href="/dashboard/bacteriologo" style={navItemStyle}><i className="fas fa-chart-line" style={{width: '25px'}}></i> Panel Trabajo</Link></li>
+                                    <li><Link href="/dashboard/bacteriologo/ingresar" style={navItemStyle}><i className="fas fa-vials" style={{width: '25px'}}></i> Ingresar Resultados</Link></li>
+                                    <li><Link href="/dashboard/bacteriologo/validar" style={navItemStyle}><i className="fas fa-check-double" style={{width: '25px'}}></i> Validar Exámenes</Link></li>
+                                    <li><Link href="/dashboard/bacteriologo/buscar" style={navItemStyle}><i className="fas fa-search" style={{width: '25px'}}></i> Buscar Paciente</Link></li>
                                 </>
                             )}
 
@@ -130,35 +130,13 @@ export default function Dashboard() {
                         )}
 
                         {currentRole === 'bacteriologo' && (
-                            <div style={{ background: '#fff', borderRadius: '10px', padding: '2rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-                                <h2 style={{ color: 'var(--primary-blue)', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>Muestras Pendientes por Procesar</h2>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                    <thead>
-                                        <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #ddd' }}>
-                                            <th style={{ padding: '12px' }}>ID Orden</th>
-                                            <th style={{ padding: '12px' }}>Paciente</th>
-                                            <th style={{ padding: '12px' }}>Examen</th>
-                                            <th style={{ padding: '12px' }}>Estado</th>
-                                            <th style={{ padding: '12px' }}>Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '12px', fontWeight: 'bold' }}>#ORD-1092</td>
-                                            <td style={{ padding: '12px' }}>María González</td>
-                                            <td style={{ padding: '12px' }}>Perfil Lipídico</td>
-                                            <td style={{ padding: '12px' }}><span style={{ background: '#fff3cd', color: '#856404', padding: '5px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Esperando Resultados</span></td>
-                                            <td style={{ padding: '12px' }}><button style={{ background: 'var(--primary-blue)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Ingresar</button></td>
-                                        </tr>
-                                        <tr style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '12px', fontWeight: 'bold' }}>#ORD-1093</td>
-                                            <td style={{ padding: '12px' }}>Carlos Ruiz</td>
-                                            <td style={{ padding: '12px' }}>Cuadro Hemático</td>
-                                            <td style={{ padding: '12px' }}><span style={{ background: '#d4edda', color: '#155724', padding: '5px 10px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Para Validar</span></td>
-                                            <td style={{ padding: '12px' }}><button style={{ background: '#28a745', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Validar</button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <div style={{ background: '#fff', borderRadius: '10px', padding: '2rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', textAlign: 'center' }}>
+                                <i className="fas fa-flask" style={{ fontSize: '3rem', color: 'var(--primary-blue)', marginBottom: '1rem', display: 'block' }} />
+                                <h2 style={{ color: '#333', marginBottom: '1rem' }}>Portal Bacteriólogo</h2>
+                                <p style={{ color: 'var(--text-gray)', marginBottom: '1.5rem' }}>Usa el menú lateral para acceder a tus módulos de trabajo.</p>
+                                <Link href="/dashboard/bacteriologo" className="btn-primary" style={{ padding: '10px 20px', borderRadius: '25px', fontSize: '0.9rem', textDecoration: 'none', display: 'inline-block' }}>
+                                    Ir al Panel de Trabajo
+                                </Link>
                             </div>
                         )}
 
