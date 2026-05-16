@@ -109,3 +109,33 @@ class ChatbotViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         call_history = mock_model.start_chat.call_args[1]['history']
         self.assertEqual(call_history, [])
+
+
+class BuildSystemPromptTests(TestCase):
+    """Tests para _build_system_prompt() que ahora lee de la BD."""
+
+    def test_prompt_incluye_enlace_markdown_con_slug(self):
+        from examenes.models import Examen
+        Examen.objects.create(
+            codigo='GLU', nombre='Glucosa Basal', slug='glucosa-basal',
+            precio=15000, categoria='Metabolismo', activo=True,
+        )
+        from chatbot.views import _build_system_prompt
+        prompt = _build_system_prompt()
+        self.assertIn('[Glucosa Basal](/servicios/glucosa-basal)', prompt)
+
+    def test_prompt_excluye_examenes_inactivos(self):
+        from examenes.models import Examen
+        Examen.objects.create(
+            codigo='INA', nombre='Examen Inactivo', slug='examen-inactivo',
+            precio=0, categoria='Otras', activo=False,
+        )
+        from chatbot.views import _build_system_prompt
+        prompt = _build_system_prompt()
+        self.assertNotIn('Examen Inactivo', prompt)
+
+    def test_prompt_con_bd_vacia_no_falla(self):
+        from chatbot.views import _build_system_prompt
+        prompt = _build_system_prompt()
+        self.assertIsInstance(prompt, str)
+        self.assertIn('BIOANALISIS', prompt)
