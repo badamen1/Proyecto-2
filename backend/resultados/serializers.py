@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import serializers
 from .models import Paciente, Resultado
 
@@ -53,20 +55,13 @@ class PacienteListSerializer(serializers.ModelSerializer):
 class ResultadoSerializer(serializers.ModelSerializer):
     """
     Serializer completo para CRUD de Resultados.
-    
-    Usado por bacteriólogos para cargar resultados (equivale a 
-    result_consultas.php → Cargar_Archivo() del sistema viejo).
-
-    N-04 (Gap Analysis): se agregan los campos 'empresa' (FK writable)
-    y 'empresa_nombre' (solo lectura) para que la API exponga y permita
-    asignar la empresa al crear o editar un resultado.
     """
     paciente_nombre = serializers.SerializerMethodField()
-    paciente_documento = serializers.SerializerMethodField()
+    paciente_documento_display = serializers.SerializerMethodField()
     subido_por_nombre = serializers.CharField(source='subido_por.username', read_only=True)
     nombre_archivo = serializers.ReadOnlyField()
-    # N-04: nombre legible de la empresa (sin costo de JOIN extra — usa select_related en la view)
     empresa_nombre = serializers.CharField(source='empresa.nombre', read_only=True, default=None)
+    fecha_examen = serializers.DateField(required=False, default=datetime.date.today)
 
     class Meta:
         model = Resultado
@@ -74,9 +69,10 @@ class ResultadoSerializer(serializers.ModelSerializer):
             'id',
             'paciente',
             'paciente_nombre',
+            'paciente_documento_display',
             'paciente_documento',
-            'empresa',          # FK nullable — permite asignar empresa al crear/editar
-            'empresa_nombre',   # Nombre legible — read only
+            'empresa',
+            'empresa_nombre',
             'subido_por',
             'subido_por_nombre',
             'tipo_examen',
@@ -98,7 +94,7 @@ class ResultadoSerializer(serializers.ModelSerializer):
             'fecha_carga',
             'fecha_actualizacion',
             'nombre_archivo',
-            'empresa_nombre',   # Solo escritura de empresa (ID), lectura de empresa_nombre
+            'empresa_nombre',
         ]
 
     def get_paciente_nombre(self, obj):
@@ -108,7 +104,7 @@ class ResultadoSerializer(serializers.ModelSerializer):
             return obj.paciente.nombre_completo
         return ''
 
-    def get_paciente_documento(self, obj):
+    def get_paciente_documento_display(self, obj):
         if obj.paciente_user_id:
             return obj.paciente_user.documento
         if obj.paciente_id:
@@ -116,25 +112,16 @@ class ResultadoSerializer(serializers.ModelSerializer):
         return ''
 
     def validate_archivo_pdf(self, value):
-        """Valida que el archivo sea un PDF y no exceda 100MB."""
-        # Validar extensión
         if not value.name.lower().endswith('.pdf'):
             raise serializers.ValidationError("Solo se permiten archivos PDF.")
-        
-        # Validar tamaño (100MB máximo)
-        max_size = 100 * 1024 * 1024  # 100MB
+        max_size = 100 * 1024 * 1024
         if value.size > max_size:
             raise serializers.ValidationError(
                 f"El archivo excede el tamaño máximo de 100MB. Tamaño actual: {value.size / (1024*1024):.1f}MB"
             )
-        
         return value
 
     def create(self, validated_data):
-        """
-        Al crear un resultado, se asigna automáticamente el usuario autenticado
-        como 'subido_por' (el bacteriólogo o admin que lo carga).
-        """
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             validated_data['subido_por'] = request.user
@@ -144,17 +131,9 @@ class ResultadoSerializer(serializers.ModelSerializer):
 class ResultadoListSerializer(serializers.ModelSerializer):
     """
     Serializer resumido para listados de resultados.
-    Optimizado para la vista del paciente (lista cronológica).
-
-    Equivalente a la consulta de resultado.php (AJAX) del viejo,
-    pero unificando resultados FASIL + externos.
-
-    N-04 (Gap Analysis): se agrega empresa_nombre para que el admin
-    y el portal empresa puedan identificar a qué empresa pertenece
-    cada resultado en el listado sin hacer una llamada adicional.
     """
     paciente_nombre = serializers.SerializerMethodField()
-    paciente_documento = serializers.SerializerMethodField()
+    paciente_documento_display = serializers.SerializerMethodField()
     empresa_nombre = serializers.CharField(source='empresa.nombre', read_only=True, default=None)
     nombre_archivo = serializers.ReadOnlyField()
 
@@ -163,8 +142,9 @@ class ResultadoListSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'paciente_nombre',
+            'paciente_documento_display',
             'paciente_documento',
-            'empresa_nombre',   # N-04: nombre de empresa en listado
+            'empresa_nombre',
             'tipo_examen',
             'fuente',
             'estado',
@@ -180,7 +160,7 @@ class ResultadoListSerializer(serializers.ModelSerializer):
             return obj.paciente.nombre_completo
         return ''
 
-    def get_paciente_documento(self, obj):
+    def get_paciente_documento_display(self, obj):
         if obj.paciente_user_id:
             return obj.paciente_user.documento
         if obj.paciente_id:

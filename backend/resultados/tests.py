@@ -267,3 +267,47 @@ class ResultadoLakeModelTests(TestCase):
             fecha_examen=datetime.date.today(),
         )
         self.assertIn('Sin paciente', str(r))
+
+
+class ResultadoLakeAPITests(APITestCase):
+    """POST /api/resultados/ acepta paciente_documento sin FK a Paciente."""
+
+    def setUp(self):
+        self.bacteriologo = User.objects.create(
+            username='bact_test_01',
+            documento='11100011',
+            role=User.Role.BACTERIOLOGO,
+        )
+        self.bacteriologo.set_unusable_password()
+        self.bacteriologo.save()
+        self.client.force_authenticate(user=self.bacteriologo)
+
+    def test_bacteriologo_crea_resultado_con_solo_documento(self):
+        import io
+        pdf = io.BytesIO(b'%PDF-1.4 fake pdf content')
+        pdf.name = 'resultado_test.pdf'
+        response = self.client.post('/api/resultados/', {
+            'paciente_documento': '99900011',
+            'tipo_examen': 'Perfil Lipídico',
+            'fuente': 'EXTERNO',
+            'fecha_examen': '2026-05-16',
+            'archivo_pdf': pdf,
+        }, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['paciente_documento'], '99900011')
+        self.assertIsNone(response.data['paciente'])
+
+    def test_paciente_documento_aparece_en_listado_bacteriologo(self):
+        """ResultadoListSerializer incluye paciente_documento."""
+        Resultado.objects.create(
+            paciente_documento='88800022',
+            tipo_examen='Glucosa',
+            fuente='EXTERNO',
+            estado='PENDIENTE',
+            fecha_examen=datetime.date.today(),
+            subido_por=self.bacteriologo,
+        )
+        response = self.client.get('/api/resultados/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        documentos = [r.get('paciente_documento') for r in response.data['results']]
+        self.assertIn('88800022', documentos)
