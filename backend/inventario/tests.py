@@ -475,3 +475,156 @@ class ProductoMovimientosTest(BaseAPITest):
         self.client.force_authenticate(user=self.admin)
         r = self.client.get(f'/api/inventario/productos/{self.producto.id}/movimientos/')
         self.assertIn('producto_nombre', r.data['results'][0])
+
+
+# ─────────────────────────────────────────────
+# Endpoints: Reportes (7–10)
+# ─────────────────────────────────────────────
+
+class InventarioAlertasTest(BaseAPITest):
+
+    def test_alerta_stock_bajo(self):
+        self.producto.stock_actual = 3  # stock_minimo=5 → stock_bajo
+        self.producto.save()
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/alertas/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        codigos_bajos = [p['codigo'] for p in r.data['stock_bajo']]
+        self.assertIn('API001', codigos_bajos)
+
+    def test_alerta_stock_igual_a_minimo_aparece(self):
+        self.producto.stock_actual = 5  # igual al minimo
+        self.producto.save()
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/alertas/')
+        codigos_bajos = [p['codigo'] for p in r.data['stock_bajo']]
+        self.assertIn('API001', codigos_bajos)
+
+    def test_alerta_vencido(self):
+        from datetime import date, timedelta
+        self.producto.fecha_vencimiento = date.today() - timedelta(days=1)
+        self.producto.save()
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/alertas/')
+        codigos_vencidos = [p['codigo'] for p in r.data['vencidos']]
+        self.assertIn('API001', codigos_vencidos)
+
+    def test_alerta_por_vencer(self):
+        from datetime import date, timedelta
+        self.producto.fecha_vencimiento = date.today() + timedelta(days=15)
+        self.producto.save()
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/alertas/')
+        codigos_por_vencer = [p['codigo'] for p in r.data['por_vencer']]
+        self.assertIn('API001', codigos_por_vencer)
+
+    def test_bacteriologo_puede_ver_alertas(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get('/api/inventario/alertas/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertIn('stock_bajo', r.data)
+        self.assertIn('vencidos', r.data)
+        self.assertIn('por_vencer', r.data)
+
+
+class MovimientoListTest(BaseAPITest):
+
+    def setUp(self):
+        super().setUp()
+        Movimiento.objects.create(
+            producto=self.producto,
+            tipo=Movimiento.TipoMovimiento.INGRESO,
+            cantidad=10, motivo='Compra',
+            registrado_por=self.admin,
+        )
+
+    def test_admin_puede_listar_movimientos(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/movimientos/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertEqual(r.data['count'], 1)
+
+    def test_bacteriologo_puede_listar_movimientos(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get('/api/inventario/movimientos/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+
+    def test_busqueda_por_codigo_producto(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/movimientos/?search=API001')
+        self.assertEqual(r.data['count'], 1)
+        r2 = self.client.get('/api/inventario/movimientos/?search=NOEXISTE')
+        self.assertEqual(r2.data['count'], 0)
+
+
+class MovimientoExportarTest(BaseAPITest):
+
+    def setUp(self):
+        super().setUp()
+        Movimiento.objects.create(
+            producto=self.producto,
+            tipo=Movimiento.TipoMovimiento.INGRESO,
+            cantidad=10, motivo='Compra exportar',
+            registrado_por=self.admin,
+        )
+
+    def test_bacteriologo_no_puede_exportar(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get('/api/inventario/movimientos/exportar/')
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_exporta_csv(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/movimientos/exportar/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertIn('text/csv', r['Content-Type'])
+        content = r.content.decode('utf-8-sig')
+        self.assertIn('API001', content)
+        self.assertIn('Compra exportar', content)
+
+    def test_exportar_csv_tiene_encabezados(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/movimientos/exportar/')
+        content = r.content.decode('utf-8-sig')
+        for col in ['Fecha', 'Código Producto', 'Tipo', 'Cantidad', 'Motivo']:
+            self.assertIn(col, content)
+
+    def test_filtro_por_producto_id(self):
+        otro = make_producto(codigo='OTRO01', nombre='Otro producto')
+        Movimiento.objects.create(producto=otro, tipo='INGRESO', cantidad=5, motivo='Otro')
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get(f'/api/inventario/movimientos/exportar/?producto_id={self.producto.id}')
+        content = r.content.decode('utf-8-sig')
+        self.assertIn('API001', content)
+        self.assertNotIn('OTRO01', content)
+
+
+class InventarioResumenTest(BaseAPITest):
+
+    def test_bacteriologo_no_puede_ver_resumen(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get('/api/inventario/resumen/')
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_resumen_contiene_campos_requeridos(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/resumen/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        for campo in ['total_productos', 'stock_bajo', 'sin_stock', 'vencidos', 'ultimos_movimientos']:
+            self.assertIn(campo, r.data)
+
+    def test_resumen_sin_stock_cuenta_correctamente(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/resumen/')
+        self.assertGreaterEqual(r.data['sin_stock'], 1)
+
+    def test_resumen_ultimos_movimientos_max_5(self):
+        for i in range(7):
+            Movimiento.objects.create(
+                producto=self.producto,
+                tipo=Movimiento.TipoMovimiento.INGRESO,
+                cantidad=1, motivo=f'Movimiento {i}',
+            )
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/resumen/')
+        self.assertLessEqual(len(r.data['ultimos_movimientos']), 5)

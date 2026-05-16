@@ -221,3 +221,110 @@ class ProductoMovimientosView(generics.ListAPIView):
         _require_operativo(self.request.user)
         producto = get_object_or_404(Producto, pk=self.kwargs['pk'])
         return Movimiento.objects.filter(producto=producto).select_related('producto', 'registrado_por')
+
+
+# =============================================================================
+# REPORTES (endpoints 7–10)
+# =============================================================================
+
+class InventarioAlertasView(APIView):
+    """GET /api/inventario/alertas/ — Stock bajo + vencidos/por vencer (admin y bacteriólogo)."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        _require_operativo(request.user)
+        hoy = date.today()
+        limite_vencimiento = hoy + timedelta(days=30)
+
+        stock_bajo = Producto.objects.filter(activo=True, stock_actual__lte=F('stock_minimo'))
+        vencidos = Producto.objects.filter(activo=True, fecha_vencimiento__lt=hoy)
+        por_vencer = Producto.objects.filter(
+            activo=True,
+            fecha_vencimiento__gte=hoy,
+            fecha_vencimiento__lte=limite_vencimiento,
+        )
+
+        return Response({
+            'stock_bajo': ProductoListSerializer(stock_bajo, many=True).data,
+            'vencidos': ProductoListSerializer(vencidos, many=True).data,
+            'por_vencer': ProductoListSerializer(por_vencer, many=True).data,
+        })
+
+
+class MovimientoListView(generics.ListAPIView):
+    """GET /api/inventario/movimientos/ — Trazabilidad global (admin y bacteriólogo)."""
+    permission_classes = [IsAuthenticated]
+    serializer_class = MovimientoListSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['producto__codigo', 'producto__nombre', 'motivo']
+    ordering_fields = ['fecha_registro', 'tipo']
+    ordering = ['-fecha_registro']
+
+    def get_queryset(self):
+        _require_operativo(self.request.user)
+        return Movimiento.objects.select_related('producto', 'registrado_por').all()
+
+
+class MovimientoExportarView(APIView):
+    """GET /api/inventario/movimientos/exportar/ — CSV (solo admin)."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        _require_admin(request.user)
+
+        qs = Movimiento.objects.select_related('producto', 'registrado_por').order_by('-fecha_registro')
+
+        fecha_desde = request.query_params.get('fecha_desde')
+        fecha_hasta = request.query_params.get('fecha_hasta')
+        producto_id = request.query_params.get('producto_id')
+
+        if fecha_desde:
+            qs = qs.filter(fecha_registro__date__gte=fecha_desde)
+        if fecha_hasta:
+            qs = qs.filter(fecha_registro__date__lte=fecha_hasta)
+        if producto_id:
+            qs = qs.filter(producto_id=producto_id)
+
+        nombre_archivo = f"inventario_movimientos_{date.today():%Y-%m-%d}.csv"
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
+        response.write('﻿')  # BOM para compatibilidad con Excel
+
+        writer = csv.writer(response)
+        writer.writerow(['Fecha', 'Código Producto', 'Nombre Producto', 'Tipo', 'Cantidad', 'Motivo', 'Registrado Por'])
+        for mov in qs:
+            writer.writerow([
+                mov.fecha_registro.strftime('%Y-%m-%d %H:%M'),
+                mov.producto.codigo,
+                mov.producto.nombre,
+                mov.get_tipo_display(),
+                mov.cantidad,
+                mov.motivo,
+                mov.registrado_por.nombre_completo if mov.registrado_por else '',
+            ])
+
+        logger.info(
+            "EXPORTAR CSV | admin_id=%s | fecha_desde=%s | fecha_hasta=%s | producto_id=%s",
+            request.user.id, fecha_desde, fecha_hasta, producto_id
+        )
+        return response
+
+
+class InventarioResumenView(APIView):
+    """GET /api/inventario/resumen/ — Contadores + últimos 5 movimientos (solo admin)."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        _require_admin(request.user)
+        hoy = date.today()
+
+        return Response({
+            'total_productos': Producto.objects.filter(activo=True).count(),
+            'stock_bajo': Producto.objects.filter(activo=True, stock_actual__lte=F('stock_minimo')).count(),
+            'sin_stock': Producto.objects.filter(activo=True, stock_actual=0).count(),
+            'vencidos': Producto.objects.filter(activo=True, fecha_vencimiento__lt=hoy).count(),
+            'ultimos_movimientos': MovimientoListSerializer(
+                Movimiento.objects.select_related('producto').order_by('-fecha_registro')[:5],
+                many=True
+            ).data,
+        })
