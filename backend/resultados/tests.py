@@ -311,3 +311,65 @@ class ResultadoLakeAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         documentos = [r.get('paciente_documento') for r in response.data['results']]
         self.assertIn('88800022', documentos)
+
+
+class ResultadoLakeQueryTests(APITestCase):
+    """Paciente ve resultados del lake al registrarse con el mismo documento."""
+
+    def setUp(self):
+        self.bacteriologo = User.objects.create(
+            username='bact_lake_01',
+            documento='22200011',
+            role=User.Role.BACTERIOLOGO,
+        )
+        self.bacteriologo.set_unusable_password()
+        self.bacteriologo.save()
+
+        # Resultado subido con solo documento (paciente no registrado)
+        self.resultado_lake = Resultado.objects.create(
+            paciente_documento='77700099',
+            tipo_examen='Perfil Lipídico',
+            fuente='EXTERNO',
+            estado='VALIDADO',
+            fecha_examen=datetime.date.today(),
+            subido_por=self.bacteriologo,
+        )
+
+    @patch('resultados.views.fasil_service.get_paciente')
+    def test_paciente_registrado_ve_resultado_del_lake(self, mock_fasil):
+        from resultados.services.fasil_service import FasilPacienteNoEncontrado
+        mock_fasil.side_effect = FasilPacienteNoEncontrado('no')
+
+        paciente = User.objects.create(
+            username='77700099',
+            documento='77700099',
+            nombre_completo='María López',
+            role=User.Role.PACIENTE,
+        )
+        paciente.set_unusable_password()
+        paciente.save()
+
+        self.client.force_authenticate(user=paciente)
+        response = self.client.get('/api/resultados/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ids = [str(r['id']) for r in response.data['results']]
+        self.assertIn(str(self.resultado_lake.pk), ids)
+
+    @patch('resultados.views.fasil_service.get_paciente')
+    def test_otro_paciente_no_ve_resultado_del_lake(self, mock_fasil):
+        from resultados.services.fasil_service import FasilPacienteNoEncontrado
+        mock_fasil.side_effect = FasilPacienteNoEncontrado('no')
+
+        otro = User.objects.create(
+            username='88800099',
+            documento='88800099',
+            role=User.Role.PACIENTE,
+        )
+        otro.set_unusable_password()
+        otro.save()
+
+        self.client.force_authenticate(user=otro)
+        response = self.client.get('/api/resultados/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ids = [str(r['id']) for r in response.data['results']]
+        self.assertNotIn(str(self.resultado_lake.pk), ids)

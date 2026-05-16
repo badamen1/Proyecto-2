@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 import logging
 
 from .models import Paciente, Resultado
@@ -242,9 +243,19 @@ class ResultadoListCreateView(generics.ListCreateAPIView):
     def _list_paciente(self, request):
         from .serializers import ResultadoUnificadoSerializer
 
-        # 1. Resultados de BD (ya filtrados por get_queryset para paciente_user=user)
-        qs = self.get_queryset()
-        bd_items = [_resultado_a_dict(r) for r in qs]
+        # 1. Resultados de BD — por paciente_user FK o por paciente_documento (lake)
+        user = request.user
+        documento = getattr(user, 'documento', None)
+
+        bd_qs = Resultado.objects.filter(
+            Q(paciente_user=user) | Q(paciente_documento=documento),
+            estado__in=['VALIDADO', 'ENTREGADO']
+        ) if documento else Resultado.objects.filter(
+            paciente_user=user,
+            estado__in=['VALIDADO', 'ENTREGADO']
+        )
+
+        bd_items = [_resultado_a_dict(r) for r in bd_qs]
 
         # 2. Órdenes FASIL — secuencial, con degradación elegante
         fasil_items = []
