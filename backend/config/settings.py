@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'resultados.apps.ResultadosConfig',
     'empresas.apps.EmpresasConfig',
     'chatbot.apps.ChatbotConfig',
+    'examenes.apps.ExamenesConfig',
 ]
 
 MIDDLEWARE = [
