@@ -591,12 +591,63 @@ class MovimientoExportarTest(BaseAPITest):
 
     def test_filtro_por_producto_id(self):
         otro = make_producto(codigo='OTRO01', nombre='Otro producto')
-        Movimiento.objects.create(producto=otro, tipo='INGRESO', cantidad=5, motivo='Otro')
+        Movimiento.objects.create(producto=otro, tipo=Movimiento.TipoMovimiento.INGRESO, cantidad=5, motivo='Otro')
         self.client.force_authenticate(user=self.admin)
         r = self.client.get(f'/api/inventario/movimientos/exportar/?producto_id={self.producto.id}')
         content = r.content.decode('utf-8-sig')
         self.assertIn('API001', content)
         self.assertNotIn('OTRO01', content)
+
+    def test_filtro_por_fecha_desde(self):
+        from datetime import date, timedelta
+        # Create a movement (all movements are created today in setUp)
+        Movimiento.objects.create(
+            producto=self.producto,
+            tipo=Movimiento.TipoMovimiento.EGRESO,
+            cantidad=1,
+            motivo='viejo',
+            registrado_por=self.admin,
+        )
+        today = date.today().isoformat()
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(
+            '/api/inventario/movimientos/exportar/',
+            {'fecha_desde': today, 'fecha_hasta': today},
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8-sig')
+        # At least header row present
+        self.assertIn('Fecha', content)
+
+    def test_fecha_desde_invalida_retorna_400(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(
+            '/api/inventario/movimientos/exportar/',
+            {'fecha_desde': 'no-es-fecha'},
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_producto_id_invalido_retorna_400(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(
+            '/api/inventario/movimientos/exportar/',
+            {'producto_id': 'abc'},
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_exportar_csv_fila_tiene_fecha_formato_correcto(self):
+        import re
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(
+            '/api/inventario/movimientos/exportar/',
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8-sig')
+        lines = content.strip().split('\n')
+        # At least one data row beyond header
+        self.assertGreater(len(lines), 1)
+        # Data row date matches YYYY-MM-DD HH:MM format
+        self.assertRegex(lines[1], r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}')
 
 
 class InventarioResumenTest(BaseAPITest):

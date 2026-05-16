@@ -1,5 +1,5 @@
 import csv
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from decimal import Decimal, InvalidOperation
 
 from django.db.models import F
@@ -279,10 +279,22 @@ class MovimientoExportarView(APIView):
         producto_id = request.query_params.get('producto_id')
 
         if fecha_desde:
+            try:
+                fecha_desde = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
+            except ValueError:
+                return Response({'detail': 'fecha_desde debe tener formato YYYY-MM-DD.'}, status=400)
             qs = qs.filter(fecha_registro__date__gte=fecha_desde)
         if fecha_hasta:
+            try:
+                fecha_hasta = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
+            except ValueError:
+                return Response({'detail': 'fecha_hasta debe tener formato YYYY-MM-DD.'}, status=400)
             qs = qs.filter(fecha_registro__date__lte=fecha_hasta)
         if producto_id:
+            try:
+                producto_id = int(producto_id)
+            except (ValueError, TypeError):
+                return Response({'detail': 'producto_id debe ser un entero válido.'}, status=400)
             qs = qs.filter(producto_id=producto_id)
 
         nombre_archivo = f"inventario_movimientos_{date.today():%Y-%m-%d}.csv"
