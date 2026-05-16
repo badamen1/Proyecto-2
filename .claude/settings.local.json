@@ -5,7 +5,13 @@
       "Bash(git add *)",
       "Bash(git commit -m 'fix\\(backend\\): upgrade Django to 5.1.6 for Python 3.14 compatibility *)",
       "Bash(git commit -m 'fix\\(backend\\): upgrade Django a 5.2.13 para soporte Python 3.14 *)",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Bash(Get-ChildItem -Path \"backend\\\\core\" -Force)",
+      "Bash(Grep -r \"from core\\\\.\" --include=\"*.py\" backend/)",
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(git -C \"C:\\\\Users\\\\bayro\\\\Desktop\\\\labclinic-nextjs\" add backend/examenes/urls.py backend/config/settings.py)",
+      "Bash(git -C 'C:\\\\Users\\\\bayro\\\\Desktop\\\\labclinic-nextjs' commit -m ' *)"
     ]
   }
 }
