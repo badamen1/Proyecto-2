@@ -121,6 +121,18 @@ class ResultadoSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate(self, attrs):
+        # Al crear un resultado, debe haber al menos un identificador de paciente
+        if not self.instance:  # solo al crear, no al actualizar
+            paciente = attrs.get('paciente')
+            paciente_user = attrs.get('paciente_user')
+            paciente_documento = attrs.get('paciente_documento', '').strip()
+            if not paciente and not paciente_user and not paciente_documento:
+                raise serializers.ValidationError(
+                    "Debe especificar un paciente (FK, usuario o número de documento)."
+                )
+        return attrs
+
     def create(self, validated_data):
         request = self.context.get('request')
         if request and request.user.is_authenticated:

@@ -12,7 +12,7 @@ export type ResultadoFuente = 'FASIL' | 'EXTERNO' | 'MANUAL';
 export type ResultadoLista = {
   id: string;
   paciente_nombre: string;
-  paciente_documento: string;
+  paciente_documento: string | null;
   empresa_nombre: string | null;
   tipo_examen: string;
   fuente: ResultadoFuente;
