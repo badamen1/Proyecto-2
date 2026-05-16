@@ -1,0 +1,730 @@
+[
+  {
+    "codigo": "17H",
+    "nombre": "17 HIDROXIPROGESTERONA",
+    "precio": 59932,
+    "categoria": "Hormonas",
+    "descripcion": "Mide los niveles de 17-hidroxiprogesterona producida por las glándulas suprarrenales. Se usa para detectar hiperplasia suprarrenal congénita.",
+    "sintomas": ["acné", "exceso de vello corporal", "irregularidades menstruales", "infertilidad", "desarrollo precoz en niños", "genitales ambiguos en recién nacidos"]
+  },
+  {
+    "codigo": "VAL",
+    "nombre": "ACIDO VALPROICO",
+    "precio": 27000,
+    "categoria": "Otras",
+    "descripcion": "Mide el nivel sérico del ácido valproico, medicamento antiepiléptico y estabilizador del ánimo. Monitorea la dosis terapéutica.",
+    "sintomas": ["control de epilepsia", "monitoreo de medicamento antiepiléptico", "mareo por valproato", "temblor", "náuseas por medicamento"]
+  },
+  {
+    "codigo": "LUP",
+    "nombre": "ANTICOAGULANTE LUPICO",
+    "precio": 45588,
+    "categoria": "Coagulación",
+    "descripcion": "Detecta anticuerpos que interfieren con factores de coagulación, aumentando el riesgo de trombosis. Asociado con lupus eritematoso sistémico.",
+    "sintomas": ["trombosis recurrente", "abortos espontáneos repetidos", "lupus", "coágulos sin causa aparente", "trombocitopenia"]
+  },
+  {
+    "codigo": "ACSDNA",
+    "nombre": "ANTICUERPOS ANTI DNA",
+    "precio": 100000,
+    "categoria": "Inmunología",
+    "descripcion": "Detecta anticuerpos contra el ADN de doble cadena. Marcador específico de lupus eritematoso sistémico activo.",
+    "sintomas": ["lupus", "articulaciones inflamadas", "sarpullido en mariposa", "fatiga extrema", "fiebre", "daño renal", "fotosensibilidad"]
+  },
+  {
+    "codigo": "RNP",
+    "nombre": "ANTICUERPOS ANTI RNP",
+    "precio": 100000,
+    "categoria": "Inmunología",
+    "descripcion": "Detecta anticuerpos contra ribonucleoproteínas. Positivo en enfermedades mixtas del tejido conectivo y lupus.",
+    "sintomas": ["lupus", "enfermedad mixta del tejido conectivo", "fenómeno de Raynaud", "artritis", "debilidad muscular", "dificultad para tragar"]
+  },
+  {
+    "codigo": "SSA",
+    "nombre": "ANTICUERPOS ANTI SSA",
+    "precio": 90000,
+    "categoria": "Inmunología",
+    "descripcion": "Detecta anticuerpos asociados al síndrome de Sjögren y lupus. Relevante en lupus neonatal durante el embarazo.",
+    "sintomas": ["ojos secos", "boca seca", "lupus", "síndrome de Sjögren", "fatiga", "articulaciones dolorosas", "embarazo con riesgo de lupus neonatal"]
+  },
+  {
+    "codigo": "ATG",
+    "nombre": "ANTICUERPOS ANTI TIROGLOBULINICOS",
+    "precio": 70000,
+    "categoria": "Tiroides",
+    "descripcion": "Detecta anticuerpos contra la tiroglobulina. Se usa para diagnosticar enfermedades autoinmunes de tiroides.",
+    "sintomas": ["hipotiroidismo", "hipertiroidismo", "bocio", "fatiga", "aumento de peso sin causa", "intolerancia al frío", "nódulo tiroideo"]
+  },
+  {
+    "codigo": "ANTITPO",
+    "nombre": "ANTICUERPOS ANTI TIROPEROXIDASA",
+    "precio": 50000,
+    "categoria": "Tiroides",
+    "descripcion": "Detecta anticuerpos contra la tiroperoxidasa. Principal marcador de tiroiditis de Hashimoto y enfermedad de Graves.",
+    "sintomas": ["hipotiroidismo", "tiroiditis de Hashimoto", "bocio", "fatiga", "aumento de peso", "sensación de frío", "depresión", "cabello frágil"]
+  },
+  {
+    "codigo": "FOSFG",
+    "nombre": "ANTICUERPOS ANTI-FOSFOLIPIDOS IGG",
+    "precio": 200000,
+    "categoria": "Coagulación",
+    "descripcion": "Detecta anticuerpos IgG contra fosfolípidos, asociados al síndrome antifosfolipídico. Aumenta el riesgo de trombosis y abortos.",
+    "sintomas": ["trombosis venosa", "abortos recurrentes", "coágulos", "lupus", "migraña", "livedo reticularis"]
+  },
+  {
+    "codigo": "FOSFM",
+    "nombre": "ANTICUERPOS ANTI-FOSFOLIPIDOS IgM",
+    "precio": 200000,
+    "categoria": "Coagulación",
+    "descripcion": "Detecta anticuerpos IgM contra fosfolípidos. Marcador del síndrome antifosfolipídico.",
+    "sintomas": ["trombosis", "abortos espontáneos repetidos", "coágulos sin causa", "lupus", "migraña recurrente"]
+  },
+  {
+    "codigo": "SCL",
+    "nombre": "ANTICUERPOS ANTI-SCL 70",
+    "precio": 75063,
+    "categoria": "Inmunología",
+    "descripcion": "Detecta anticuerpos anti-topoisomerasa I, específicos para esclerodermia difusa. Indica mayor riesgo de compromiso pulmonar.",
+    "sintomas": ["piel endurecida", "esclerodermia", "fenómeno de Raynaud", "dificultad para tragar", "fibrosis pulmonar", "dedos hinchados"]
+  },
+  {
+    "codigo": "SSB",
+    "nombre": "ANTICUERPOS ANTI-SSB",
+    "precio": 75063,
+    "categoria": "Inmunología",
+    "descripcion": "Detecta anticuerpos asociados principalmente al síndrome de Sjögren. Suele aparecer junto con Anti-SSA.",
+    "sintomas": ["ojos secos", "boca seca", "síndrome de Sjögren", "parotiditis", "fatiga", "artritis"]
+  },
+  {
+    "codigo": "ANAS",
+    "nombre": "ANTICUERPOS ANTINUCLEARES",
+    "precio": 50000,
+    "categoria": "Inmunología",
+    "descripcion": "Detecta anticuerpos contra estructuras del núcleo celular. Prueba de tamizaje para enfermedades autoinmunes sistémicas.",
+    "sintomas": ["lupus", "artritis reumatoide", "fatiga crónica", "sarpullido", "fiebre sin causa", "dolor articular", "esclerodermia"]
+  },
+  {
+    "codigo": "ENAS",
+    "nombre": "ANTICUERPOS ANTINUCLEARES EXTRACTABLES TOTALES ENA",
+    "precio": 140000,
+    "categoria": "Inmunología",
+    "descripcion": "Panel de anticuerpos contra antígenos nucleares extraíbles (SSA, SSB, RNP, Sm). Específico para varias enfermedades autoinmunes.",
+    "sintomas": ["lupus", "síndrome de Sjögren", "esclerodermia", "polimiositis", "enfermedad mixta del tejido conectivo", "artritis inflamatoria"]
+  },
+  {
+    "codigo": "ACSHEPC",
+    "nombre": "ANTICUERPOS DE HEPATITIS C",
+    "precio": 60000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos contra el virus de la hepatitis C. Indica exposición pasada o infección activa por VHC.",
+    "sintomas": ["ictericia", "cansancio extremo", "dolor abdominal derecho", "orina oscura", "heces claras", "náuseas", "exposición a sangre", "cirrosis"]
+  },
+  {
+    "codigo": "RUBG",
+    "nombre": "ANTICUERPOS IgG RUBEOLA",
+    "precio": 54234,
+    "categoria": "Infectología",
+    "descripcion": "Detecta inmunidad previa contra la rubéola. Importante en mujeres en edad fértil para verificar protección antes del embarazo.",
+    "sintomas": ["evaluación preconcepcional", "embarazo", "verificar inmunidad a rubeola", "sarpullido", "ganglios inflamados"]
+  },
+  {
+    "codigo": "RUBM",
+    "nombre": "ANTICUERPOS IgM RUBEOLA",
+    "precio": 54234,
+    "categoria": "Infectología",
+    "descripcion": "Detecta infección aguda o reciente por rubéola. Crítico en el primer trimestre de embarazo por el riesgo al feto.",
+    "sintomas": ["sarpullido rosado", "fiebre leve", "ganglios inflamados detrás de las orejas", "embarazo", "articulaciones dolorosas", "conjuntivitis"]
+  },
+  {
+    "codigo": "ACSTRIP",
+    "nombre": "ANTICUERPOS TRYPANOSOMA CRUZI",
+    "precio": 1,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos contra Trypanosoma cruzi, parásito causante de la enfermedad de Chagas. Endémica en zonas rurales de Latinoamérica.",
+    "sintomas": ["enfermedad de Chagas", "hinchazón en lugar de picadura", "fiebre", "arritmias cardíacas", "megacolon", "zona endémica de Chagas"]
+  },
+  {
+    "codigo": "CA153",
+    "nombre": "ANTIGENO CA 15-3 (CANCER DE MAMA)",
+    "precio": 140000,
+    "categoria": "Oncología",
+    "descripcion": "Marcador tumoral para monitorear el tratamiento y recurrencia del cáncer de mama. No se usa para diagnóstico inicial.",
+    "sintomas": ["seguimiento cáncer de mama", "control postoperatorio mamario", "recurrencia tumoral", "masa en mama", "tratamiento oncológico"]
+  },
+  {
+    "codigo": "AgCCA",
+    "nombre": "ANTÍGENO CCA",
+    "precio": 1,
+    "categoria": "Oncología",
+    "descripcion": "Marcador tumoral para carcinoma de células escamosas de cuello uterino y otros epitelios.",
+    "sintomas": ["cáncer de cuello uterino", "seguimiento oncológico", "control post-tratamiento cervical"]
+  },
+  {
+    "codigo": "BICAR",
+    "nombre": "BICARBONATO",
+    "precio": 40000,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide el bicarbonato sérico, indicador del equilibrio ácido-base. Útil en enfermedades renales y pulmonares.",
+    "sintomas": ["dificultad respiratoria", "insuficiencia renal", "vómitos persistentes", "diarrea crónica", "confusión mental", "acidosis"]
+  },
+  {
+    "codigo": "BIOP",
+    "nombre": "BIOPSIA",
+    "precio": 120000,
+    "categoria": "Otras",
+    "descripcion": "Análisis histológico de tejido extraído para diagnóstico de enfermedades, especialmente cáncer.",
+    "sintomas": ["masa o tumor", "lesión sospechosa", "diagnóstico oncológico", "úlcera que no cicatriza", "ganglio inflamado sin causa"]
+  },
+  {
+    "codigo": "CA125",
+    "nombre": "CA 125 (ANTÍGENO C.A. DE OVARIO) - CA 125",
+    "precio": 101001,
+    "categoria": "Oncología",
+    "descripcion": "Marcador tumoral para monitorear el cáncer de ovario. También puede elevarse en endometriosis y enfermedades benignas.",
+    "sintomas": ["dolor pélvico", "abdomen distendido", "seguimiento cáncer de ovario", "endometriosis", "masa ovárica", "control oncológico"]
+  },
+  {
+    "codigo": "CA199",
+    "nombre": "CA 19-9 (ANTÍGENO DE CANCER) - CA19-9",
+    "precio": 101001,
+    "categoria": "Oncología",
+    "descripcion": "Marcador tumoral para cáncer de páncreas y vías biliares. También puede elevarse en cáncer colorrectal.",
+    "sintomas": ["dolor abdominal", "ictericia", "pérdida de peso", "seguimiento cáncer de páncreas", "cáncer colorrectal", "control oncológico digestivo"]
+  },
+  {
+    "codigo": "CARBA",
+    "nombre": "CARBAMAZEPINA NIVELES SERICOS",
+    "precio": 40000,
+    "categoria": "Otras",
+    "descripcion": "Mide el nivel sérico de carbamazepina, medicamento antiepiléptico. Para ajustar dosis y verificar toxicidad.",
+    "sintomas": ["monitoreo de epilepsia", "control de medicamento anticonvulsivante", "mareo", "visión doble", "ataxia por carbamazepina"]
+  },
+  {
+    "codigo": "CARDIOG",
+    "nombre": "CARDIOLIPINA IgG",
+    "precio": 50000,
+    "categoria": "Coagulación",
+    "descripcion": "Detecta anticuerpos IgG contra cardiolipina, asociados al síndrome antifosfolipídico. Aumenta el riesgo de trombosis.",
+    "sintomas": ["trombosis recurrente", "abortos espontáneos repetidos", "lupus", "coágulos sin causa", "migraña"]
+  },
+  {
+    "codigo": "CARDIOM",
+    "nombre": "CARDIOLIPINA IgM",
+    "precio": 44000,
+    "categoria": "Coagulación",
+    "descripcion": "Detecta anticuerpos IgM contra cardiolipina. Marcador del síndrome antifosfolipídico.",
+    "sintomas": ["trombosis", "abortos repetidos", "lupus", "coágulos", "livedo reticularis"]
+  },
+  {
+    "codigo": "CARGA",
+    "nombre": "CARGA VIRAL HIV",
+    "precio": 290000,
+    "categoria": "Infectología",
+    "descripcion": "Mide la cantidad de virus HIV en la sangre. Fundamental para monitorear la eficacia del tratamiento antirretroviral.",
+    "sintomas": ["HIV positivo", "seguimiento tratamiento antirretroviral", "inmunodeficiencia", "infecciones oportunistas"]
+  },
+  {
+    "codigo": "CITOG",
+    "nombre": "CITOMEGALOVIRUS ANTICUERPOS G",
+    "precio": 54000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos IgG contra citomegalovirus (CMV). Indica infección pasada o inmunidad adquirida.",
+    "sintomas": ["mononucleosis infecciosa", "fiebre prolongada", "control en embarazo", "trasplante", "inmunosupresión", "fatiga severa"]
+  },
+  {
+    "codigo": "CITOM",
+    "nombre": "CITOMEGALOVIRUS ANTICUERPOS M",
+    "precio": 54000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos IgM contra citomegalovirus. Indica infección activa o reciente por CMV.",
+    "sintomas": ["fiebre alta", "ganglios inflamados", "cansancio extremo", "dolor de garganta", "embarazo", "inmunosupresión"]
+  },
+  {
+    "codigo": "C3",
+    "nombre": "COMPLEMENTO C3",
+    "precio": 45000,
+    "categoria": "Inmunología",
+    "descripcion": "Mide la proteína C3 del sistema complemento. Disminuye en lupus activo y algunas glomerulonefritis.",
+    "sintomas": ["lupus", "enfermedad renal", "infecciones recurrentes", "glomerulonefritis", "artritis inflamatoria"]
+  },
+  {
+    "codigo": "C4",
+    "nombre": "COMPLEMENTO C4",
+    "precio": 30000,
+    "categoria": "Inmunología",
+    "descripcion": "Mide la proteína C4 del sistema complemento. Útil junto al C3 para evaluar enfermedades autoinmunes.",
+    "sintomas": ["lupus", "angioedema hereditario", "glomerulonefritis", "infecciones bacterianas recurrentes", "enfermedad autoinmune"]
+  },
+  {
+    "codigo": "PLASMA",
+    "nombre": "CONSERVACION DE PLASMA",
+    "precio": 1,
+    "categoria": "Otras",
+    "descripcion": "Servicio de conservación de muestra de plasma para análisis posterior o envío a laboratorio de referencia.",
+    "sintomas": []
+  },
+  {
+    "codigo": "SUERO",
+    "nombre": "CONSERVACION DE SUERO",
+    "precio": 1,
+    "categoria": "Otras",
+    "descripcion": "Servicio de conservación de muestra de suero para análisis posterior o envío a laboratorio de referencia.",
+    "sintomas": []
+  },
+  {
+    "codigo": "COOIC",
+    "nombre": "COOMBS INDIRECTO CUALITATIVA",
+    "precio": 70000,
+    "categoria": "Hematología",
+    "descripcion": "Detecta anticuerpos en el suero que pueden reaccionar contra glóbulos rojos. Importante en transfusiones y embarazo con Rh negativo.",
+    "sintomas": ["incompatibilidad de grupo sanguíneo", "preparación para transfusión", "embarazo con factor Rh negativo", "anemia hemolítica"]
+  },
+  {
+    "codigo": "CORTI",
+    "nombre": "CORTISOL",
+    "precio": 40000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide el cortisol, hormona del estrés producida por las glándulas suprarrenales. Diagnóstica para síndrome de Cushing e insuficiencia suprarrenal (Addison).",
+    "sintomas": ["obesidad central", "estrías", "cara de luna llena", "hipertensión", "debilidad muscular", "fatiga extrema", "hipotensión", "pigmentación de piel"]
+  },
+  {
+    "codigo": "CORT",
+    "nombre": "CORTISOL",
+    "precio": 50000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide el cortisol, hormona del estrés producida por las glándulas suprarrenales. Diagnóstica para síndrome de Cushing e insuficiencia suprarrenal (Addison).",
+    "sintomas": ["obesidad central", "estrías", "cara de luna llena", "hipertensión", "debilidad muscular", "fatiga extrema", "hipotensión", "pigmentación de piel"]
+  },
+  {
+    "codigo": "HONGO",
+    "nombre": "CULTIVO DE HONGOS MICOSIS SUPERFICIAL",
+    "precio": 93000,
+    "categoria": "Microbiología",
+    "descripcion": "Identifica hongos causantes de infecciones superficiales como pie de atleta, tiña y candidiasis cutánea.",
+    "sintomas": ["picazón en la piel", "descamación", "manchas en la piel", "pie de atleta", "uñas engrosadas o amarillas", "sarpullido circular", "candidiasis cutánea"]
+  },
+  {
+    "codigo": "CURETRAL",
+    "nombre": "CULTIVO SECRECION URETRAL",
+    "precio": 88000,
+    "categoria": "Microbiología",
+    "descripcion": "Identifica bacterias causantes de infecciones de transmisión sexual en la uretra, como gonorrea y clamidia.",
+    "sintomas": ["secreción uretral", "ardor al orinar", "infección de transmisión sexual", "gonorrea", "clamidia", "dolor al orinar"]
+  },
+  {
+    "codigo": "DEHIDRO",
+    "nombre": "DEHIDROEPIANDROSTERONA",
+    "precio": 50000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide el DHEA-S, hormona suprarrenal precursora de andrógenos y estrógenos. Útil en el estudio del exceso androgénico.",
+    "sintomas": ["exceso de vello", "acné", "irregularidades menstruales", "infertilidad", "síndrome de ovario poliquístico", "virilización"]
+  },
+  {
+    "codigo": "DIHTESTO",
+    "nombre": "DIHIDROTESTOSTERONA",
+    "precio": 130000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide el DHT, la forma activa de testosterona. Relacionado con calvicie masculina, hiperplasia prostática e hirsutismo.",
+    "sintomas": ["calvicie", "hiperplasia prostática", "vello facial excesivo en mujeres", "acné severo", "infertilidad masculina"]
+  },
+  {
+    "codigo": "NUCAL",
+    "nombre": "ECOGRAFIA OBTRETICA CON TRANSLUCENCIA NUCAL",
+    "precio": 115000,
+    "categoria": "Otras",
+    "descripcion": "Ecografía del primer trimestre que mide la translucencia nucal del feto para evaluar el riesgo de síndrome de Down y otras cromosomopatías.",
+    "sintomas": ["embarazo primer trimestre", "tamizaje Down", "control prenatal", "riesgo genético fetal"]
+  },
+  {
+    "codigo": "ECOGRA",
+    "nombre": "ECOGRAFIA PELVICA TRASVAGINAL",
+    "precio": 120000,
+    "categoria": "Otras",
+    "descripcion": "Ecografía que evalúa los órganos pélvicos femeninos (útero, ovarios) con mayor detalle que la ecografía abdominal.",
+    "sintomas": ["dolor pélvico", "irregularidades menstruales", "quiste ovárico", "mioma uterino", "infertilidad", "sangrado anormal", "endometriosis"]
+  },
+  {
+    "codigo": "ELECTHB",
+    "nombre": "ELECTROFORESIS DE HEMOGLOBINA",
+    "precio": 60000,
+    "categoria": "Hematología",
+    "descripcion": "Identifica los tipos de hemoglobina en la sangre. Diagnóstica para anemia de células falciformes, talasemia y otras hemoglobinopatías.",
+    "sintomas": ["anemia severa", "ictericia", "fatiga extrema", "dolor de huesos", "antecedentes familiares de anemia", "esplenomegalia"]
+  },
+  {
+    "codigo": "ESTR",
+    "nombre": "ESTRADIOL",
+    "precio": 60000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide el estradiol (E2), principal hormona estrogénica. Útil para evaluar la función ovárica, menopausia, infertilidad y ciclo menstrual.",
+    "sintomas": ["irregularidades menstruales", "infertilidad", "menopausia", "sofocos", "osteoporosis", "síndrome de ovario poliquístico", "evaluación hormonal"]
+  },
+  {
+    "codigo": "OCUP",
+    "nombre": "EXAMEN OCUPACIONAL",
+    "precio": 60000,
+    "categoria": "Otras",
+    "descripcion": "Conjunto de exámenes para evaluar la aptitud laboral. Requerido por empresas para ingreso o control periódico de trabajadores.",
+    "sintomas": ["ingreso laboral", "control médico ocupacional", "certificado médico de trabajo"]
+  },
+  {
+    "codigo": "FERR",
+    "nombre": "FERRITINA",
+    "precio": 60000,
+    "categoria": "Hematología",
+    "descripcion": "Mide las reservas de hierro en el cuerpo. El indicador más sensible para detectar deficiencia de hierro antes de que aparezca la anemia.",
+    "sintomas": ["fatiga", "debilidad", "palidez", "caída de cabello", "uñas quebradizas", "mareo", "anemia", "intolerancia al ejercicio"]
+  },
+  {
+    "codigo": "GLFOD",
+    "nombre": "GLUCOSA 6 FOSFATO DISHIDROGENASA",
+    "precio": 103000,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide la actividad de la enzima G6PD en glóbulos rojos. Su deficiencia es la enzimoptía más común y causa anemia hemolítica.",
+    "sintomas": ["anemia hemolítica", "ictericia en recién nacido", "orina oscura después de medicamentos", "reacción a habas", "fatiga"]
+  },
+  {
+    "codigo": "HEMOSIS",
+    "nombre": "HOMOCISTEINA",
+    "precio": 148000,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide la homocisteína en sangre. Niveles elevados son factor de riesgo cardiovascular y se asocian con deficiencia de vitaminas B.",
+    "sintomas": ["riesgo cardiovascular", "trombosis", "arteriosclerosis", "deficiencia de vitamina B12", "deficiencia de folato", "infarto previo"]
+  },
+  {
+    "codigo": "HEPAG",
+    "nombre": "HEPATITIS A, ANTICUERPOS IgG",
+    "precio": 90000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta inmunidad contra el virus de la hepatitis A (infección pasada o vacunación).",
+    "sintomas": ["verificar inmunidad hepatitis A", "control post-vacunación", "viaje a zonas endémicas", "ictericia previa"]
+  },
+  {
+    "codigo": "HEPAM",
+    "nombre": "HEPATITIS A, ANTICUERPOS IgM",
+    "precio": 90000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta infección aguda o reciente por el virus de la hepatitis A.",
+    "sintomas": ["ictericia", "orina oscura", "náuseas", "vómitos", "dolor abdominal derecho", "fiebre", "heces claras"]
+  },
+  {
+    "codigo": "HEPBCENT",
+    "nombre": "HEPATITIS B ANTICUERPOS CENTRAL IgM",
+    "precio": 50000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta infección aguda por el virus de la hepatitis B. El anti-HBc IgM es el marcador de infección reciente.",
+    "sintomas": ["ictericia aguda", "fatiga severa", "dolor abdominal", "exposición reciente al virus B", "hepatitis aguda"]
+  },
+  {
+    "codigo": "HEPBTOT",
+    "nombre": "HEPATITIS B, ANTICUERPO CENTRAL TOTALES",
+    "precio": 48000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta infección pasada o presente por hepatitis B. Persiste de por vida tras la infección.",
+    "sintomas": ["evaluación hepatitis B", "ictericia", "cirrosis", "donación de sangre", "control hepático"]
+  },
+  {
+    "codigo": "HBE",
+    "nombre": "HEPATITIS B, ANTICUERPOS E",
+    "precio": 1,
+    "categoria": "Infectología",
+    "descripcion": "Detecta el antígeno o anticuerpo 'e' del virus de la hepatitis B. Indica nivel de replicación viral.",
+    "sintomas": ["hepatitis B crónica", "seguimiento tratamiento hepatitis B", "alta replicación viral"]
+  },
+  {
+    "codigo": "HERPES I",
+    "nombre": "HERPES I ANTICUERPOS IGG",
+    "precio": 100000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos IgG contra herpes simple tipo 1 (HSV-1). Indica infección pasada, generalmente herpes oral.",
+    "sintomas": ["fuego labial recurrente", "herpes oral", "úlceras en boca", "evaluación herpes labial"]
+  },
+  {
+    "codigo": "HERPEIGM",
+    "nombre": "HERPES I ANTICUERPOS IGM",
+    "precio": 100000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos IgM contra HSV-1. Indica infección activa o reciente por herpes tipo 1.",
+    "sintomas": ["fuego labial activo", "úlceras orales", "fiebre", "herpes oral agudo"]
+  },
+  {
+    "codigo": "HERPESG",
+    "nombre": "HERPES II ANTICUERPOS IgG",
+    "precio": 100000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos IgG contra herpes simple tipo 2 (HSV-2). Indica infección pasada por herpes genital.",
+    "sintomas": ["herpes genital", "úlceras genitales recurrentes", "evaluación ITS", "embarazo con riesgo de herpes neonatal"]
+  },
+  {
+    "codigo": "HERPESM",
+    "nombre": "HERPES II ANTICUERPOS IgM",
+    "precio": 100000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos IgM contra HSV-2. Indica infección activa o reciente por herpes genital.",
+    "sintomas": ["úlceras genitales activas", "ardor genital", "herpes genital agudo", "ITS"]
+  },
+  {
+    "codigo": "SH",
+    "nombre": "HORMONA DE CRECIMIENTO",
+    "precio": 180000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide la hormona de crecimiento (GH). Útil para diagnosticar deficiencia en niños y acromegalia en adultos.",
+    "sintomas": ["baja estatura en niños", "crecimiento lento", "acromegalia", "manos y pies grandes", "cara tosca", "déficit de hormona de crecimiento"]
+  },
+  {
+    "codigo": "TSH NEO",
+    "nombre": "HORMONA ESTIMULANTE DE TIROIDES TSH NEONATAL",
+    "precio": 19800,
+    "categoria": "Tiroides",
+    "descripcion": "Tamizaje neonatal para hipotiroidismo congénito. Se realiza en los primeros días de vida.",
+    "sintomas": ["tamizaje neonatal", "recién nacido", "hipotiroidismo congénito", "ictericia prolongada en bebé", "alimentación lenta en recién nacido"]
+  },
+  {
+    "codigo": "IgA",
+    "nombre": "INMUNOGLOBULINA IgA",
+    "precio": 62000,
+    "categoria": "Inmunología",
+    "descripcion": "Mide los niveles de inmunoglobulina A. Disminuida en inmunodeficiencia selectiva IgA; elevada en algunas infecciones crónicas.",
+    "sintomas": ["infecciones respiratorias recurrentes", "diarrea crónica", "enfermedad celíaca", "inmunodeficiencia", "alergia severa"]
+  },
+  {
+    "codigo": "INS",
+    "nombre": "INSULINA",
+    "precio": 55000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide los niveles de insulina en sangre. Útil para evaluar resistencia a la insulina, diabetes tipo 2 y síndrome metabólico.",
+    "sintomas": ["diabetes", "obesidad", "acantosis nigricans", "síndrome metabólico", "glucosa alta en ayunas", "síndrome de ovario poliquístico", "hipoglucemia"]
+  },
+  {
+    "codigo": "CD3",
+    "nombre": "LINFOCITOS CD3",
+    "precio": 40000,
+    "categoria": "Inmunología",
+    "descripcion": "Mide la población total de linfocitos T en sangre. Útil para evaluar el sistema inmunológico celular.",
+    "sintomas": ["inmunodeficiencia", "HIV", "infecciones recurrentes", "seguimiento trasplante", "linfoma", "evaluación inmunológica"]
+  },
+  {
+    "codigo": "CD4",
+    "nombre": "LINFOCITOS CD4",
+    "precio": 40000,
+    "categoria": "Inmunología",
+    "descripcion": "Mide los linfocitos T helper CD4+. Principal marcador para monitorear la progresión del HIV/SIDA e iniciar tratamiento.",
+    "sintomas": ["HIV positivo", "inmunodeficiencia", "infecciones oportunistas", "SIDA", "seguimiento tratamiento antirretroviral"]
+  },
+  {
+    "codigo": "CD8",
+    "nombre": "LINFOCITOS CD8",
+    "precio": 1,
+    "categoria": "Inmunología",
+    "descripcion": "Mide los linfocitos T citotóxicos CD8+. Se evalúa junto al CD4 en HIV y seguimiento de trasplantes.",
+    "sintomas": ["HIV", "inmunodeficiencia", "seguimiento trasplante", "infecciones virales recurrentes"]
+  },
+  {
+    "codigo": "LITIO",
+    "nombre": "LITIO",
+    "precio": 40000,
+    "categoria": "Otras",
+    "descripcion": "Mide el nivel sérico de litio, estabilizador del ánimo usado en trastorno bipolar. Para ajustar dosis y detectar toxicidad.",
+    "sintomas": ["monitoreo trastorno bipolar", "control medicamento litio", "temblor", "poliuria", "polidipsia"]
+  },
+  {
+    "codigo": "EVERO",
+    "nombre": "NIVELES DE EVEROLIMUS",
+    "precio": 185000,
+    "categoria": "Otras",
+    "descripcion": "Mide el nivel sérico de everolimus, inmunosupresor usado en trasplante y tratamiento de algunos tumores.",
+    "sintomas": ["trasplante de órgano", "monitoreo inmunosupresor", "cáncer con tratamiento de everolimus"]
+  },
+  {
+    "codigo": "OPTOME",
+    "nombre": "OPTOMETRIA",
+    "precio": 60000,
+    "categoria": "Otras",
+    "descripcion": "Evaluación de la agudeza visual y salud ocular. Diagnóstica para miopía, hipermetropía, astigmatismo y glaucoma.",
+    "sintomas": ["visión borrosa", "dificultad para leer", "dolor de cabeza frecuente", "fatiga visual", "miopía", "necesidad de gafas"]
+  },
+  {
+    "codigo": "OSTEOM",
+    "nombre": "OSTEOMUSCULAR",
+    "precio": 50000,
+    "categoria": "Otras",
+    "descripcion": "Evaluación del sistema osteomuscular para exámenes ocupacionales. Incluye evaluación de columna, articulaciones y masa muscular.",
+    "sintomas": ["dolor de espalda", "dolor articular", "certificado médico laboral", "examen ocupacional musculoesquelético"]
+  },
+  {
+    "codigo": "VPH",
+    "nombre": "PAPILOMAVIRUS POR PCR CON TIPIFICACION DE 14 CEPAS (Alto Riesgo)",
+    "precio": 190000,
+    "categoria": "Oncología",
+    "descripcion": "Detecta y tipifica 14 cepas de alto riesgo del VPH mediante PCR. Fundamental para la prevención del cáncer de cuello uterino.",
+    "sintomas": ["control ginecológico", "resultado anormal en citología", "prevención cáncer cervical", "verrugas genitales", "ITS"]
+  },
+  {
+    "codigo": "PTH",
+    "nombre": "PARATOHORMONA PTH",
+    "precio": 76438,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide la hormona paratiroidea. Regula calcio y fósforo. Útil para diagnosticar hiperparatiroidismo e hipoparatiroidismo.",
+    "sintomas": ["cálculos renales", "osteoporosis", "calcio alto en sangre", "debilidad muscular", "calambres", "hormigueo", "enfermedad renal crónica"]
+  },
+  {
+    "codigo": "PLOMO",
+    "nombre": "PLOMO",
+    "precio": 98900,
+    "categoria": "Otras",
+    "descripcion": "Mide los niveles de plomo en sangre. Para detectar intoxicación por plomo en trabajadores expuestos y niños.",
+    "sintomas": ["exposición laboral a plomo", "dolor abdominal", "confusión mental", "cefalea", "anemia", "retraso en desarrollo en niños"]
+  },
+  {
+    "codigo": "PROGE",
+    "nombre": "PROGESTERONA",
+    "precio": 70000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide los niveles de progesterona. Útil para evaluar la ovulación, diagnosticar insuficiencia lútea y monitorear el embarazo temprano.",
+    "sintomas": ["infertilidad", "abortos espontáneos recurrentes", "irregularidades menstruales", "síndrome premenstrual severo", "embarazo temprano"]
+  },
+  {
+    "codigo": "PROGES",
+    "nombre": "PROGESTERONA",
+    "precio": 70000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide los niveles de progesterona. Útil para evaluar la ovulación, diagnosticar insuficiencia lútea y monitorear el embarazo temprano.",
+    "sintomas": ["infertilidad", "abortos espontáneos recurrentes", "irregularidades menstruales", "síndrome premenstrual severo", "embarazo temprano"]
+  },
+  {
+    "codigo": "PROTEC",
+    "nombre": "PROTEINA C DE LA COAGULACION",
+    "precio": 120000,
+    "categoria": "Coagulación",
+    "descripcion": "Mide la proteína C, anticoagulante natural. Su deficiencia aumenta el riesgo de trombosis venosa profunda.",
+    "sintomas": ["trombosis venosa profunda", "tromboembolismo pulmonar", "coágulos recurrentes", "historia familiar de trombosis"]
+  },
+  {
+    "codigo": "PROTES",
+    "nombre": "PROTEINA S DE LA COAGULACION",
+    "precio": 246000,
+    "categoria": "Coagulación",
+    "descripcion": "Mide la proteína S, cofactor de la proteína C. Su deficiencia predispone a trombosis. Se evalúa en estudio de trombofilia.",
+    "sintomas": ["trombosis recurrente", "embolia pulmonar", "coágulos en venas profundas", "historia familiar de trombosis", "abortos recurrentes"]
+  },
+  {
+    "codigo": "PTHS",
+    "nombre": "PROTEINA TRANSPORTADORA DE HORMONA SEXUAL",
+    "precio": 1,
+    "categoria": "Hormonas",
+    "descripcion": "Mide la SHBG, proteína que transporta testosterona y estradiol. Útil en el estudio de hiperandrogenismo.",
+    "sintomas": ["exceso de vello en mujeres", "acné", "síndrome de ovario poliquístico", "irregularidades menstruales", "infertilidad", "diabetes tipo 2"]
+  },
+  {
+    "codigo": "COVID19",
+    "nombre": "PRUEBA DE EXUDADO COVID19",
+    "precio": 300000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta la presencia del virus SARS-CoV-2 mediante hisopado nasofaríngeo para diagnóstico de COVID-19 activo.",
+    "sintomas": ["fiebre", "tos seca", "dificultad para respirar", "pérdida del olfato", "pérdida del gusto", "dolor de cuerpo", "contacto con caso COVID"]
+  },
+  {
+    "codigo": "PATERN",
+    "nombre": "PRUEBA DE PATERNIDAD",
+    "precio": 780000,
+    "categoria": "Otras",
+    "descripcion": "Análisis de ADN para determinar la relación biológica padre-hijo con precisión mayor al 99.9%.",
+    "sintomas": ["determinación de paternidad", "análisis de ADN familiar"]
+  },
+  {
+    "codigo": "ADDIS",
+    "nombre": "Recuento de Addis, Orina de 12 horas",
+    "precio": 25000,
+    "categoria": "Hematología",
+    "descripcion": "Cuantifica eritrocitos, leucocitos y cilindros en orina de 12 horas. Evalúa la función glomerular renal.",
+    "sintomas": ["orina con sangre", "proteinuria", "enfermedad renal", "glomerulonefritis", "nefritis", "control renal"]
+  },
+  {
+    "codigo": "TESTL",
+    "nombre": "TESTOSTERONA LIBRE",
+    "precio": 58000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide la fracción activa de testosterona no unida a proteínas. Más sensible que la testosterona total para detectar déficits.",
+    "sintomas": ["fatiga crónica", "disminución de la libido", "disfunción eréctil", "pérdida de masa muscular", "depresión en hombres", "infertilidad masculina"]
+  },
+  {
+    "codigo": "TEST",
+    "nombre": "TESTOSTERONA TOTAL",
+    "precio": 48000,
+    "categoria": "Hormonas",
+    "descripcion": "Mide la testosterona total en sangre (libre + unida a proteínas). Útil para evaluar hipogonadismo masculino e hiperandrogenismo femenino.",
+    "sintomas": ["disminución de libido", "disfunción eréctil", "infertilidad", "acné severo", "exceso de vello en mujeres", "pérdida de masa muscular"]
+  },
+  {
+    "codigo": "TIROG",
+    "nombre": "TIROGLOBULINA",
+    "precio": 80000,
+    "categoria": "Tiroides",
+    "descripcion": "Mide la tiroglobulina sérica. Principal marcador para el seguimiento del cáncer diferenciado de tiroides post-tratamiento.",
+    "sintomas": ["seguimiento cáncer de tiroides", "nódulo tiroideo", "control post-tiroidectomía", "recurrencia cáncer tiroideo"]
+  },
+  {
+    "codigo": "TRANS",
+    "nombre": "TRANSFERRINA",
+    "precio": 70000,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide la proteína que transporta el hierro en la sangre. Útil para el diagnóstico de anemia ferropénica y sobrecarga de hierro.",
+    "sintomas": ["anemia", "fatiga", "palidez", "sobrecarga de hierro", "hemocromatosis", "desnutrición", "enfermedad hepática"]
+  },
+  {
+    "codigo": "TREPO",
+    "nombre": "TREPONEMA PALLIDUM ANTICUERPOS IgM",
+    "precio": 160000,
+    "categoria": "Infectología",
+    "descripcion": "Detecta anticuerpos IgM contra Treponema pallidum, bacteria causante de la sífilis. Indica infección activa o reciente.",
+    "sintomas": ["úlcera genital", "sarpullido en palmas y plantas", "sífilis", "ITS", "ganglios inflamados", "fiebre", "embarazo con control prenatal"]
+  },
+  {
+    "codigo": "VITK",
+    "nombre": "VITAMINA K",
+    "precio": 285000,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide los niveles de vitamina K, esencial para la coagulación sanguínea y la salud ósea.",
+    "sintomas": ["sangrado excesivo", "hematomas fáciles", "sangrado de encías", "anticoagulación con warfarina", "recién nacido con sangrado", "malnutrición"]
+  },
+  {
+    "codigo": "VITD",
+    "nombre": "VITAMINA D 25 HIDROXI",
+    "precio": 110000,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide el nivel de vitamina D. Su deficiencia se asocia con osteoporosis, fatiga y alteraciones del sistema inmune.",
+    "sintomas": ["osteoporosis", "dolores óseos", "fatiga crónica", "debilidad muscular", "depresión", "infecciones frecuentes", "poca exposición solar", "fracturas frecuentes"]
+  },
+  {
+    "codigo": "WARFARIN",
+    "nombre": "WARFARINA",
+    "precio": 95000,
+    "categoria": "Otras",
+    "descripcion": "Mide el efecto anticoagulante de la warfarina a través del INR. Fundamental para ajustar la dosis en pacientes con tratamiento anticoagulante.",
+    "sintomas": ["monitoreo anticoagulante", "sangrado excesivo", "tratamiento con warfarina", "fibrilación auricular", "trombosis bajo tratamiento"]
+  },
+  {
+    "codigo": "WESTERN",
+    "nombre": "WESTERN BLOT",
+    "precio": 230000,
+    "categoria": "Infectología",
+    "descripcion": "Prueba confirmatoria para el diagnóstico de HIV, utilizada después de un ELISA positivo.",
+    "sintomas": ["confirmación HIV", "ELISA positivo para HIV", "inmunodeficiencia", "riesgo de HIV"]
+  },
+  {
+    "codigo": "ZINC",
+    "nombre": "ZINC",
+    "precio": 84000,
+    "categoria": "Metabolismo",
+    "descripcion": "Mide los niveles de zinc en sangre. Su deficiencia afecta el sistema inmune, la cicatrización y el crecimiento.",
+    "sintomas": ["cicatrización lenta", "pérdida del gusto", "pérdida del olfato", "infecciones frecuentes", "caída de cabello", "diarrea crónica", "retraso en crecimiento"]
+  },
+  {
+    "codigo": "REMISION",
+    "nombre": "ESTE PACIENTE TIENE EXAMENES DE REMISION",
+    "precio": 90000,
+    "categoria": "Otras",
+    "descripcion": "Registro administrativo de exámenes enviados a laboratorio de referencia externo para análisis especializado.",
+    "sintomas": []
+  }
+]
