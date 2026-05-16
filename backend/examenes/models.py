@@ -51,9 +51,12 @@ class Examen(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base_slug = slugify(self.nombre) or slugify(self.codigo)
-            if Examen.objects.filter(slug=base_slug).exclude(pk=self.pk).exists():
-                self.slug = f"{base_slug}-{self.codigo.lower()}"
-            else:
-                self.slug = base_slug
+            base = slugify(self.nombre) or slugify(self.codigo)
+            candidate = base
+            suffix = 1
+            qs = Examen.objects.exclude(pk=self.pk)
+            while qs.filter(slug=candidate).exists():
+                candidate = f"{base}-{suffix}"
+                suffix += 1
+            self.slug = candidate
         super().save(*args, **kwargs)

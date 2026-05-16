@@ -1,5 +1,4 @@
 from django.test import TestCase
-from rest_framework.test import APIClient
 
 from .models import Examen
 
@@ -21,7 +20,7 @@ class ExamenModelTests(TestCase):
         )
         e = Examen(codigo='A2', nombre='Proteína C', precio=12000, categoria='Otras')
         e.save()
-        self.assertEqual(e.slug, 'proteina-c-a2')
+        self.assertEqual(e.slug, 'proteina-c-1')
 
     def test_str(self):
         e = Examen(codigo='GLU', nombre='Glucosa Basal', precio=15000, categoria='Metabolismo')
