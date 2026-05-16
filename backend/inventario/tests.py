@@ -95,3 +95,73 @@ class MovimientoModelTest(TestCase):
         )
         self.assertIn('EGRESO', str(mov))
         self.assertIn(self.producto.codigo, str(mov))
+
+
+# ─────────────────────────────────────────────
+# Serializers
+# ─────────────────────────────────────────────
+
+from inventario.serializers import (
+    ProductoListSerializer,
+    ProductoSerializer,
+    ProductoBacteriologoSerializer,
+    MovimientoSerializer,
+    MovimientoListSerializer,
+)
+
+
+class ProductoSerializerTest(TestCase):
+
+    def setUp(self):
+        self.producto = make_producto(
+            codigo='SER01', nombre='Reactivo Serializer',
+            ultimo_costo='25.50',
+        )
+
+    def test_list_serializer_excluye_ultimo_costo(self):
+        data = ProductoListSerializer(self.producto).data
+        self.assertNotIn('ultimo_costo', data)
+
+    def test_list_serializer_incluye_campos_basicos(self):
+        data = ProductoListSerializer(self.producto).data
+        for campo in ['id', 'codigo', 'nombre', 'categoria', 'stock_actual', 'stock_minimo', 'activo']:
+            self.assertIn(campo, data)
+
+    def test_serializer_admin_incluye_ultimo_costo(self):
+        data = ProductoSerializer(self.producto).data
+        self.assertIn('ultimo_costo', data)
+        self.assertEqual(str(data['ultimo_costo']), '25.50')
+
+    def test_serializer_bacteriologo_excluye_ultimo_costo(self):
+        data = ProductoBacteriologoSerializer(self.producto).data
+        self.assertNotIn('ultimo_costo', data)
+
+    def test_stock_actual_es_readonly(self):
+        serializer = ProductoSerializer(self.producto, data={'stock_actual': 999}, partial=True)
+        serializer.is_valid()
+        # stock_actual no debe aparecer en validated_data al ser read_only
+        self.assertNotIn('stock_actual', serializer.validated_data)
+
+
+class MovimientoSerializerTest(TestCase):
+
+    def setUp(self):
+        self.admin = make_admin(username='ser_admin')
+        self.producto = make_producto(codigo='MOV01')
+        self.movimiento = Movimiento.objects.create(
+            producto=self.producto,
+            tipo=Movimiento.TipoMovimiento.INGRESO,
+            cantidad=5,
+            motivo='Test serializer',
+            registrado_por=self.admin,
+        )
+
+    def test_movimiento_serializer_incluye_producto_nombre(self):
+        data = MovimientoSerializer(self.movimiento).data
+        self.assertIn('producto_nombre', data)
+        self.assertEqual(data['producto_nombre'], self.producto.nombre)
+
+    def test_movimiento_list_serializer_incluye_codigo(self):
+        data = MovimientoListSerializer(self.movimiento).data
+        self.assertIn('producto_codigo', data)
+        self.assertEqual(data['producto_codigo'], self.producto.codigo)
