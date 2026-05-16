@@ -165,3 +165,132 @@ class MovimientoSerializerTest(TestCase):
         data = MovimientoListSerializer(self.movimiento).data
         self.assertIn('producto_codigo', data)
         self.assertEqual(data['producto_codigo'], self.producto.codigo)
+
+
+# ─────────────────────────────────────────────
+# Endpoints CRUD: Productos (1–3)
+# ─────────────────────────────────────────────
+
+class BaseAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.admin = make_admin(username='api_admin')
+        self.bacteriologo = make_bacteriologo(username='api_bact')
+        self.producto = make_producto(codigo='API001', nombre='Reactivo API')
+
+
+class ProductoListCreateTest(BaseAPITest):
+
+    def test_no_autenticado_retorna_401(self):
+        r = self.client.get('/api/inventario/productos/')
+        self.assertEqual(r.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_puede_listar(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get('/api/inventario/productos/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertIn('results', r.data)
+
+    def test_bacteriologo_puede_listar(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get('/api/inventario/productos/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+
+    def test_lista_excluye_ultimo_costo(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get('/api/inventario/productos/')
+        self.assertNotIn('ultimo_costo', r.data['results'][0])
+
+    def test_admin_puede_crear_producto(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post('/api/inventario/productos/', {
+            'codigo': 'NUEVO01', 'nombre': 'Nuevo Reactivo',
+            'categoria': 'REACTIVO', 'unidad_medida': 'ML',
+        }, format='json')
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Producto.objects.get(codigo='NUEVO01').stock_actual, 0)
+
+    def test_bacteriologo_no_puede_crear(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.post('/api/inventario/productos/', {
+            'codigo': 'BACT01', 'nombre': 'Test',
+            'categoria': 'REACTIVO', 'unidad_medida': 'ML',
+        }, format='json')
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_crear_codigo_duplicado_retorna_400(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.post('/api/inventario/productos/', {
+            'codigo': 'API001', 'nombre': 'Duplicado',
+            'categoria': 'REACTIVO', 'unidad_medida': 'ML',
+        }, format='json')
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class ProductoDetailTest(BaseAPITest):
+
+    def test_admin_ve_ultimo_costo_en_detalle(self):
+        self.producto.ultimo_costo = '15.50'
+        self.producto.save()
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.get(f'/api/inventario/productos/{self.producto.id}/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertIn('ultimo_costo', r.data)
+
+    def test_bacteriologo_no_ve_ultimo_costo_en_detalle(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.get(f'/api/inventario/productos/{self.producto.id}/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertNotIn('ultimo_costo', r.data)
+
+    def test_admin_puede_actualizar(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.patch(
+            f'/api/inventario/productos/{self.producto.id}/',
+            {'nombre': 'Nombre Actualizado'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.nombre, 'Nombre Actualizado')
+
+    def test_bacteriologo_no_puede_actualizar(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.patch(
+            f'/api/inventario/productos/{self.producto.id}/',
+            {'nombre': 'Intento'},
+            format='json'
+        )
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_stock_actual_ignorado_en_patch(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.patch(
+            f'/api/inventario/productos/{self.producto.id}/',
+            {'stock_actual': 999},
+            format='json'
+        )
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock_actual, 0)
+
+
+class ProductoToggleTest(BaseAPITest):
+
+    def test_toggle_cambia_estado(self):
+        self.client.force_authenticate(user=self.admin)
+        r = self.client.patch(f'/api/inventario/productos/{self.producto.id}/toggle/')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.producto.refresh_from_db()
+        self.assertFalse(self.producto.activo)
+
+    def test_toggle_doble_restaura_estado(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.patch(f'/api/inventario/productos/{self.producto.id}/toggle/')
+        self.client.patch(f'/api/inventario/productos/{self.producto.id}/toggle/')
+        self.producto.refresh_from_db()
+        self.assertTrue(self.producto.activo)
+
+    def test_bacteriologo_no_puede_toggle(self):
+        self.client.force_authenticate(user=self.bacteriologo)
+        r = self.client.patch(f'/api/inventario/productos/{self.producto.id}/toggle/')
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
