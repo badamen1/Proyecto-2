@@ -8,7 +8,7 @@
 
 ## Contexto
 
-El laboratorio CNG necesita controlar el stock de reactivos, consumibles y materiales de vidrio. Este módulo provee una API REST de inventario integrada al backend Django existente, siguiendo todos los patrones y convenciones del proyecto (`labclinic-refactor` skill).
+El laboratorio bioanalisis necesita controlar el stock de reactivos, consumibles y materiales de vidrio. Este módulo provee una API REST de inventario integrada al backend Django existente, siguiendo todos los patrones y convenciones del proyecto (`labclinic-refactor` skill).
 
 El módulo NO reemplaza ningún sistema externo; es nativo del nuevo sistema.
 
@@ -20,7 +20,7 @@ El módulo NO reemplaza ningún sistema externo; es nativo del nuevo sistema.
 |---|---|---|
 | Inmutabilidad `Movimiento` | Solo a nivel de views (sin endpoints PATCH/DELETE) | Consistente con el proyecto; suficiente para la escala del lab |
 | Concurrencia egreso | Validación simple (sin `select_for_update`) | Bajo tráfico concurrente en contexto de laboratorio clínico |
-| Permisos | Solo `role='admin'` para todos los endpoints | Inventario involucra costos y utilidades financieras |
+| Permisos | `admin` acceso total; `bacteriologo` acceso operativo (sin datos financieros) | Bacteriólogo usa reactivos diariamente; costos y compras son gestión admin |
 | Estructura views | Un solo `views.py` | Coherente con el patrón de `empresas/views.py` |
 
 ---
@@ -97,11 +97,15 @@ class Movimiento(models.Model):
 ## Serializers
 
 ### `ProductoListSerializer`
-Campos ligeros para listados: `id`, `codigo`, `nombre`, `categoria`, `unidad_medida`, `stock_actual`, `stock_minimo`, `activo`.
+Campos ligeros para listados (ambos roles): `id`, `codigo`, `nombre`, `categoria`, `unidad_medida`, `stock_actual`, `stock_minimo`, `activo`. **Sin `ultimo_costo`.**
 
 ### `ProductoSerializer`
-Todos los campos. `read_only_fields`: `id`, `stock_actual`, `fecha_registro`, `fecha_actualizacion`.  
+Todos los campos — **solo para admin** (create/update/detail completo). `read_only_fields`: `id`, `stock_actual`, `fecha_registro`, `fecha_actualizacion`.  
 `stock_actual` es read-only en creación/edición directa — solo se modifica via `/ingreso/` y `/egreso/`.
+
+### `ProductoBacteriologoSerializer`
+Para GET detalle por bacteriólogo. Igual a `ProductoSerializer` pero **excluye `ultimo_costo`**. Campos: todos menos `ultimo_costo`.  
+En `ProductoDetailView.get_serializer_class()` se elige según `request.user.role`.
 
 ### `MovimientoSerializer`
 Campos: `id`, `producto`, `producto_nombre` (read-only, FK display), `tipo`, `cantidad`, `motivo`, `registrado_por`, `registrado_por_nombre` (read-only), `fecha_registro`.
@@ -111,22 +115,29 @@ Campos ligeros: `id`, `producto_nombre`, `tipo`, `cantidad`, `fecha_registro`.
 
 ---
 
+## Permisos por Rol
+
+| Rol | Puede hacer |
+|---|---|
+| `admin` | Todo — gestión completa incluyendo datos financieros |
+| `bacteriologo` | Ver catálogo (sin `ultimo_costo`), registrar egresos, ver historial y alertas |
+
 ## Endpoints
 
-Todos requieren `IsAuthenticated` + `request.user.role == 'admin'`.
-
-| # | Método | URL | View | Descripción |
-|---|---|---|---|---|
-| 1 | GET/POST | `/api/inventario/productos/` | `ProductoListCreateView` | Listar (paginado, buscable) / Crear |
-| 2 | GET/PATCH | `/api/inventario/productos/<id>/` | `ProductoDetailView` | Detalle / Actualizar datos |
-| 3 | PATCH | `/api/inventario/productos/<id>/toggle/` | `ProductoToggleView` | Activar/Desactivar |
-| 4 | POST | `/api/inventario/productos/<id>/ingreso/` | `ProductoIngresoView` | Suma stock + crea Movimiento |
-| 5 | POST | `/api/inventario/productos/<id>/egreso/` | `ProductoEgresoView` | Resta stock + crea Movimiento |
-| 6 | GET | `/api/inventario/productos/<id>/movimientos/` | `ProductoMovimientosView` | Historial del producto (paginado) |
-| 7 | GET | `/api/inventario/alertas/` | `InventarioAlertasView` | Stock bajo + vencidos/por vencer (30 días) |
-| 8 | GET | `/api/inventario/movimientos/` | `MovimientoListView` | Trazabilidad global (paginado) |
-| 9 | GET | `/api/inventario/movimientos/exportar/` | `MovimientoExportarView` | CSV sin paginación, con filtros |
-| 10 | GET | `/api/inventario/resumen/` | `InventarioResumenView` | Contadores + últimos 5 movimientos |
+| # | Método | URL | View | Roles | Descripción |
+|---|---|---|---|---|---|
+| 1 | GET | `/api/inventario/productos/` | `ProductoListCreateView` | admin, bacteriologo | Listar productos (paginado, buscable) |
+| 1 | POST | `/api/inventario/productos/` | `ProductoListCreateView` | admin | Crear producto |
+| 2 | GET | `/api/inventario/productos/<id>/` | `ProductoDetailView` | admin, bacteriologo | Detalle (bacteriólogo no ve `ultimo_costo`) |
+| 2 | PATCH | `/api/inventario/productos/<id>/` | `ProductoDetailView` | admin | Actualizar datos del producto |
+| 3 | PATCH | `/api/inventario/productos/<id>/toggle/` | `ProductoToggleView` | admin | Activar/Desactivar |
+| 4 | POST | `/api/inventario/productos/<id>/ingreso/` | `ProductoIngresoView` | admin | Suma stock + crea Movimiento (con datos financieros opcionales) |
+| 5 | POST | `/api/inventario/productos/<id>/egreso/` | `ProductoEgresoView` | admin, bacteriologo | Resta stock + crea Movimiento |
+| 6 | GET | `/api/inventario/productos/<id>/movimientos/` | `ProductoMovimientosView` | admin, bacteriologo | Historial del producto (paginado) |
+| 7 | GET | `/api/inventario/alertas/` | `InventarioAlertasView` | admin, bacteriologo | Stock bajo + vencidos/por vencer (30 días) |
+| 8 | GET | `/api/inventario/movimientos/` | `MovimientoListView` | admin, bacteriologo | Trazabilidad global (paginado) |
+| 9 | GET | `/api/inventario/movimientos/exportar/` | `MovimientoExportarView` | admin | CSV sin paginación, con filtros — reporte financiero |
+| 10 | GET | `/api/inventario/resumen/` | `InventarioResumenView` | admin | Contadores financieros + últimos 5 movimientos |
 
 ### Detalle de endpoints no-CRUD
 
@@ -274,7 +285,7 @@ backend/inventario/
 - [x] Serializers con `fields` explícito (nunca `__all__`)
 - [x] `_nombre` read-only para relaciones FK
 - [x] `ListSerializer` separado para endpoints de listado
-- [x] `permission_classes` explícito en cada view
+- [x] `permission_classes` explícito en cada view; verificación de role dentro del view para separar admin vs bacteriólogo
 - [x] `select_related()` en querysets con FK en serializer
 - [x] `search_fields` y `ordering_fields` en todas las list views
 - [x] Logging a `audit.log` en ingreso, egreso y toggle
