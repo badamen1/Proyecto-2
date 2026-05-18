@@ -35,6 +35,7 @@ export default function MovimientosPage() {
   }, [router]);
 
   const fetchMovimientos = async (url: string) => {
+    setError('');
     try {
       const data = await apiFetch<PaginatedResponse<MovimientoLista>>(url);
       setMovimientos(data.results);
@@ -73,9 +74,11 @@ export default function MovimientosPage() {
   };
 
   const handleExport = async () => {
+    setError('');
     setExporting(true);
     try {
       const params = new URLSearchParams();
+      if (search) params.set('search', search);
       if (fechaDesde) params.set('fecha_desde', fechaDesde);
       if (fechaHasta) params.set('fecha_hasta', fechaHasta);
       const qs = params.toString();
