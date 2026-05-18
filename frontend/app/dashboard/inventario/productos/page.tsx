@@ -56,6 +56,7 @@ export default function ProductosListPage() {
 
   const fetchProductos = async (url: string) => {
     try {
+      setError('');
       const data = await apiFetch<PaginatedResponse<ProductoLista>>(url);
       setProductos(data.results);
       setCount(data.count);
@@ -193,6 +194,10 @@ export default function ProductosListPage() {
             <div>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Fecha Vencimiento</label>
               <input type="date" value={formData.fecha_vencimiento} onChange={e => setFormData({ ...formData, fecha_vencimiento: e.target.value })} style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Número de Lote</label>
+              <input value={formData.numero_lote} onChange={e => setFormData({ ...formData, numero_lote: e.target.value })} style={inputStyle} />
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Observaciones</label>
