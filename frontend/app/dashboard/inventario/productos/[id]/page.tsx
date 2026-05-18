@@ -4,7 +4,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
-import type { PaginatedResponse, ProductoDetalle, ProductoBacteriologoDetalle, MovimientoLista } from '@/lib/types';
+import type { PaginatedResponse, ProductoDetalle, ProductoBacteriologoDetalle, MovimientoLista, ProductoCategoria, ProductoUnidadMedida } from '@/lib/types';
 
 const inputStyle = {
   width: '100%', padding: '10px 15px', borderRadius: '8px',
@@ -28,6 +28,7 @@ export default function ProductoDetailPage() {
 
   const [showIngreso, setShowIngreso] = useState(false);
   const [showEgreso, setShowEgreso] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   const [ingresoData, setIngresoData] = useState({ cantidad: '', motivo: '', ultimo_costo: '', fecha_vencimiento: '', numero_lote: '' });
   const [ingresoLoading, setIngresoLoading] = useState(false);
@@ -36,6 +37,10 @@ export default function ProductoDetailPage() {
   const [egresoData, setEgresoData] = useState({ cantidad: '', motivo: '' });
   const [egresoLoading, setEgresoLoading] = useState(false);
   const [egresoError, setEgresoError] = useState('');
+
+  const [editData, setEditData] = useState({ nombre: '', categoria: '' as ProductoCategoria, unidad_medida: '' as ProductoUnidadMedida, stock_minimo: '', proveedor_habitual: '', observaciones: '' });
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState('');
 
   const reloadMovimientos = async () => {
     const movs = await apiFetch<PaginatedResponse<MovimientoLista>>(`/api/inventario/productos/${id}/movimientos/`);
@@ -54,6 +59,14 @@ export default function ProductoDetailPage() {
           apiFetch<PaginatedResponse<MovimientoLista>>(`/api/inventario/productos/${id}/movimientos/`),
         ]);
         setProducto(prod);
+        setEditData({
+          nombre: prod.nombre,
+          categoria: prod.categoria,
+          unidad_medida: prod.unidad_medida,
+          stock_minimo: String(prod.stock_minimo),
+          proveedor_habitual: prod.proveedor_habitual || '',
+          observaciones: prod.observaciones || '',
+        });
         setMovimientos(movs.results);
         setMovNextUrl(movs.next);
       } catch {
@@ -114,6 +127,31 @@ export default function ProductoDetailPage() {
     }
   };
 
+  const handleEdit = async (e: FormEvent) => {
+    e.preventDefault();
+    setEditLoading(true);
+    setEditError('');
+    try {
+      const updated = await apiFetch<ProductoDetalle>(`/api/inventario/productos/${id}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          nombre: editData.nombre,
+          categoria: editData.categoria,
+          unidad_medida: editData.unidad_medida,
+          stock_minimo: parseInt(editData.stock_minimo, 10),
+          proveedor_habitual: editData.proveedor_habitual,
+          observaciones: editData.observaciones,
+        }),
+      });
+      setProducto(updated);
+      setShowEdit(false);
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : 'Error al actualizar producto.');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   const handleToggle = async () => {
     try {
       const updated = await apiFetch<ProductoDetalle>(`/api/inventario/productos/${id}/toggle/`, { method: 'PATCH' });
@@ -122,6 +160,21 @@ export default function ProductoDetailPage() {
       setError('Error al cambiar estado del producto.');
     }
   };
+
+  const categorias: { value: ProductoCategoria; label: string }[] = [
+    { value: 'REACTIVO', label: 'Reactivo' },
+    { value: 'CONSUMIBLE', label: 'Consumible' },
+    { value: 'MATERIAL_VIDRIO', label: 'Material de Vidrio' },
+    { value: 'OTRO', label: 'Otro' },
+  ];
+  const unidades: { value: ProductoUnidadMedida; label: string }[] = [
+    { value: 'UNIDAD', label: 'Unidad' },
+    { value: 'CAJA', label: 'Caja' },
+    { value: 'ML', label: 'Mililitro' },
+    { value: 'LT', label: 'Litro' },
+    { value: 'GR', label: 'Gramo' },
+    { value: 'PAQUETE', label: 'Paquete' },
+  ];
 
   if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Cargando...</div>;
   if (!producto) return <div style={{ color: '#c62828', padding: '2rem' }}>{error || 'Producto no encontrado.'}</div>;
@@ -187,15 +240,21 @@ export default function ProductoDetailPage() {
       {/* Action buttons */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         {isAdmin && (
-          <button onClick={() => { setShowIngreso(!showIngreso); setShowEgreso(false); }}
+          <button onClick={() => { setShowIngreso(!showIngreso); setShowEgreso(false); setShowEdit(false); }}
             style={{ padding: '10px 20px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
             {showIngreso ? 'Cancelar' : 'Registrar Ingreso'}
           </button>
         )}
-        <button onClick={() => { setShowEgreso(!showEgreso); setShowIngreso(false); }}
+        <button onClick={() => { setShowEgreso(!showEgreso); setShowIngreso(false); setShowEdit(false); }}
           style={{ padding: '10px 20px', background: '#fd7e14', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
           {showEgreso ? 'Cancelar' : 'Registrar Egreso'}
         </button>
+        {isAdmin && (
+          <button onClick={() => { setShowEdit(!showEdit); setShowIngreso(false); setShowEgreso(false); }}
+            style={{ padding: '10px 20px', background: 'var(--primary-blue)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+            {showEdit ? 'Cancelar' : 'Editar Datos'}
+          </button>
+        )}
       </div>
 
       {/* Ingreso form */}
@@ -219,6 +278,10 @@ export default function ProductoDetailPage() {
             <div>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Fecha Vencimiento</label>
               <input type="date" value={ingresoData.fecha_vencimiento} onChange={e => setIngresoData({ ...ingresoData, fecha_vencimiento: e.target.value })} style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Número de Lote</label>
+              <input value={ingresoData.numero_lote} onChange={e => setIngresoData({ ...ingresoData, numero_lote: e.target.value })} placeholder="Ej: LOT-001" style={inputStyle} />
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <button type="submit" disabled={ingresoLoading} style={{ padding: '12px 30px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%', opacity: ingresoLoading ? 0.7 : 1, fontWeight: 'bold' }}>
@@ -246,6 +309,49 @@ export default function ProductoDetailPage() {
             <div style={{ gridColumn: '1 / -1' }}>
               <button type="submit" disabled={egresoLoading} style={{ padding: '12px 30px', background: '#fd7e14', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%', opacity: egresoLoading ? 0.7 : 1, fontWeight: 'bold' }}>
                 {egresoLoading ? 'Guardando...' : 'Confirmar Egreso'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Edit form */}
+      {showEdit && isAdmin && (
+        <div style={{ background: '#fff', borderRadius: '10px', padding: '1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', marginBottom: '1.5rem' }}>
+          <h3 style={{ color: 'var(--primary-blue)', marginBottom: '1rem' }}>Editar Datos del Producto</h3>
+          {editError && <div style={{ background: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '8px', marginBottom: '10px' }}>{editError}</div>}
+          <form onSubmit={handleEdit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Nombre *</label>
+              <input required value={editData.nombre} onChange={e => setEditData({ ...editData, nombre: e.target.value })} style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Categoría *</label>
+              <select value={editData.categoria} onChange={e => setEditData({ ...editData, categoria: e.target.value as ProductoCategoria })} style={inputStyle}>
+                {categorias.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Unidad de Medida *</label>
+              <select value={editData.unidad_medida} onChange={e => setEditData({ ...editData, unidad_medida: e.target.value as ProductoUnidadMedida })} style={inputStyle}>
+                {unidades.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Stock Mínimo *</label>
+              <input type="number" min="0" required value={editData.stock_minimo} onChange={e => setEditData({ ...editData, stock_minimo: e.target.value })} style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Proveedor Habitual</label>
+              <input value={editData.proveedor_habitual} onChange={e => setEditData({ ...editData, proveedor_habitual: e.target.value })} style={inputStyle} />
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '0.9rem' }}>Observaciones</label>
+              <textarea value={editData.observaciones} onChange={e => setEditData({ ...editData, observaciones: e.target.value })} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <button type="submit" disabled={editLoading} style={{ padding: '12px 30px', background: 'var(--primary-blue)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%', opacity: editLoading ? 0.7 : 1, fontWeight: 'bold' }}>
+                {editLoading ? 'Guardando...' : 'Guardar Cambios'}
               </button>
             </div>
           </form>
