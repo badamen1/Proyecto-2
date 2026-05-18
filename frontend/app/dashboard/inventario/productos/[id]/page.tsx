@@ -25,6 +25,8 @@ export default function ProductoDetailPage() {
   const [movNextUrl, setMovNextUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [toggleError, setToggleError] = useState('');
+  const [movLoadingMore, setMovLoadingMore] = useState(false);
 
   const [showIngreso, setShowIngreso] = useState(false);
   const [showEgreso, setShowEgreso] = useState(false);
@@ -153,11 +155,12 @@ export default function ProductoDetailPage() {
   };
 
   const handleToggle = async () => {
+    setToggleError('');
     try {
       const updated = await apiFetch<ProductoDetalle>(`/api/inventario/productos/${id}/toggle/`, { method: 'PATCH' });
       setProducto(updated);
     } catch {
-      setError('Error al cambiar estado del producto.');
+      setToggleError('Error al cambiar estado del producto.');
     }
   };
 
@@ -199,15 +202,18 @@ export default function ProductoDetailPage() {
             <h2 style={{ color: 'var(--primary-blue)', margin: '0 0 4px 0' }}>{producto.nombre}</h2>
             <p style={{ color: '#888', margin: 0, fontSize: '0.9rem' }}>Código: <strong>{producto.codigo}</strong></p>
           </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <span style={{ background: producto.activo ? '#d4edda' : '#f8d7da', color: producto.activo ? '#155724' : '#721c24', padding: '4px 10px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>
-              {producto.activo ? 'Activo' : 'Inactivo'}
-            </span>
-            {isAdmin && (
-              <button onClick={handleToggle} style={{ padding: '4px 12px', background: '#f1f1f1', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}>
-                {producto.activo ? 'Desactivar' : 'Activar'}
-              </button>
-            )}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <span style={{ background: producto.activo ? '#d4edda' : '#f8d7da', color: producto.activo ? '#155724' : '#721c24', padding: '4px 10px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                {producto.activo ? 'Activo' : 'Inactivo'}
+              </span>
+              {isAdmin && (
+                <button onClick={handleToggle} style={{ padding: '4px 12px', background: '#f1f1f1', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                  {producto.activo ? 'Desactivar' : 'Activar'}
+                </button>
+              )}
+            </div>
+            {toggleError && <p style={{ color: '#c62828', fontSize: '0.85rem', margin: 0 }}>{toggleError}</p>}
           </div>
         </div>
 
@@ -383,12 +389,23 @@ export default function ProductoDetailPage() {
         )}
         {movNextUrl && (
           <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-            <button onClick={async () => {
-              const data = await apiFetch<PaginatedResponse<MovimientoLista>>(movNextUrl);
-              setMovimientos(prev => [...prev, ...data.results]);
-              setMovNextUrl(data.next);
-            }} style={{ padding: '8px 20px', background: 'var(--primary-blue)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-              Cargar más
+            <button
+              disabled={movLoadingMore}
+              onClick={async () => {
+                setMovLoadingMore(true);
+                try {
+                  const data = await apiFetch<PaginatedResponse<MovimientoLista>>(movNextUrl);
+                  setMovimientos(prev => [...prev, ...data.results]);
+                  setMovNextUrl(data.next);
+                } catch {
+                  setError('Error al cargar más movimientos.');
+                } finally {
+                  setMovLoadingMore(false);
+                }
+              }}
+              style={{ padding: '8px 20px', background: 'var(--primary-blue)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', opacity: movLoadingMore ? 0.7 : 1 }}
+            >
+              {movLoadingMore ? 'Cargando...' : 'Cargar más'}
             </button>
           </div>
         )}
