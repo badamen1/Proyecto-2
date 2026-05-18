@@ -1,20 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { InventarioSidebar } from '@/features/inventario/components/InventarioSidebar';
 
 export default function InventarioLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [role, setRole] = useState<'admin' | 'bacteriologo' | null>(null);
 
   useEffect(() => {
     const token = window.localStorage.getItem('access_token');
     const r = window.localStorage.getItem('user_role');
     if (!token) { router.push('/login'); return; }
-    if (r !== 'admin' && r !== 'bacteriologo') { router.push('/dashboard'); return; }
-    setRole(r as 'admin' | 'bacteriologo');
+    if (r !== 'admin' && r !== 'bacteriologo') { router.push('/dashboard'); }
   }, [router]);
 
   const handleLogout = () => {
@@ -24,7 +22,11 @@ export default function InventarioLayout({ children }: { children: React.ReactNo
     router.push('/');
   };
 
-  if (!role) return null;
+  const role = typeof window !== 'undefined'
+    ? window.localStorage.getItem('user_role') as 'admin' | 'bacteriologo' | null
+    : null;
+
+  if (!role || (role !== 'admin' && role !== 'bacteriologo')) return null;
 
   return (
     <section className="section" style={{ background: '#f4f6f9', minHeight: '90vh' }}>
