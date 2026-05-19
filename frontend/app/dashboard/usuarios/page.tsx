@@ -54,7 +54,7 @@ export default function UsuariosDashboard() {
             });
             if (res.ok) {
                 const data = await res.json();
-                setUsers(data);
+                setUsers(Array.isArray(data) ? data : (data.results ?? []));
             } else {
                 setError('Error al cargar usuarios. Token inválido o expirado.');
             }

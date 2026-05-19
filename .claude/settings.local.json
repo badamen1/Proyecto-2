@@ -11,7 +11,11 @@
       "Skill(superpowers:brainstorming)",
       "Skill(superpowers:subagent-driven-development)",
       "Bash(git -C \"C:\\\\Users\\\\bayro\\\\Desktop\\\\labclinic-nextjs\" add backend/examenes/urls.py backend/config/settings.py)",
-      "Bash(git -C 'C:\\\\Users\\\\bayro\\\\Desktop\\\\labclinic-nextjs' commit -m ' *)"
+      "Bash(git -C 'C:\\\\Users\\\\bayro\\\\Desktop\\\\labclinic-nextjs' commit -m ' *)",
+      "Skill(superpowers:writing-plans)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\bayro\\\\Desktop\\\\labclinic-nextjs\\\\frontend\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(npm test *)"
     ]
   }
 }

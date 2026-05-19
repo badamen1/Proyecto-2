@@ -18,4 +18,4 @@ EXPOSE 8000
 
 # Ejecuta migraciones pendientes y luego inicia el servidor de desarrollo.
 # Las variables de entorno vienen de docker-compose.yml (DB_HOST=db, etc.)
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py create_default_admin && python manage.py runserver 0.0.0.0:8000"]

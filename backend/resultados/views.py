@@ -322,15 +322,18 @@ class ResultadoDetailView(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         queryset = Resultado.objects.select_related('paciente', 'paciente_user', 'subido_por', 'empresa')
 
-        if user.role == 'admin':
+        if user.role in ('admin', 'bacteriologo'):
             return queryset.all()
-        elif user.role == 'bacteriologo':
-            return queryset.all()
-        else:
+        documento = getattr(user, 'documento', None)
+        if documento:
             return queryset.filter(
-                paciente_user=user,
+                Q(paciente_user=user) | Q(paciente_documento=documento),
                 estado__in=['VALIDADO', 'ENTREGADO']
             )
+        return queryset.filter(
+            paciente_user=user,
+            estado__in=['VALIDADO', 'ENTREGADO']
+        )
 
     def perform_destroy(self, instance):
         if self.request.user.role != 'admin':
@@ -384,12 +387,15 @@ class ResultadoDescargarPDFView(APIView):
         if user.role in ('admin', 'bacteriologo'):
             resultado = get_object_or_404(Resultado, pk=pk)
         else:
-            resultado = get_object_or_404(
-                Resultado,
-                pk=pk,
+            documento = getattr(user, 'documento', None)
+            qs = Resultado.objects.filter(
+                Q(paciente_user=user) | Q(paciente_documento=documento),
+                estado__in=['VALIDADO', 'ENTREGADO']
+            ) if documento else Resultado.objects.filter(
                 paciente_user=user,
                 estado__in=['VALIDADO', 'ENTREGADO']
             )
+            resultado = get_object_or_404(qs, pk=pk)
 
         if not resultado.archivo_pdf:
             raise Http404("Este resultado no tiene un archivo PDF asociado.")

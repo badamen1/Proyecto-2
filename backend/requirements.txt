@@ -18,3 +18,8 @@ requests==2.32.3
 
 # Chatbot IA — integración con Gemini 2.5 Flash
 google-generativeai>=0.8.0
+
+# Producción — Render
+gunicorn==23.0.0
+whitenoise==6.9.0
+dj-database-url==2.3.0

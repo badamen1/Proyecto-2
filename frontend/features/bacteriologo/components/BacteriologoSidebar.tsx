@@ -8,6 +8,7 @@ const links = [
   { href: '/dashboard/bacteriologo/ingresar', label: 'Ingresar Resultado', icon: 'fa-vials', exact: false },
   { href: '/dashboard/bacteriologo/validar', label: 'Validar Exámenes', icon: 'fa-check-double', exact: false },
   { href: '/dashboard/bacteriologo/buscar', label: 'Buscar Paciente', icon: 'fa-search', exact: false },
+  { href: '/dashboard/inventario', label: 'Inventario', icon: 'fa-boxes', exact: false },
 ];
 
 export function BacteriologoSidebar() {

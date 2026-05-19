@@ -12,11 +12,6 @@ const badgeColors: Record<ResultadoEstado, { bg: string; color: string }> = {
   ENTREGADO: { bg: '#cce5ff', color: '#004085' },
 };
 
-const fuenteLegible: Record<string, string> = {
-  FASIL: 'Sistema FASIL',
-  EXTERNO: 'Laboratorio Externo',
-  MANUAL: 'Ingreso Manual',
-};
 
 export default function ResultadoDetallePage() {
   const router = useRouter();
@@ -29,9 +24,12 @@ export default function ResultadoDetallePage() {
   const [pdfLoading, setPdfLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     const token = window.localStorage.getItem('access_token');
+    const role = window.localStorage.getItem('user_role');
+    setUserRole(role);
     if (!token) {
       router.push('/login');
       return;
@@ -108,6 +106,7 @@ export default function ResultadoDetallePage() {
   }
 
   const colors = badgeColors[resultado.estado];
+  const isAdmin = userRole === 'admin';
 
   return (
     <section className="section" style={{ background: '#f4f6f9', minHeight: '90vh' }}>
@@ -129,19 +128,25 @@ export default function ResultadoDetallePage() {
         </div>
 
         {/* Metadata */}
-        <div style={{ background: '#fff', borderRadius: '10px', padding: '2rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <MetaRow label="Fecha del examen" value={new Date(resultado.fecha_examen).toLocaleDateString('es-CO')} />
-            <MetaRow label="Fecha de carga" value={new Date(resultado.fecha_carga).toLocaleString('es-CO')} />
-            <MetaRow label="Fuente" value={fuenteLegible[resultado.fuente] ?? resultado.fuente} />
-            <MetaRow label="Subido por" value={resultado.subido_por_nombre ?? '—'} />
-            {resultado.observaciones && (
-              <div style={{ gridColumn: '1 / span 2' }}>
-                <MetaRow label="Observaciones" value={resultado.observaciones} />
-              </div>
-            )}
+        {(isAdmin || resultado.observaciones) && (
+          <div style={{ background: '#fff', borderRadius: '10px', padding: '2rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              {isAdmin && (
+                <>
+                  <MetaRow label="Fecha del examen" value={new Date(resultado.fecha_examen).toLocaleDateString('es-CO')} />
+                  <MetaRow label="Fecha de carga" value={new Date(resultado.fecha_carga).toLocaleString('es-CO')} />
+                  <MetaRow label="Fuente" value={{ FASIL: 'Sistema FASIL', EXTERNO: 'Laboratorio Externo', MANUAL: 'Ingreso Manual' }[resultado.fuente] ?? resultado.fuente} />
+                  <MetaRow label="Subido por" value={resultado.subido_por_nombre ?? '—'} />
+                </>
+              )}
+              {resultado.observaciones && (
+                <div style={{ gridColumn: '1 / span 2' }}>
+                  <MetaRow label="Observaciones" value={resultado.observaciones} />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Visor PDF */}
         <div style={{ background: '#fff', borderRadius: '10px', padding: '1rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
