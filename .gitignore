@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Notas locales sensibles
+FASIL_CONNECTION_NOTES.md
+
 # dependencies
 /node_modules
 frontend/node_modules/
